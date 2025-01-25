@@ -1,4 +1,4 @@
-module backend
+module github.com/djhranicky/ConcertTracker-SE-Project
 
 go 1.23.5
 
