@@ -13,5 +13,6 @@ func NewSqliteStorage() (*gorm.DB, error) {
 		log.Fatal(err)
 	}
 
+	log.Println("Successfully connected to DB")
 	return db, nil
 }
