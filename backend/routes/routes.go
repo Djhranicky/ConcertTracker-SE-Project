@@ -3,13 +3,16 @@ package routes
 import (
 	"net/http"
 
+	"github.com/djhranicky/ConcertTracker-SE-Project/types"
 	"github.com/gorilla/mux"
 )
 
-type Handler struct{}
+type Handler struct {
+	UserStore types.UserStore
+}
 
-func NewHandler() *Handler {
-	return &Handler{}
+func NewHandler(store types.UserStore) *Handler {
+	return &Handler{UserStore: store}
 }
 
 func (h *Handler) RegisterRoutes(router *mux.Router) {

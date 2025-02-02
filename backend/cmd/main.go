@@ -19,6 +19,6 @@ func main() {
 	db.Create(&types.User{Name: "DJ", Email: &email})
 	log.Printf("Added User %s %s to the DB\n", "DJ", email)
 
-	server := api.NewAPIServer(":8080")
+	server := api.NewAPIServer(":8080", db)
 	server.Run()
 }

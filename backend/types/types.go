@@ -1,6 +1,8 @@
 package types
 
-import "time"
+import (
+	"time"
+)
 
 type User struct {
 	ID        uint
@@ -8,4 +10,8 @@ type User struct {
 	Email     *string
 	CreatedAt time.Time
 	UpdatedAt time.Time
+}
+
+type UserStore interface {
+	GetUserByEmail(email string) (*User, error)
 }
