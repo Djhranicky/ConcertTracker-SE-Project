@@ -4,6 +4,11 @@ import (
 	"time"
 )
 
+type UserLoginPayload struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
 type User struct {
 	ID        uint
 	Name      string
