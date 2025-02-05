@@ -23,11 +23,12 @@ func NewAPIServer(addr string, db *gorm.DB) *APIServer {
 
 func (s *APIServer) Run() error {
 	router := mux.NewRouter()
+	subrouter := router.PathPrefix("/api").Subrouter()
 
 	userStore := user.NewStore(s.db)
 	handler := routes.NewHandler(userStore)
-	handler.RegisterRoutes(router)
+	handler.RegisterRoutes(subrouter)
 
-	http.Handle("/", router)
+	http.Handle("/", subrouter)
 	return http.ListenAndServe(s.addr, router)
 }
