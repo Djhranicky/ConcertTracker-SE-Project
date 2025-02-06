@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-	"time"
 
 	"github.com/djhranicky/ConcertTracker-SE-Project/service/auth"
 	"github.com/djhranicky/ConcertTracker-SE-Project/types"
@@ -104,11 +103,9 @@ func (h *Handler) handleRegister(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	err = h.UserStore.CreateUser(types.User{
-		Name:      payload.Name,
-		Email:     payload.Email,
-		Password:  hashedPassword,
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
+		Name:     payload.Name,
+		Email:    payload.Email,
+		Password: hashedPassword,
 	})
 	if err != nil {
 		utils.WriteError(w, http.StatusInternalServerError, err)
