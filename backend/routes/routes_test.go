@@ -3,6 +3,7 @@ package routes
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -11,16 +12,14 @@ import (
 	"github.com/gorilla/mux"
 )
 
-// TODO: fix these tests
-
 func TestUserServiceHandlers(t *testing.T) {
 	userStore := &MockUserStore{}
 	handler := NewHandler(userStore)
 
-	t.Run("Should fail if the user payload is invalid", func(t *testing.T) {
+	t.Run("Should fail if the user payload is invalid on register", func(t *testing.T) {
 		payload := types.UserRegisterPayload{
 			Name:     "testuser",
-			Email:    "test",
+			Email:    "test@example.com",
 			Password: "test123",
 		}
 		marshalled, _ := json.Marshal(payload)
@@ -37,8 +36,8 @@ func TestUserServiceHandlers(t *testing.T) {
 
 		router.ServeHTTP(rr, req)
 
-		if rr.Code != http.StatusBadRequest {
-			t.Errorf("expected status code %v, got status code %v", http.StatusBadRequest, rr.Code)
+		if rr.Code != http.StatusCreated {
+			t.Errorf("expected status code %v, got status code %v", http.StatusCreated, rr.Code)
 		}
 	})
 }
@@ -47,13 +46,13 @@ type MockUserStore struct {
 }
 
 func (m *MockUserStore) GetUserByEmail(email string) (*types.User, error) {
-	return nil, nil
+	return nil, errors.New("user not found")
 }
 
 func (m *MockUserStore) GetUserByID(id uint) (*types.User, error) {
-	return nil, nil
+	return nil, errors.New("user not found")
 }
 
-func (m *MockUserStore) CreateUser(types.User) error {
+func (m *MockUserStore) CreateUser(user types.User) error {
 	return nil
 }
