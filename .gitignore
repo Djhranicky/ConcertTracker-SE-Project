@@ -4,3 +4,4 @@ frontend/.vscode
 backend/bin
 backend/*.db
 backend/.env
+backend/routes/*.db

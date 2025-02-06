@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-	"time"
 
 	"github.com/djhranicky/ConcertTracker-SE-Project/service/auth"
 	"github.com/djhranicky/ConcertTracker-SE-Project/types"
@@ -61,7 +60,7 @@ func (h *Handler) handleLogin(w http.ResponseWriter, r *http.Request) {
 	// load jwt token from .env
 	err = godotenv.Load()
 	if err != nil {
-		utils.WriteError(w, http.StatusInternalServerError, fmt.Errorf("Could not load .env"))
+		utils.WriteError(w, http.StatusInternalServerError, fmt.Errorf("could not load .env"))
 	}
 
 	secret := []byte(os.Getenv("JWT_SECRET"))
@@ -93,7 +92,7 @@ func (h *Handler) handleRegister(w http.ResponseWriter, r *http.Request) {
 	// check if the user already exists
 	_, err := h.UserStore.GetUserByEmail(payload.Email)
 	if err == nil {
-		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("User with email %s already exists", payload.Email))
+		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("user with email %s already exists", payload.Email))
 		return
 	}
 
@@ -104,11 +103,9 @@ func (h *Handler) handleRegister(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	err = h.UserStore.CreateUser(types.User{
-		Name:      payload.Name,
-		Email:     payload.Email,
-		Password:  hashedPassword,
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
+		Name:     payload.Name,
+		Email:    payload.Email,
+		Password: hashedPassword,
 	})
 	if err != nil {
 		utils.WriteError(w, http.StatusInternalServerError, err)
