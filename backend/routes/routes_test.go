@@ -8,15 +8,41 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/djhranicky/ConcertTracker-SE-Project/db"
+	"github.com/djhranicky/ConcertTracker-SE-Project/service/auth"
 	"github.com/djhranicky/ConcertTracker-SE-Project/types"
 	"github.com/gorilla/mux"
+	"gorm.io/gorm"
 )
 
 // TODO: fix these tests
+func initTestDatabase(dbName string) *gorm.DB {
+	mockDatabase, err := db.NewSqliteStorage(dbName)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	mockDatabase.AutoMigrate(&types.User{})
+
+	return mockDatabase
+}
 
 func TestUserServiceHandlers(t *testing.T) {
-	userStore := &MockUserStore{}
+	database := initTestDatabase("test.db")
+	userStore := &MockUserStore{database}
 	handler := NewHandler(userStore)
+
+	hashedPassword, err := auth.HashPassword("test")
+	if err != nil {
+		log.Fatal(err)
+	}
+	user := types.User{
+		Name:     "John Doe",
+		Email:    "test@example.com",
+		Password: hashedPassword,
+	}
+
+	database.Create(&user)
 
 	t.Run("Should fail if request body is empty", func(t *testing.T) {
 		req, err := http.NewRequest(http.MethodPost, "/register", nil)
@@ -63,8 +89,8 @@ func TestUserServiceHandlers(t *testing.T) {
 
 	t.Run("Should fail if user exists", func(t *testing.T) {
 		payload := types.UserRegisterPayload{
-			Name:     "DJ Hranicky",
-			Email:    "test@example3.com",
+			Name:     "John Doe",
+			Email:    "test@example.com",
 			Password: "testpw",
 		}
 		marshalled, _ := json.Marshal(payload)
@@ -81,15 +107,16 @@ func TestUserServiceHandlers(t *testing.T) {
 
 		router.ServeHTTP(rr, req)
 
-		log.Print(rr.Body)
-
 		if rr.Code != http.StatusBadRequest {
 			t.Errorf("expected status code %v, got status code %v", http.StatusBadRequest, rr.Code)
 		}
 	})
+
+	database.Migrator().DropTable(&types.User{})
 }
 
 type MockUserStore struct {
+	db *gorm.DB
 }
 
 func (m *MockUserStore) GetUserByEmail(email string) (*types.User, error) {
