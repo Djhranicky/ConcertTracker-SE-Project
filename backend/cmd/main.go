@@ -5,25 +5,19 @@ import (
 
 	"github.com/djhranicky/ConcertTracker-SE-Project/cmd/api"
 	"github.com/djhranicky/ConcertTracker-SE-Project/db"
-	"github.com/djhranicky/ConcertTracker-SE-Project/types"
-	"gorm.io/gorm"
 )
 
 func main() {
-	db, err := db.NewSqliteStorage()
+	database, err := db.NewSqliteStorage("gorm.db")
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	initDatabase(db)
+	db.InitDatabase(database)
 
-	server := api.NewAPIServer(":8080", db)
+	server := api.NewAPIServer(":8080", database)
 	err = server.Run()
 	if err != nil {
 		log.Fatal(err)
 	}
-}
-
-func initDatabase(db *gorm.DB) {
-	db.AutoMigrate(&types.User{})
 }
