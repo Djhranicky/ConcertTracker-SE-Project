@@ -24,3 +24,13 @@ func (s *Store) GetUserByEmail(email string) (*types.User, error) {
 
 	return &user, nil
 }
+
+func (s *Store) GetUserByID(id uint) (*types.User, error) {
+	var user types.User
+	err := s.db.First(&user, "id = ?", id).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, err
+	}
+
+	return &user, nil
+}

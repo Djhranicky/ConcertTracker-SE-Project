@@ -19,4 +19,5 @@ type User struct {
 
 type UserStore interface {
 	GetUserByEmail(email string) (*User, error)
+	GetUserByID(id uint) (*User, error)
 }
