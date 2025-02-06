@@ -61,7 +61,7 @@ func (h *Handler) handleLogin(w http.ResponseWriter, r *http.Request) {
 	// load jwt token from .env
 	err = godotenv.Load()
 	if err != nil {
-		utils.WriteError(w, http.StatusInternalServerError, fmt.Errorf("Could not load .env"))
+		utils.WriteError(w, http.StatusInternalServerError, fmt.Errorf("could not load .env"))
 	}
 
 	secret := []byte(os.Getenv("JWT_SECRET"))
@@ -80,6 +80,7 @@ func (h *Handler) handleRegister(w http.ResponseWriter, r *http.Request) {
 	var payload types.UserRegisterPayload
 	if err := utils.ParseJSON(r, &payload); err != nil {
 		utils.WriteError(w, http.StatusBadRequest, err)
+		return
 	}
 
 	// validate fields
@@ -92,7 +93,7 @@ func (h *Handler) handleRegister(w http.ResponseWriter, r *http.Request) {
 	// check if the user already exists
 	_, err := h.UserStore.GetUserByEmail(payload.Email)
 	if err == nil {
-		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("User with email %s already exists", payload.Email))
+		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("user with email %s already exists", payload.Email))
 		return
 	}
 
