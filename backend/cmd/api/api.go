@@ -1,6 +1,7 @@
 package api
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/djhranicky/ConcertTracker-SE-Project/routes"
@@ -28,6 +29,8 @@ func (s *APIServer) Run() error {
 	userStore := user.NewStore(s.db)
 	handler := routes.NewHandler(userStore)
 	handler.RegisterRoutes(subrouter)
+
+	fmt.Println("Listening on port", s.addr)
 
 	http.Handle("/", subrouter)
 	return http.ListenAndServe(s.addr, router)

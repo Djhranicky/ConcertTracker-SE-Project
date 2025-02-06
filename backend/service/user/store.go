@@ -34,3 +34,13 @@ func (s *Store) GetUserByID(id uint) (*types.User, error) {
 
 	return &user, nil
 }
+
+func (s *Store) CreateUser(user types.User) error {
+	result := s.db.Create(&user)
+
+	if result.Error != nil {
+		return result.Error
+	}
+
+	return nil
+}

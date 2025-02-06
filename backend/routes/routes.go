@@ -3,10 +3,15 @@ package routes
 import (
 	"fmt"
 	"net/http"
+	"os"
+	"time"
 
+	"github.com/djhranicky/ConcertTracker-SE-Project/service/auth"
 	"github.com/djhranicky/ConcertTracker-SE-Project/types"
 	"github.com/djhranicky/ConcertTracker-SE-Project/utils"
+	"github.com/go-playground/validator/v10"
 	"github.com/gorilla/mux"
+	"github.com/joho/godotenv"
 )
 
 type Handler struct {
@@ -19,7 +24,8 @@ func NewHandler(store types.UserStore) *Handler {
 
 func (h *Handler) RegisterRoutes(router *mux.Router) {
 	router.HandleFunc("/", h.handleHome).Methods("GET")
-	router.HandleFunc("/login", h.handleLogin).Methods("GET")
+	router.HandleFunc("/login", h.handleLogin).Methods("POST")
+	router.HandleFunc("/register", h.handleRegister).Methods("POST")
 }
 
 func (h *Handler) handleHome(w http.ResponseWriter, r *http.Request) {
@@ -29,18 +35,84 @@ func (h *Handler) handleHome(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) handleLogin(w http.ResponseWriter, r *http.Request) {
-	var payload types.UserLoginPayload
-	if err := utils.ParseJSON(r, &payload); err != nil {
-		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("invalid payload %v", err))
+	var user types.UserLoginPayload
+	if err := utils.ParseJSON(r, &user); err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
 		return
 	}
 
-	_, err := h.UserStore.GetUserByEmail(payload.Email)
+	if err := utils.Validate.Struct(user); err != nil {
+		errors := err.(validator.ValidationErrors)
+		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("invalid payload: %v", errors))
+		return
+	}
+
+	u, err := h.UserStore.GetUserByEmail(user.Email)
 	if err != nil {
-		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("user with email %s does not exist", payload.Email))
+		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("invalid email or password"))
 		return
 	}
 
-	// w.Write([]byte(`{"message":"Log in successful"}`))
-	utils.WriteJSON(w, http.StatusOK, map[string]string{"message": fmt.Sprintf("User %s logged in successfully", payload.Email)})
+	if !auth.ComparePasswords(u.Password, []byte(user.Password)) {
+		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("invalid email or password"))
+		return
+	}
+
+	// load jwt token from .env
+	err = godotenv.Load()
+	if err != nil {
+		utils.WriteError(w, http.StatusInternalServerError, fmt.Errorf("Could not load .env"))
+	}
+
+	secret := []byte(os.Getenv("JWT_SECRET"))
+	token, err := auth.CreateJWT(secret, u.ID)
+	if err != nil {
+		utils.WriteError(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	// implement jwt
+	utils.WriteJSON(w, http.StatusOK, map[string]string{"token": token})
+}
+
+func (h *Handler) handleRegister(w http.ResponseWriter, r *http.Request) {
+	// get JSON payload
+	var payload types.UserRegisterPayload
+	if err := utils.ParseJSON(r, &payload); err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+	}
+
+	// validate fields
+	if err := utils.Validate.Struct(payload); err != nil {
+		errors := err.(validator.ValidationErrors)
+		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("invalid payload %v", errors))
+		return
+	}
+
+	// check if the user already exists
+	_, err := h.UserStore.GetUserByEmail(payload.Email)
+	if err == nil {
+		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("User with email %s already exists", payload.Email))
+		return
+	}
+
+	// if not, create new user
+	hashedPassword, err := auth.HashPassword(payload.Password)
+	if err != nil {
+		utils.WriteError(w, http.StatusInternalServerError, err)
+		return
+	}
+	err = h.UserStore.CreateUser(types.User{
+		Name:      payload.Name,
+		Email:     payload.Email,
+		Password:  hashedPassword,
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+	})
+	if err != nil {
+		utils.WriteError(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	utils.WriteJSON(w, http.StatusCreated, nil)
 }
