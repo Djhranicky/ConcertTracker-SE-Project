@@ -10,6 +10,7 @@ import (
 
 	"github.com/djhranicky/ConcertTracker-SE-Project/db"
 	"github.com/djhranicky/ConcertTracker-SE-Project/service/auth"
+	"github.com/djhranicky/ConcertTracker-SE-Project/service/user"
 	"github.com/djhranicky/ConcertTracker-SE-Project/types"
 	"github.com/gorilla/mux"
 	"gorm.io/gorm"
@@ -29,7 +30,7 @@ func initTestDatabase(dbName string) *gorm.DB {
 
 func TestUserServiceHandlers(t *testing.T) {
 	database := initTestDatabase("test.db")
-	userStore := &MockUserStore{database}
+	userStore := user.NewStore(database)
 	handler := NewHandler(userStore)
 
 	hashedPassword, err := auth.HashPassword("test")
@@ -109,6 +110,33 @@ func TestUserServiceHandlers(t *testing.T) {
 
 		if rr.Code != http.StatusBadRequest {
 			t.Errorf("expected status code %v, got status code %v", http.StatusBadRequest, rr.Code)
+		}
+	})
+
+	t.Run("Should succeed when new user is created", func(t *testing.T) {
+		payload := types.UserRegisterPayload{
+			Name:     "Created User",
+			Email:    "test2@example.com",
+			Password: "testpw",
+		}
+		marshalled, _ := json.Marshal(payload)
+
+		req, err := http.NewRequest(http.MethodPost, "/register", bytes.NewBuffer(marshalled))
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/register", handler.handleRegister)
+
+		router.ServeHTTP(rr, req)
+
+		log.Print(rr.Body)
+
+		if rr.Code != http.StatusCreated {
+			t.Errorf("expected status code %v, got status code %v", http.StatusCreated, rr.Code)
 		}
 	})
 
