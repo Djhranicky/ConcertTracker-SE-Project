@@ -1,0 +1,28 @@
+<div class="card">
+  <p-menubar [model]="items">
+    <ng-template #start>
+      <div
+        style="
+          color: #f21414;
+          font-size: 32px;
+          font-family: Blogh Trial;
+          font-weight: 400;
+          line-height: 35.2px;
+          word-wrap: break-word;
+        "
+      >
+        concerto
+      </div>
+    </ng-template>
+    <ng-template #end>
+      <p-button label="Log In" [link]="true" class="log-in" />
+      <a
+        href="/"
+        rel="noopener noreferrer"
+        class="p-button p-button-rounded font-bold sign-up"
+      >
+        Sign Up
+      </a>
+    </ng-template>
+  </p-menubar>
+</div>

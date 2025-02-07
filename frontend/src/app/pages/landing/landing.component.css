@@ -1,0 +1,30 @@
+body {
+  margin: 0;
+  line-height: normal;
+  background-color: #f3f0e6;
+  background: #f3f0e6;
+}
+
+.hero {
+  width: 100%;
+  position: relative;
+  height: 1vh;
+  text-align: left;
+  font-size: 1.5rem;
+  color: #0f172a;
+  font-family: "Roboto";
+}
+
+.section {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 1440px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 80px 80px 0px;
+  box-sizing: border-box;
+  gap: 80px;
+}

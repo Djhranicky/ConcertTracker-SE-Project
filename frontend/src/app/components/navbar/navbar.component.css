@@ -1,0 +1,26 @@
+/*.card{
+}*/
+
+.sign-up {
+  color: #78350f;
+  font-size: 0.875rem;
+  font-family: Roboto;
+  font-weight: 500;
+  line-height: 1.5rem;
+  letter-spacing: 0.031rem;
+  word-wrap: break-word;
+  background-color: #fcd34d;
+  border: 0.125rem #fcd34d solid;
+  text-decoration: none;
+  padding: 0.25rem 0.75rem;
+  box-shadow: 0rem 0rem 0.125rem rgba(0, 0, 0, 0.07);
+}
+
+/*
+.sign-up:hover {
+  background-color: #fcd34d;
+  background: #fcd34d;
+  border: 0px;
+  text-decoration: none;
+}
+*/
