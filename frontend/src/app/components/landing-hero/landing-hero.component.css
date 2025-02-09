@@ -1,0 +1,58 @@
+.cont {
+  height: calc(100vh - 60px);
+}
+.title {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  font-size: 6rem;
+  font-family: "Blogh Trial";
+  letter-spacing: 0.125rem;
+}
+
+section {
+  font-family: "Roboto";
+}
+
+button {
+  padding: 8px 24px;
+}
+
+.sector {
+  /*
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 1440px;
+    height: 678px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 80px 80px 0px;
+    box-sizing: border-box;
+    gap: 80px;
+    */
+}
+
+.right {
+  flex: 1;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: right;
+  justify-content: flex-start;
+  position: relative;
+  gap: 24px;
+}
+
+.blueBlob {
+  z-index: 0;
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  margin: 0 !important;
+  height: calc(100vh - 75px);
+}

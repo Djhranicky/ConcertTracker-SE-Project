@@ -18,7 +18,10 @@ const MyPreset = definePreset(Aura, {
       colorScheme: {
         light: {
           root: {
-            background: 'transparent',
+            //background: 'transparent',
+            top: '0px',
+            position: 'sticky',
+            zIndex: '99999',
           },
         },
       },

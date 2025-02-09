@@ -1,0 +1,15 @@
+.bg {
+  background-color: #f21414;
+  border-radius: 3rem;
+  /*
+  height: 90vh;
+  */
+  color: white;
+  align-items: center;
+}
+
+.features {
+  font-family: "Blogh Trial";
+  font-size: 3.5rem;
+  letter-spacing: 0.125rem;
+}
