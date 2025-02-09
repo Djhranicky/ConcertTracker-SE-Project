@@ -1,1 +1,47 @@
-<p>signup works!</p>
+<app-navbar class="navbar"></app-navbar>
+
+<div class="signup-container">
+  <div class="left-section">
+    <div class="content-wrapper">
+      <section class="text-content">
+        <h1 class="main-title">Sign up</h1>
+        <h2 class="subtitle">to Concerto</h2>
+        <p class="description">If you already have an account, you can <a href="/login">login</a>.</p>
+      </section>
+    </div>
+  </div>
+  
+  <div class="right-section">
+    <div class="signup-card">
+      <h2>Sign up</h2>
+      <form class="signup-form">
+        <div class="form-group">
+          <span class="p-input-icon-left">
+            <input pInputText id="email" type="email" placeholder="Enter email">
+          </span>
+        </div>
+        <div class="form-group">
+          <span class="p-input-icon-left">
+            <input pInputText id="username" type="text" placeholder="Create username">
+          </span>
+        </div>
+        <div class="form-group">
+          <span class="p-input-icon-left">
+            <input pInputText id="contact" type="text" placeholder="Contact number">
+          </span>
+        </div>
+        <div class="form-group">
+          <span class="p-input-icon-left">
+            <input pInputText id="password" type="password" placeholder="Password">
+          </span>
+        </div>
+        <div class="form-group">
+          <span class="p-input-icon-left">
+            <input pInputText id="password" type="password" placeholder="Confirm password">
+          </span>
+        </div>
+        <p-button label="Sign Up" styleClass="signup-button"></p-button>
+      </form>
+    </div>
+  </div>
+</div>

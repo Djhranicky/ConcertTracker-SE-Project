@@ -17,6 +17,11 @@
   box-shadow: 0rem 0rem 0.125rem rgba(0, 0, 0, 0.07);
 }
 
+.buttons {
+  display: flex;
+  gap: 2rem;
+}
+
 /*
 .sign-up:hover {
   background-color: #fcd34d;
