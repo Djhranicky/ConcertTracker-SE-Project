@@ -1,0 +1,128 @@
+.signup-container {
+    background-color: #F3F0E6;
+    height: calc(100vh - 60px);
+    display: flex;
+    width: 100%;
+  }
+  
+  .left-section {
+    width: 50%;
+    background-image: url('../../../../public/imgs/sign-in-bg.svg');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: left center;
+    position: relative;
+
+    background-position-x: -50px;
+    background-position-y: -50px;
+  }
+  
+  .content-wrapper {
+    position: relative;
+    padding: 2rem;
+    height: 100%;
+    display: flex;
+    align-items: center;
+  }
+  
+  .text-content {
+    color: #fff;
+    position: relative;
+    z-index: 1;
+  }
+  
+  .main-title {
+    font-size: 6rem;
+    letter-spacing: 0.125rem;
+    margin: 0;
+    color: #fff;
+  }
+  
+  .subtitle {
+    font-size: 6rem;
+    letter-spacing: 0.125rem;
+    margin: 0;
+    color: #4338ca;
+  }
+  
+  .description {
+    font-size: 1.1rem;
+    margin-top: 1rem;
+  }
+  
+  .right-section {
+    width: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .signup-card {
+    background: #F3F0E6;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 80%;
+    max-width: 400px;
+  }
+  
+  .signup-card h2 {
+    margin-bottom: 2rem;
+    color: #333;
+    font-weight: 600;
+  }
+
+  .signup-card a {
+    margin-bottom: 2rem;
+    align-items: flex-end;
+    color: black;
+    text-decoration: none;
+  }
+  
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
+  
+  .form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #4b5563;
+    font-weight: 500;
+  }
+  
+  .form-group input {
+    background-color: #F9DFDF;
+  }
+  
+  /* PrimeNG Input styling */
+  .p-input-icon-left {
+    width: 100%;
+  }
+  
+  .p-input-icon-left i {
+    color: #6b7280;
+  }
+  
+  :host ::ng-deep .p-inputtext {
+    width: 100%;
+    padding: 0.75rem 0.75rem 0.75rem 2.5rem;
+  }
+  
+  /* PrimeNG Button styling */
+  :host ::ng-deep .signup-button {
+    width: 100%;
+  }
+  
+  :host ::ng-deep .signup-button .p-button {
+    width: 100%;
+    background-color: #4338ca;
+  }
+  
+  :host ::ng-deep .signup-button .p-button:hover {
+    background-color: #3730a3;
+  }
+  
+  /* Make the form full width */
+  .signup-form {
+    width: 100%;
+  }

@@ -16,14 +16,17 @@
         </div>
       </ng-template>
       <ng-template #end>
-        <p-button label="Log In" [link]="true" class="log-in" />
-        <a
-          href="/"
-          rel="noopener noreferrer"
-          class="p-button p-button-rounded font-bold sign-up"
-        >
-          Sign Up
-        </a>
+        <div class="buttons">
+          <p-button routerLink="/login" label="Log In" class="log-in" />
+          <!-- <a
+            href="/"
+            rel="noopener noreferrer"
+            class="p-button p-button-rounded font-bold sign-up"
+          >
+            Sign Up
+          </a> -->
+          <p-button routerLink="/signup" label="Sign up" />
+        </div>
       </ng-template>
     </p-menubar>
   </div>
