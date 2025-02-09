@@ -2,22 +2,16 @@
   <div class="card">
     <p-menubar [model]="items">
       <ng-template #start>
-        <div
-          style="
-            color: #f21414;
-            font-size: 32px;
-            font-family: Blogh Trial;
-            font-weight: 400;
-            line-height: 35.2px;
-            word-wrap: break-word;
-          "
-        >
-          concerto
-        </div>
+        <a href="/" class="icon"> concerto </a>
       </ng-template>
       <ng-template #end>
         <div class="buttons">
-          <p-button routerLink="/login" label="Log In" class="log-in" />
+          <p-button
+            routerLink="/login"
+            label="Log In"
+            class="log-in"
+            [link]="true"
+          />
           <!-- <a
             href="/"
             rel="noopener noreferrer"
@@ -25,7 +19,11 @@
           >
             Sign Up
           </a> -->
-          <p-button routerLink="/signup" label="Sign up" />
+          <p-button
+            routerLink="/signup"
+            label="Sign up"
+            class="p-button p-button-rounded p-0"
+          />
         </div>
       </ng-template>
     </p-menubar>

@@ -1,3 +1,13 @@
+.icon {
+  color: #f21414;
+  font-size: 32px;
+  font-family: Blogh Trial;
+  font-weight: 400;
+  line-height: 35.2px;
+  word-wrap: break-word;
+  text-decoration: none;
+}
+
 .cont {
   align-self: stretch;
 }
