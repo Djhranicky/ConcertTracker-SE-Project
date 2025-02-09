@@ -1,1 +1,45 @@
-<p>pop-carousel works!</p>
+<div class="popThisWeek">
+  <div class="title">
+    <div class="section-text">
+      <div class="top">
+        <div class="secondary-headline">Popular This Week</div>
+      </div>
+    </div>
+    <p-button
+      label="View All Concerts"
+      [link]="true"
+      icon="pi pi-arrow-right"
+      severity="secondary"
+      iconPos="right"
+      class="button"
+    />
+  </div>
+  <div>
+    <div class="card">
+      <p-carousel
+        [value]="tours"
+        [numVisible]="5"
+        [numScroll]="3"
+        [circular]="false"
+        [responsiveOptions]="responsiveOptions"
+        class="carousel"
+      >
+        <ng-template let-tour #item>
+          <div
+            class="border border-surface rounded-border w-full image"
+            style="--url: url({{ tour.img }})"
+          >
+            <div class="content">
+              <div class="title-category">
+                <div class="category">{{ tour.tour }}</div>
+                <div class="title-container">
+                  <b class="title">{{ tour.artist }}</b>
+                </div>
+              </div>
+            </div>
+          </div>
+        </ng-template>
+      </p-carousel>
+    </div>
+  </div>
+</div>
