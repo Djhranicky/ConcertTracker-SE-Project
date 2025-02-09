@@ -45,6 +45,7 @@ func TestUserServiceHandlers(t *testing.T) {
 
 	database.Create(&user)
 
+	// Testing handleRegister
 	t.Run("Should fail if request body is empty", func(t *testing.T) {
 		req, err := http.NewRequest(http.MethodPost, "/register", nil)
 		if err != nil {
@@ -137,6 +138,125 @@ func TestUserServiceHandlers(t *testing.T) {
 
 		if rr.Code != http.StatusCreated {
 			t.Errorf("expected status code %v, got status code %v", http.StatusCreated, rr.Code)
+		}
+	})
+
+	// Testing handleLogin
+	t.Run("Should fail if request body is empty", func(t *testing.T) {
+		req, err := http.NewRequest(http.MethodPost, "/login", nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/login", handler.handleLogin)
+
+		router.ServeHTTP(rr, req)
+
+		if rr.Code != http.StatusBadRequest {
+			t.Errorf("expected status code %v, got status code %v", http.StatusBadRequest, rr.Code)
+		}
+	})
+
+	t.Run("Should fail if payload is invalid", func(t *testing.T) {
+		payload := &types.UserRegisterPayload{
+			Name:     "John Doe",
+			Email:    "test", //Bad Email
+			Password: "test123",
+		}
+		marshalled, _ := json.Marshal(payload)
+
+		req, err := http.NewRequest(http.MethodPost, "/login", bytes.NewBuffer(marshalled))
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/login", handler.handleLogin)
+
+		router.ServeHTTP(rr, req)
+
+		if rr.Code != http.StatusBadRequest {
+			t.Errorf("expected status code %v, got status code %v", http.StatusBadRequest, rr.Code)
+		}
+	})
+
+	t.Run("Should fail if user does not exist", func(t *testing.T) {
+		payload := &types.UserRegisterPayload{
+			Name:     "John Doe",
+			Email:    "doesnotexist@example.com",
+			Password: "test123",
+		}
+		marshalled, _ := json.Marshal(payload)
+
+		req, err := http.NewRequest(http.MethodPost, "/login", bytes.NewBuffer(marshalled))
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/login", handler.handleLogin)
+
+		router.ServeHTTP(rr, req)
+
+		if rr.Code != http.StatusBadRequest {
+			t.Errorf("expected status code %v, got status code %v", http.StatusBadRequest, rr.Code)
+		}
+	})
+
+	t.Run("Should fail if user enters wrong password", func(t *testing.T) {
+		payload := &types.UserRegisterPayload{
+			Name:     "John Doe",
+			Email:    "test@example.com",
+			Password: "wrongpassword",
+		}
+		marshalled, _ := json.Marshal(payload)
+
+		req, err := http.NewRequest(http.MethodPost, "/login", bytes.NewBuffer(marshalled))
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/login", handler.handleLogin)
+
+		router.ServeHTTP(rr, req)
+
+		if rr.Code != http.StatusBadRequest {
+			t.Errorf("expected status code %v, got status code %v", http.StatusBadRequest, rr.Code)
+		}
+	})
+
+	t.Run("Should pass if user enters correct user name and password", func(t *testing.T) {
+		payload := &types.UserRegisterPayload{
+			Name:     "John Doe",
+			Email:    "test@example.com",
+			Password: "test",
+		}
+		marshalled, _ := json.Marshal(payload)
+
+		req, err := http.NewRequest(http.MethodPost, "/login", bytes.NewBuffer(marshalled))
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/login", handler.handleLogin)
+
+		router.ServeHTTP(rr, req)
+
+		if rr.Code != http.StatusOK {
+			t.Errorf("expected status code %v, got status code %v. JSON Body: %v", http.StatusOK, rr.Code, rr.Body)
 		}
 	})
 
