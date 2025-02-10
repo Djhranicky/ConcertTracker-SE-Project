@@ -19,6 +19,9 @@
 - [Create UI login page](https://github.com/Djhranicky/ConcertTracker-SE-Project/issues/17)
 - [Create UI sign up page](https://github.com/Djhranicky/ConcertTracker-SE-Project/issues/18)
 - [Add Login route](https://github.com/Djhranicky/ConcertTracker-SE-Project/issues/13)
+- [Add register route](https://github.com/Djhranicky/ConcertTracker-SE-Project/issues/12)
+- [Add basic session management](https://github.com/Djhranicky/ConcertTracker-SE-Project/issues/14)
+- [Create test cases for added functionality](https://github.com/Djhranicky/ConcertTracker-SE-Project/issues/19)
 
 ## Which ones were succesfully completed
 
@@ -27,5 +30,12 @@
 - [Stub out Backend](https://github.com/Djhranicky/ConcertTracker-SE-Project/issues/2)
 - [Create UI login page](https://github.com/Djhranicky/ConcertTracker-SE-Project/issues/17)
 - [Create UI sign up page](https://github.com/Djhranicky/ConcertTracker-SE-Project/issues/18)
+- [Add Login route](https://github.com/Djhranicky/ConcertTracker-SE-Project/issues/13)
+- [Add register route](https://github.com/Djhranicky/ConcertTracker-SE-Project/issues/12)
+- [Add basic session management](https://github.com/Djhranicky/ConcertTracker-SE-Project/issues/14)
+- [Create test cases for added functionality](https://github.com/Djhranicky/ConcertTracker-SE-Project/issues/19)
+- [Add database connection for backend](https://github.com/Djhranicky/ConcertTracker-SE-Project/issues/11)
 
 ## Which ones didn't and why?
+
+- Did not address different user types (regular user/admin) since it was not part of core functionality for sprint 1
