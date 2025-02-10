@@ -1,10 +1,21 @@
 <header></header>
 <body>
   <app-navbar class="navbar"></app-navbar>
-  <app-landing-hero class="hero" />
-  <app-pop-carousel class="pop"></app-pop-carousel>
+  <app-landing-hero class="component" />
+  <app-pop-carousel class="component"></app-pop-carousel>
   <app-features-landing></app-features-landing>
-  <app-discuss-landing></app-discuss-landing>
+  <app-discuss-landing
+    class="component"
+    [title]="discussTitle"
+    [subtitle]="discussSubtitle"
+    [paragraph]="discussParagraph"
+  ></app-discuss-landing>
   <app-discover-landing></app-discover-landing>
+  <app-discuss-landing
+    class="component"
+    [title]="organizeTitle"
+    [subtitle]="organizeSubtitle"
+    [paragraph]="organizeParagraph"
+  ></app-discuss-landing>
   <app-tweets-landing></app-tweets-landing>
 </body>

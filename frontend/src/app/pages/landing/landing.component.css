@@ -25,20 +25,7 @@ body {
   background: "black";
   */
 }
-.hero {
-  width: 100%;
-  height: 100%;
-  position: relative;
-
-  /*
-  text-align: left;
-  font-size: 1.5rem;
-  color: #0f172a;
-  font-family: "Roboto";
-  */
-}
-
-.pop {
+.component {
   width: 100%;
   height: 100%;
   position: relative;

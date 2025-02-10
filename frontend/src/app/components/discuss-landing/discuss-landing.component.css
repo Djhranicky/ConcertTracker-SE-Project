@@ -1,0 +1,146 @@
+.container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  box-sizing: border-box;
+  gap: 30px;
+  overflow: hidden;
+}
+
+.subtitled {
+  font-size: 20px;
+  color: #f21414;
+}
+
+.titled {
+  line-height: 110%;
+  font-family: "Blogh Trial";
+  color: #0f172a;
+  font-family: "Blogh Trial";
+  font-size: 3.5rem;
+  letter-spacing: 0.125rem;
+}
+
+.section-text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  z-index: 1;
+}
+
+.screendesktop {
+  width: 75%;
+  box-shadow: 0px 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0px 0px 10px rgba(0, 0, 0, 0.07);
+  border-radius: 20px;
+  background-color: #fff;
+  border: 5px solid #fff;
+  box-sizing: border-box;
+  height: 75vh;
+  overflow: hidden;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  z-index: 2;
+  text-align: left;
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+.top-bar {
+  align-self: stretch;
+  height: 41px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 8px 16px;
+  box-sizing: border-box;
+  position: relative;
+  gap: 28px;
+}
+.circles {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 5px;
+  z-index: 0;
+}
+.icon-jam-icons-filled-ci {
+  width: 10px;
+  position: relative;
+  height: 10px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.icon-jam-icons-outline-l {
+  width: 24px;
+  position: relative;
+  height: 24px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.arrows {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 5px;
+  z-index: 1;
+}
+.address-bar {
+  width: 44.99%;
+  margin: 0 !important;
+  position: absolute;
+  top: 8px;
+  right: 27.42%;
+  left: 27.59%;
+  border-radius: 5px;
+  background-color: #f1f5f9;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 8px;
+  box-sizing: border-box;
+  z-index: 2;
+}
+.feature {
+  position: relative;
+  line-height: 140%;
+}
+
+.circles-icon {
+  width: 100vw;
+  position: absolute;
+  margin: 0 !important;
+  top: 190px;
+  /* left: -355px; */
+  /* height: 807px; */
+  z-index: 0;
+  overflow: hidden;
+}
+
+.circles-icon1 {
+  width: 100vw;
+  position: absolute;
+  margin: 0 !important;
+  top: 629px;
+  left: 0px;
+  z-index: 3;
+}
+.paragraph {
+  max-width: 65vw;
+  /* align-self: center; */
+  /* position: relative; */
+  line-height: 180%;
+  color: #0f172a;
+}

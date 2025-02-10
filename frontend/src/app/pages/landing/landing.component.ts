@@ -20,4 +20,13 @@ import { TweetsLandingComponent } from '../../components/tweets-landing/tweets-l
   templateUrl: './landing.component.html',
   styleUrl: './landing.component.css',
 })
-export class LandingComponent {}
+export class LandingComponent {
+  discussTitle: string = 'Discuss Title';
+  discussSubtitle: string = 'Discuss';
+  discussParagraph: string =
+    'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Velit numquam eligendi quos';
+  organizeTitle: string = 'Organize Title';
+  organizeSubtitle: string = 'Organize';
+  organizeParagraph: string =
+    'Et pulvinar nec interdum integer id urna molestie porta nullam. A, donec ornare sed turpis pulvinar purus maecenas quam a. Erat porttitor pharetra sed in mauris elementum sollicitudin.';
+}
