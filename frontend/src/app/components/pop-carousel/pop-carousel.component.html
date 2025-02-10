@@ -14,32 +14,30 @@
       class="button"
     />
   </div>
-  <div>
-    <div class="card">
-      <p-carousel
-        [value]="tours"
-        [numVisible]="5"
-        [numScroll]="3"
-        [circular]="false"
-        [responsiveOptions]="responsiveOptions"
-        class="carousel"
-      >
-        <ng-template let-tour #item>
-          <div
-            class="border border-surface rounded-border w-full image"
-            style="--url: url({{ tour.img }})"
-          >
-            <div class="content">
-              <div class="title-category">
-                <div class="category">{{ tour.tour }}</div>
-                <div class="title-container">
-                  <b class="title">{{ tour.artist }}</b>
-                </div>
+  <div class="bottom">
+    <p-carousel
+      [value]="tours"
+      [numVisible]="5"
+      [numScroll]="3"
+      [circular]="false"
+      [responsiveOptions]="responsiveOptions"
+      class="carousel p-carousel-content"
+    >
+      <ng-template let-tour #item>
+        <div
+          class="border border-surface rounded-border w-full image"
+          style="--url: url({{ tour.img }})"
+        >
+          <div class="content">
+            <div class="title-category">
+              <div class="category">{{ tour.tour }}</div>
+              <div class="title-container">
+                <b class="title">{{ tour.artist }}</b>
               </div>
             </div>
           </div>
-        </ng-template>
-      </p-carousel>
-    </div>
+        </div>
+      </ng-template>
+    </p-carousel>
   </div>
 </div>
