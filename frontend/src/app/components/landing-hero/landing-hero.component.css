@@ -1,5 +1,5 @@
 .cont {
-  height: calc(100vh - 60px);
+  height: calc(100vh - 3.9375rem);
 }
 .title {
   align-self: stretch;
@@ -18,7 +18,7 @@ section {
 }
 
 button {
-  padding: 8px 24px;
+  padding: 0.5rem 1.5rem;
 }
 
 .sector {
@@ -46,14 +46,14 @@ button {
   align-items: right;
   justify-content: flex-start;
   position: relative;
-  gap: 24px;
+  gap: 1.5rem;
 }
 
 .blueBlob {
   z-index: 0;
   position: absolute;
-  top: 0px;
-  right: 0px;
+  top: 0rem;
+  right: 0rem;
   margin: 0 !important;
-  height: calc(100vh - 75px);
+  height: calc(100vh - 4.6875rem);
 }
