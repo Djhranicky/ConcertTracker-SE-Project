@@ -1,6 +1,6 @@
 .signup-container {
   background-color: #f3f0e6;
-  height: calc(100vh - 63px);
+  height: calc(100vh - 3.75rem);
   display: flex;
   width: 100%;
   font-family: "Poppins";
@@ -15,8 +15,8 @@
   background-position: left center;
   position: relative;
 
-  background-position-x: -50px;
-  background-position-y: -50px;
+  background-position-x: -3.125rem;
+  background-position-y: -3.125rem;
 }
 
 .content-wrapper {
@@ -71,10 +71,10 @@
 .signup-card {
   background: #f3f0e6;
   padding: 2rem;
-  border-radius: 8px;
+  border-radius: 0.5rem;
   /* box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); */
   width: 80%;
-  max-width: 400px;
+  max-width: 25rem;
 }
 
 .signup-card h2 {
@@ -103,7 +103,7 @@
 
 .form-group input {
   background-color: #f4f4f4;
-  box-shadow: 0px 0px 8px 0px #b4b4b4;
+  box-shadow: 0rem 0rem .5rem 0rem #b4b4b4;
 }
 
 /* PrimeNG Input styling */
@@ -123,18 +123,19 @@
 /* PrimeNG Button styling */
 :host ::ng-deep .signup-button {
   width: 100%;
+
   margin-top: 1rem;
   background-color: #01bcd2;
-  border: 0px;
+  border: 0rem;
 }
 :host ::ng-deep .signup-button .p-button {
   width: 100%;
   background-color: #01bcd2;
-  border: 0px;
+  border: 0rem;
 }
 :host ::ng-deep .signup-button:hover {
   background-color: #128b98;
-  border: 0px;
+  border: 0rem;
 }
 
 :host ::ng-deep .signup-button .p-button:hover {

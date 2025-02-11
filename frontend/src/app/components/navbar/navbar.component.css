@@ -3,10 +3,10 @@
 }
 .icon {
   color: #f21414;
-  font-size: 32px;
+  font-size: 2rem;
   font-family: Blogh Trial;
   font-weight: 400;
-  line-height: 35.2px;
+  line-height: 2.2rem;
   word-wrap: break-word;
   text-decoration: none;
 }
@@ -34,12 +34,3 @@
   display: flex;
   gap: 2rem;
 }
-
-/*
-.sign-up:hover {
-  background-color: #fcd34d;
-  background: #fcd34d;
-  border: 0px;
-  text-decoration: none;
-}
-*/
