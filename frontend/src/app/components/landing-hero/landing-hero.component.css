@@ -9,7 +9,8 @@
   justify-content: flex-start;
   font-size: 6rem;
   font-family: "Blogh Trial";
-  letter-spacing: 0.125rem;
+  font-weight: 100;
+  letter-spacing: 0.1rem;
 }
 
 section {

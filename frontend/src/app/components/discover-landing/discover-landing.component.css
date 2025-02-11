@@ -1,0 +1,154 @@
+.discover {
+  width: 100%;
+  margin: 0;
+  height: 90vh;
+  position: relative;
+  background-color: #f21414;
+  text-align: left;
+  font-size: 20px;
+  color: #fff;
+  font-family: Roboto;
+}
+.discover-child {
+  position: relative;
+  justify-self: center;
+  border-radius: 50%;
+  background-color: #01bcd2;
+  width: 85%;
+  height: 100%;
+  clip-path: ellipse(83% 100%);
+}
+
+.section-text {
+  position: absolute;
+  top: 11rem;
+  left: 6rem;
+  width: 28rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 2rem;
+}
+.top {
+  /* align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 16px; */
+  /* z-index: 2; */
+}
+.caption {
+  align-self: stretch;
+  position: relative;
+  letter-spacing: 3px;
+  line-height: 100%;
+  text-transform: uppercase;
+  z-index: 2;
+}
+
+.secondary-headline {
+  align-self: stretch;
+  position: relative;
+  font-size: 56px;
+  line-height: 110%;
+  font-family: "Blogh Trial";
+  font-weight: 100;
+  letter-spacing: 0.125rem;
+}
+
+.paragraph {
+  align-self: stretch;
+  position: relative;
+  font-size: 18px;
+  line-height: 160%;
+}
+
+.secondary-headline1 {
+  align-self: stretch;
+  position: relative;
+  font-size: 56px;
+  line-height: 110%;
+  font-family: "Blogh Trial";
+  color: #000;
+}
+.paragraph1 {
+  align-self: stretch;
+  position: relative;
+  font-size: 18px;
+  line-height: 160%;
+  color: #000;
+}
+.section-text1 {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 32px;
+}
+.col {
+  position: absolute;
+  top: 10.5rem;
+  left: 4.5rem;
+  width: 28rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+}
+.icon-jam-icons-filled-ci {
+  width: 10px;
+  position: relative;
+  height: 10px;
+  overflow: hidden;
+  flex-shrink: 0;
+  z-index: 3;
+}
+.circles {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 5px;
+  z-index: 3;
+}
+.top-bar {
+  align-self: stretch;
+  height: 41px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 8px 16px;
+  box-sizing: border-box;
+  z-index: 3;
+}
+.desktop-app-placeholder-1-icon {
+  align-self: stretch;
+  flex: 1;
+  position: relative;
+  max-width: 100%;
+  overflow: hidden;
+  max-height: 100%;
+  z-index: 3;
+}
+.screendesktop {
+  position: absolute;
+  top: 80px;
+  left: 610px;
+  box-shadow: 0px 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0px 0px 10px rgba(0, 0, 0, 0.07);
+  border-radius: 20px;
+  background-color: #fff;
+  width: 750px;
+  height: 480px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  z-index: 3;
+}
