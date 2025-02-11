@@ -58,9 +58,10 @@ func (h *Handler) handleLogin(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// load jwt token from .env
-	err = godotenv.Load("../.env")
+	err = godotenv.Load("./.env")
 	if err != nil {
 		utils.WriteError(w, http.StatusInternalServerError, fmt.Errorf("could not load .env, error %v", err))
+		return
 	}
 
 	secret := []byte(os.Getenv("JWT_SECRET"))
