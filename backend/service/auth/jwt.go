@@ -1,6 +1,8 @@
 package auth
 
 import (
+	"fmt"
+	"os"
 	"strconv"
 	"time"
 
@@ -21,4 +23,20 @@ func CreateJWT(secret []byte, userID uint) (string, error) {
 	}
 
 	return tokenString, nil
+}
+
+func verifyToken(secret []byte, tokenString string) error {
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		return []byte(os.Getenv("JWT_SECRET")), nil
+	})
+
+	if err != nil {
+		return err
+	}
+
+	if !token.Valid {
+		return fmt.Errorf("invalid token")
+	}
+
+	return nil
 }
