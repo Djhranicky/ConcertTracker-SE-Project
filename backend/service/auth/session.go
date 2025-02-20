@@ -8,7 +8,7 @@ import (
 	"github.com/djhranicky/ConcertTracker-SE-Project/utils"
 )
 
-func setJWTCookie(w http.ResponseWriter, token string) {
+func SetJWTCookie(w http.ResponseWriter, token string) {
 	cookie := http.Cookie{
 		Name:     "id",
 		Value:    token,
@@ -18,7 +18,7 @@ func setJWTCookie(w http.ResponseWriter, token string) {
 	http.SetCookie(w, &cookie)
 }
 
-func getJWTCookie(w http.ResponseWriter, r http.Request) *http.Cookie {
+func GetJWTCookie(w http.ResponseWriter, r http.Request) *http.Cookie {
 	cookie, err := r.Cookie("id")
 	if err != nil {
 		switch {
