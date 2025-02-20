@@ -8,9 +8,11 @@ import (
 	"github.com/djhranicky/ConcertTracker-SE-Project/utils"
 )
 
+var cookieName string = "id"
+
 func SetJWTCookie(w http.ResponseWriter, token string) {
 	cookie := http.Cookie{
-		Name:     "id",
+		Name:     cookieName,
 		Value:    token,
 		HttpOnly: true,
 	}
@@ -19,7 +21,7 @@ func SetJWTCookie(w http.ResponseWriter, token string) {
 }
 
 func GetJWTCookie(w http.ResponseWriter, r *http.Request) *http.Cookie {
-	cookie, err := r.Cookie("id")
+	cookie, err := r.Cookie(cookieName)
 	if err != nil {
 		switch {
 		case errors.Is(err, http.ErrNoCookie):
