@@ -25,7 +25,7 @@ func CreateJWT(secret []byte, userID uint) (string, error) {
 	return tokenString, nil
 }
 
-func verifyToken(tokenString string) error {
+func VerifyToken(tokenString string) error {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		return []byte(os.Getenv("JWT_SECRET")), nil
 	})
