@@ -18,7 +18,7 @@ func SetJWTCookie(w http.ResponseWriter, token string) {
 	http.SetCookie(w, &cookie)
 }
 
-func GetJWTCookie(w http.ResponseWriter, r http.Request) *http.Cookie {
+func GetJWTCookie(w http.ResponseWriter, r *http.Request) *http.Cookie {
 	cookie, err := r.Cookie("id")
 	if err != nil {
 		switch {
