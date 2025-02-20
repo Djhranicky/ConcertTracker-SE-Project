@@ -25,7 +25,7 @@ func getJWTCookie(w http.ResponseWriter, r http.Request) *http.Cookie {
 		case errors.Is(err, http.ErrNoCookie):
 			utils.WriteError(w, http.StatusBadRequest, err)
 		default:
-			utils.WriteError(w, http.StatusInternalServerError, fmt.Errorf("Server error getting JWT Cookie"))
+			utils.WriteError(w, http.StatusInternalServerError, fmt.Errorf("server error getting JWT Cookie"))
 		}
 		return nil
 	}
