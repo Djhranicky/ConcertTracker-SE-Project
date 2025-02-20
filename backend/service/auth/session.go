@@ -33,3 +33,18 @@ func GetJWTCookie(w http.ResponseWriter, r *http.Request) *http.Cookie {
 	}
 	return cookie
 }
+
+func VerifyJWTCookie(cookie *http.Cookie) error {
+	if cookie == nil {
+		return fmt.Errorf("missing authorization token")
+	}
+	tokenString := cookie.Value
+	if tokenString == "" {
+		return fmt.Errorf("missing authorization token")
+	}
+	err := VerifyToken(tokenString)
+	if err != nil {
+		return fmt.Errorf("invalid authorization token")
+	}
+	return nil
+}
