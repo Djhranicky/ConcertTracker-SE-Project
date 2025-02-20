@@ -4,8 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-
-	"github.com/djhranicky/ConcertTracker-SE-Project/utils"
 )
 
 var cookieName string = "id"
@@ -20,23 +18,24 @@ func SetJWTCookie(w http.ResponseWriter, token string) {
 	http.SetCookie(w, &cookie)
 }
 
-func GetJWTCookie(w http.ResponseWriter, r *http.Request) *http.Cookie {
+func GetJWTCookie(w http.ResponseWriter, r *http.Request) (*http.Cookie, error) {
 	cookie, err := r.Cookie(cookieName)
 	if err != nil {
+		var returnErr error
 		switch {
 		case errors.Is(err, http.ErrNoCookie):
-			utils.WriteError(w, http.StatusBadRequest, err)
+			returnErr = err
 		default:
-			utils.WriteError(w, http.StatusInternalServerError, fmt.Errorf("server error getting JWT Cookie"))
+			returnErr = fmt.Errorf("server error getting JWT Cookie")
 		}
-		return nil
+		return nil, returnErr
 	}
-	return cookie
+	return cookie, nil
 }
 
-func VerifyJWTCookie(cookie *http.Cookie) error {
+func VerifyJWTCookie(cookie *http.Cookie, inErr error) error {
 	if cookie == nil {
-		return fmt.Errorf("missing authorization token")
+		return inErr
 	}
 	tokenString := cookie.Value
 	if tokenString == "" {
