@@ -30,6 +30,13 @@ func (h *Handler) RegisterRoutes(router *mux.Router) {
 func (h *Handler) handleHome(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
+
+	err := auth.VerifyJWTCookie(auth.GetJWTCookie(w, r))
+	if err != nil {
+		utils.WriteError(w, http.StatusUnauthorized, err)
+		return
+	}
+
 	w.Write([]byte(`{"message":"hello world"}`))
 }
 
@@ -72,7 +79,8 @@ func (h *Handler) handleLogin(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// implement jwt
-	utils.WriteJSON(w, http.StatusOK, map[string]string{"token": token})
+	auth.SetJWTCookie(w, token)
+	utils.WriteJSON(w, http.StatusOK, nil)
 }
 
 func (h *Handler) handleRegister(w http.ResponseWriter, r *http.Request) {
