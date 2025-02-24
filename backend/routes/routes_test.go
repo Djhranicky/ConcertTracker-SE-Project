@@ -12,6 +12,7 @@ import (
 	"github.com/djhranicky/ConcertTracker-SE-Project/service/auth"
 	"github.com/djhranicky/ConcertTracker-SE-Project/service/user"
 	"github.com/djhranicky/ConcertTracker-SE-Project/types"
+	"github.com/djhranicky/ConcertTracker-SE-Project/utils"
 	"github.com/gorilla/mux"
 	"gorm.io/gorm"
 )
@@ -29,6 +30,7 @@ func initTestDatabase(dbName string) *gorm.DB {
 }
 
 func TestUserServiceHandlers(t *testing.T) {
+	utils.Init()
 	database := initTestDatabase("test.db")
 	userStore := user.NewStore(database)
 	handler := NewHandler(userStore)
