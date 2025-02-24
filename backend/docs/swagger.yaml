@@ -1,0 +1,11 @@
+basePath: /api
+host: localhost:8080
+info:
+  contact: {}
+  description: API documentation for Concert Tracker.
+  title: Concert Tracker API
+  version: "1.0"
+paths: {}
+schemes:
+- http
+swagger: "2.0"
