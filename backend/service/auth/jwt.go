@@ -9,8 +9,8 @@ import (
 	"github.com/golang-jwt/jwt"
 )
 
-func CreateJWT(secret []byte, userID uint) (string, error) {
-	expiration := time.Second * time.Duration(3600*24*31)
+func CreateJWT(secret []byte, userID uint, seconds int) (string, error) {
+	expiration := time.Second * time.Duration(seconds)
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"userID": strconv.Itoa(int(userID)),
