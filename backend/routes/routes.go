@@ -27,6 +27,9 @@ func (h *Handler) RegisterRoutes(router *mux.Router) {
 	router.HandleFunc("/", h.handleHome).Methods("GET")
 	router.HandleFunc("/login", h.handleLogin).Methods("POST")
 	router.HandleFunc("/register", h.handleRegister).Methods("POST")
+
+	// Serve Swagger UI
+	router.PathPrefix("/swagger/").Handler(httpSwagger.WrapHandler)
 }
 
 func (h *Handler) handleHome(w http.ResponseWriter, r *http.Request) {
