@@ -32,12 +32,28 @@ func (h *Handler) RegisterRoutes(router *mux.Router) {
 	router.PathPrefix("/swagger/").Handler(httpSwagger.WrapHandler)
 }
 
+// @Summary Home Route
+// @Description Returns a simple Hello World message
+// @Tags Home
+// @Accept  json
+// @Produce  json
+// @Success 200 {object} map[string]string
+// @Router / [get]
 func (h *Handler) handleHome(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte(`{"message":"hello world"}`))
 }
 
+// @Summary Login user
+// @Description Authenticates a user and returns a JWT token
+// @Tags Auth
+// @Accept json
+// @Produce json
+// @Param request body types.UserLoginPayload true "Login Payload"
+// @Success 200 {object} map[string]string
+// @Failure 400 {string} string "Invalid email or password"
+// @Router /login [post]
 func (h *Handler) handleLogin(w http.ResponseWriter, r *http.Request) {
 	var user types.UserLoginPayload
 	if err := utils.ParseJSON(r, &user); err != nil {
@@ -80,6 +96,15 @@ func (h *Handler) handleLogin(w http.ResponseWriter, r *http.Request) {
 	utils.WriteJSON(w, http.StatusOK, map[string]string{"token": token})
 }
 
+// @Summary Register user
+// @Description Registers a new user
+// @Tags Auth
+// @Accept json
+// @Produce json
+// @Param request body types.UserRegisterPayload true "Register Payload"
+// @Success 201 {string} string "User registered successfully"
+// @Failure 400 {string} string "Invalid payload or user already exists"
+// @Router /register [post]
 func (h *Handler) handleRegister(w http.ResponseWriter, r *http.Request) {
 	// get JSON payload
 	var payload types.UserRegisterPayload
