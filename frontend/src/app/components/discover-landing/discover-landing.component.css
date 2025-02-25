@@ -8,6 +8,7 @@
   font-size: 1.25rem;
   color: #fff;
   font-family: Roboto;
+  overflow: hidden;
 }
 .discover-child {
   position: relative;

@@ -5,3 +5,8 @@
 * {
   margin: 0;
 }
+
+@font-face {
+  font-family: Blogh Trial;
+  src: url(../public/Blogh.otf) format("opentype");
+}
