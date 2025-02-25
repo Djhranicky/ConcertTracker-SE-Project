@@ -7,6 +7,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { RouterModule } from '@angular/router';
+import { AuthenticationService } from '../../services/authentication.service';
 
 @Component({
   selector: 'app-navbar',
@@ -25,8 +26,6 @@ import { RouterModule } from '@angular/router';
 export class NavbarComponent implements OnInit {
   items: MenuItem[] | undefined;
 
-  //items: MenuItem[] | undefined;
-
   logIn = {
     colorScheme: {
       light: {
@@ -40,4 +39,6 @@ export class NavbarComponent implements OnInit {
   };
 
   ngOnInit() {}
+
+  constructor(public authenticationService: AuthenticationService) {}
 }
