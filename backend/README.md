@@ -6,6 +6,11 @@ To start a local development server, run:
 make run
 ```
 
+To update swagger documentation, run:
+```bash
+swag init -g cmd/main.go
+```
+
 Once the server is running, test requests can be made to `localhost:8080` using postman or other API testing software
 
 ## Functionality
