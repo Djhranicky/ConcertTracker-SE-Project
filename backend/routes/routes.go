@@ -5,12 +5,14 @@ import (
 	"net/http"
 	"os"
 
+	_ "github.com/djhranicky/ConcertTracker-SE-Project/docs"
 	"github.com/djhranicky/ConcertTracker-SE-Project/service/auth"
 	"github.com/djhranicky/ConcertTracker-SE-Project/types"
 	"github.com/djhranicky/ConcertTracker-SE-Project/utils"
 	"github.com/go-playground/validator/v10"
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
+	httpSwagger "github.com/swaggo/http-swagger"
 )
 
 type Handler struct {
@@ -25,8 +27,18 @@ func (h *Handler) RegisterRoutes(router *mux.Router) {
 	router.HandleFunc("/", h.handleHome).Methods("GET")
 	router.HandleFunc("/login", h.handleLogin).Methods("POST")
 	router.HandleFunc("/register", h.handleRegister).Methods("POST")
+
+	// Serve Swagger UI
+	router.PathPrefix("/swagger/").Handler(httpSwagger.WrapHandler)
 }
 
+// @Summary Home Route
+// @Description Returns a simple Hello World message
+// @Tags Home
+// @Accept  json
+// @Produce  json
+// @Success 200 {object} map[string]string
+// @Router / [get]
 func (h *Handler) handleHome(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Content-Type", "application/json")
 
@@ -40,6 +52,15 @@ func (h *Handler) handleHome(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(`{"message":"hello world"}`))
 }
 
+// @Summary Login user
+// @Description Authenticates a user and returns a JWT token
+// @Tags Auth
+// @Accept json
+// @Produce json
+// @Param request body types.UserLoginPayload true "Login Payload"
+// @Success 200 {object} map[string]string
+// @Failure 400 {string} string "Invalid email or password"
+// @Router /login [post]
 func (h *Handler) handleLogin(w http.ResponseWriter, r *http.Request) {
 	var user types.UserLoginPayload
 	if err := utils.ParseJSON(r, &user); err != nil {
@@ -83,6 +104,15 @@ func (h *Handler) handleLogin(w http.ResponseWriter, r *http.Request) {
 	utils.WriteJSON(w, http.StatusOK, nil)
 }
 
+// @Summary Register user
+// @Description Registers a new user
+// @Tags Auth
+// @Accept json
+// @Produce json
+// @Param request body types.UserRegisterPayload true "Register Payload"
+// @Success 201 {string} string "User registered successfully"
+// @Failure 400 {string} string "Invalid payload or user already exists"
+// @Router /register [post]
 func (h *Handler) handleRegister(w http.ResponseWriter, r *http.Request) {
 	// get JSON payload
 	var payload types.UserRegisterPayload
