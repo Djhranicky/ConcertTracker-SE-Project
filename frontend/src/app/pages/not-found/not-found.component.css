@@ -1,0 +1,61 @@
+* {
+  font-family: "Poppins";
+  background-color: #f3f0e6;
+}
+.main {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 3.9375rem);
+  align-items: center;
+  /* flex-wrap: nowrap; */
+}
+.img {
+  width: 30rem;
+  height: 16rem;
+  background: url(../../../../public/imgs/404.png) no-repeat center;
+  background-size: cover;
+}
+
+.error {
+  font-family: "Gord Qucik" !important;
+  position: relative;
+  color: #f21414;
+  font-family: Gord Qucik, var(--default-font-family);
+  font-size: 14.5rem;
+  font-weight: 900;
+  line-height: 13rem;
+  text-align: center;
+}
+.title {
+  position: relative;
+  color: #000000;
+  font-size: 2.2rem;
+  font-weight: 500;
+  line-height: 3rem;
+  text-align: center;
+}
+.subtitle {
+  height: 100%;
+
+  position: relative;
+  color: #000000;
+  font-size: 16px;
+  font-weight: 400;
+  text-align: left;
+}
+.link {
+  color: #f21414;
+  font-size: 16px;
+  font-weight: 600;
+  text-align: center;
+  text-decoration: none;
+}
+
+.text-box {
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  align-items: center;
+  flex-wrap: nowrap;
+  flex-basis: 0;
+}

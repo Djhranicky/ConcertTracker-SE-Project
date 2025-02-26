@@ -5,3 +5,8 @@
 * {
   margin: 0;
 }
+
+@font-face {
+  font-family: Gord Qucik;
+  src: url(../public/Gord\ Qucik.otf) format("opentype");
+}

@@ -17,13 +17,6 @@ body {
 
 .navbar {
   align-self: stretch;
-  box-shadow: 0rem 0.3125rem 1.375rem -1.1875rem rgba(0, 0, 0, 0.63);
-  border: none;
-  /*top: "0px";
-  position: "sticky";
-  z-index: "99999";
-  background: "black";
-  */
 }
 .component {
   width: 100%;
