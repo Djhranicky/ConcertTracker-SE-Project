@@ -10,3 +10,8 @@
   font-family: Blogh Trial;
   src: url(../public/Blogh.otf) format("opentype");
 }
+
+@font-face {
+  font-family: Gord Qucik;
+  src: url(../public/Gord\ Qucik.otf) format("opentype");
+}
