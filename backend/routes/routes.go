@@ -107,6 +107,10 @@ func (h *Handler) handleLogin(w http.ResponseWriter, r *http.Request) {
 // @Router /register [post]
 func (h *Handler) handleRegister(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
 	// get JSON payload
 	var payload types.UserRegisterPayload
 	if err := utils.ParseJSON(r, &payload); err != nil {
