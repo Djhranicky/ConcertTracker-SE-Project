@@ -26,7 +26,7 @@ func NewHandler(store types.UserStore) *Handler {
 func (h *Handler) RegisterRoutes(router *mux.Router) {
 	router.HandleFunc("/", h.handleHome).Methods("GET")
 	router.HandleFunc("/login", h.handleLogin).Methods("POST")
-	router.HandleFunc("/register", h.handleRegister).Methods("POST")
+	router.HandleFunc("/register", h.handleRegister).Methods("POST", "OPTIONS")
 
 	// Serve Swagger UI
 	router.PathPrefix("/swagger/").Handler(httpSwagger.WrapHandler)
@@ -106,6 +106,7 @@ func (h *Handler) handleLogin(w http.ResponseWriter, r *http.Request) {
 // @Failure 400 {string} string "Invalid payload or user already exists"
 // @Router /register [post]
 func (h *Handler) handleRegister(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 	// get JSON payload
 	var payload types.UserRegisterPayload
 	if err := utils.ParseJSON(r, &payload); err != nil {
