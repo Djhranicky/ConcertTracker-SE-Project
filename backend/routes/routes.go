@@ -107,6 +107,9 @@ func (h *Handler) handleLogin(w http.ResponseWriter, r *http.Request) {
 // @Router /register [post]
 func (h *Handler) handleRegister(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Credentials", "true")
+	w.Header().Set("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST,PUT")
+	w.Header().Set("Access-Control-Allow-Headers", "Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers")
 	if r.Method == "OPTIONS" {
 		w.WriteHeader(http.StatusOK)
 		return
