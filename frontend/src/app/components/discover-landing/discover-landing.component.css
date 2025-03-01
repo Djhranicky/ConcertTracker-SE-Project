@@ -8,14 +8,18 @@
   font-size: 1.25rem;
   color: #fff;
   font-family: Roboto;
+  overflow: hidden;
 }
 .discover-child {
   position: relative;
   justify-self: center;
+  align-self: center;
+  top: 1%;
+  left: 2.8%;
   border-radius: 50%;
   background-color: #01bcd2;
-  width: 85%;
-  height: 100%;
+  width: 88%;
+  height: 98%;
   clip-path: ellipse(83% 100%);
 }
 
@@ -29,16 +33,9 @@
   align-items: flex-start;
   justify-content: flex-start;
   gap: 2rem;
+  color: #00fffb;
 }
-.top {
-  /* align-self: stretch;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: flex-start;
-  gap: 16px; */
-  /* z-index: 2; */
-}
+
 .caption {
   align-self: stretch;
   position: relative;
@@ -46,6 +43,7 @@
   line-height: 100%;
   text-transform: uppercase;
   z-index: 2;
+  color: white;
 }
 
 .secondary-headline {
@@ -56,6 +54,7 @@
   font-family: "Blogh Trial";
   font-weight: 100;
   letter-spacing: 0.125rem;
+  mix-blend-mode: difference;
 }
 
 .paragraph {
@@ -63,58 +62,9 @@
   position: relative;
   font-size: 1.125rem;
   line-height: 160%;
+  mix-blend-mode: difference;
 }
 
-.secondary-headline1 {
-  align-self: stretch;
-  position: relative;
-  font-size: 3.5rem;
-  line-height: 110%;
-  font-family: "Blogh Trial";
-  color: #000;
-}
-.paragraph1 {
-  align-self: stretch;
-  position: relative;
-  font-size: 1.125rem;
-  line-height: 160%;
-  color: #000;
-}
-.section-text1 {
-  align-self: stretch;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: flex-start;
-  gap: 2rem;
-}
-.col {
-  position: absolute;
-  top: 10.5rem;
-  left: 4.5rem;
-  width: 28rem;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: center;
-}
-.icon-jam-icons-filled-ci {
-  width: 0.625rem;
-  position: relative;
-  height: 0.625rem;
-  overflow: hidden;
-  flex-shrink: 0;
-  z-index: 3;
-}
-.circles {
-  flex: 1;
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-  justify-content: flex-start;
-  gap: 0.3125rem;
-  z-index: 3;
-}
 .top-bar {
   align-self: stretch;
   height: 2.5625rem;
