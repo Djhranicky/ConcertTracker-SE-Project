@@ -7,6 +7,6 @@ import { NotFoundComponent } from './pages/not-found/not-found.component';
 export const appRoutes: Routes = [
   { path: '', component: LandingComponent },
   { path: 'login', component: LoginComponent },
-  { path: 'signup', component: SignupComponent },
+  { path: 'register', component: SignupComponent },
   { path: '**', component: NotFoundComponent },
 ];
