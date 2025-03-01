@@ -12,7 +12,7 @@ var Validate = validator.New()
 
 func ParseJSON(r *http.Request, payload any) error {
 	if r.Body == nil {
-		return fmt.Errorf("Missing Request Body in ParseJSON")
+		return fmt.Errorf("missing Request Body in ParseJSON")
 	}
 
 	return json.NewDecoder(r.Body).Decode(payload)
