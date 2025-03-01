@@ -25,7 +25,7 @@ func NewHandler(store types.UserStore) *Handler {
 
 func (h *Handler) RegisterRoutes(router *mux.Router) {
 	router.HandleFunc("/", h.handleHome).Methods("GET")
-	router.HandleFunc("/login", h.handleLogin).Methods("POST")
+	router.HandleFunc("/login", h.handleLogin).Methods("POST", "OPTIONS")
 	router.HandleFunc("/register", h.handleRegister).Methods("POST", "OPTIONS")
 
 	// Serve Swagger UI
@@ -55,6 +55,16 @@ func (h *Handler) handleHome(w http.ResponseWriter, r *http.Request) {
 // @Failure 400 {string} string "Invalid email or password"
 // @Router /login [post]
 func (h *Handler) handleLogin(w http.ResponseWriter, r *http.Request) {
+
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Credentials", "true")
+	w.Header().Set("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST,PUT")
+	w.Header().Set("Access-Control-Allow-Headers", "Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers")
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
 	var user types.UserLoginPayload
 	if err := utils.ParseJSON(r, &user); err != nil {
 		utils.WriteError(w, http.StatusBadRequest, err)
