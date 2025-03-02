@@ -42,13 +42,6 @@ func (h *Handler) RegisterRoutes(router *mux.Router) {
 // @Router / [get]
 func (h *Handler) handleHome(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Content-Type", "application/json")
-
-	err := auth.VerifyJWTCookie(auth.GetJWTCookie(r))
-	if err != nil {
-		utils.WriteError(w, http.StatusUnauthorized, err)
-		return
-	}
-
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte(`{"message":"hello world"}`))
 }
