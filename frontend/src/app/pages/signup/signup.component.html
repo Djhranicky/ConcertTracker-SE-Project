@@ -21,9 +21,11 @@
         <div class="form-group">
           <span class="p-input-icon-left">
             <input
+              [(ngModel)]="email"
               pInputText
               id="email"
               type="email"
+              name="email"
               placeholder="Enter email"
             />
           </span>
@@ -32,8 +34,10 @@
           <span class="p-input-icon-left">
             <input
               pInputText
+              [(ngModel)]="username"
               id="username"
               type="text"
+              name="username"
               placeholder="Create username"
             />
           </span>
@@ -42,8 +46,10 @@
           <span class="p-input-icon-left">
             <input
               pInputText
+              [(ngModel)]="password"
               id="password"
               type="password"
+              name="password"
               placeholder="Password"
             />
           </span>
@@ -59,6 +65,7 @@
           </span>
         </div>
         <p-button
+          (click)="register()"
           label="Sign Up"
           class="p-button p-button-rounded signup-button"
         ></p-button>

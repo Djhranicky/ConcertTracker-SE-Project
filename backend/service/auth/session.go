@@ -12,7 +12,6 @@ func SetJWTCookie(w http.ResponseWriter, token string) {
 	cookie := http.Cookie{
 		Name:     cookieName,
 		Value:    token,
-		HttpOnly: true,
 	}
 
 	http.SetCookie(w, &cookie)
