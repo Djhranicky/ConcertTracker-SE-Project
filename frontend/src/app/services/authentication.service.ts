@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Router } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpResponse } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root',
@@ -23,7 +23,11 @@ export class AuthenticationService {
       email: email,
       password: password,
     };
-    return this.http.post(`${this.url}/login`, { email, password });
+    return this.http.post(
+      `${this.url}/login`,
+      { email, password },
+      { withCredentials: true }
+    );
   }
 
   storeJWT(jwt: string): void {

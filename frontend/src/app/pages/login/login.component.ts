@@ -35,7 +35,6 @@ export class LoginComponent {
     this.authenticationService.login(this.email, this.password).subscribe({
       next: (response) => {
         alert('Login successful!');
-        this.authenticationService.storeJWT(response.token);
         this.router.navigate(['/dashboard']);
       },
       error: (error) => {
