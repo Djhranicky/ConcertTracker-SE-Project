@@ -15,7 +15,25 @@ describe('DiscussLandingComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it('should be created', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should bind title', () => {
+    component.title = 'Test Title';
+    fixture.detectChanges();
+    expect(component.title).toBe('Test Title');
+  });
+
+  it('should bind subtitle', () => {
+    component.title = 'Test Subtitle';
+    fixture.detectChanges();
+    expect(component.title).toBe('Test Subtitle');
+  });
+
+  it('should bind paragraph', () => {
+    component.title = 'Test paragraph';
+    fixture.detectChanges();
+    expect(component.title).toBe('Test paragraph');
   });
 });

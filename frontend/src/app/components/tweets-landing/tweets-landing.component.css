@@ -1,0 +1,35 @@
+.bg {
+  background: #01bcd2;
+  min-height: 98vh;
+  width: auto;
+  /* color: white; */
+  position: relative;
+}
+
+.features {
+  font-family: "Blogh Trial";
+  font-weight: 100;
+  font-size: 3.5rem;
+  letter-spacing: 0.125rem;
+}
+
+.grid {
+  width: 100%;
+  z-index: 20;
+  position: relative;
+  margin-top: 4rem;
+}
+
+.grey-blob {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  z-index: 1;
+}
+
+.red-circle {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 1;
+}
