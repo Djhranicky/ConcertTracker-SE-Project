@@ -23,7 +23,9 @@ import { AuthenticationService } from '../../services/authentication.service';
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.css',
 })
-export class NavbarComponent implements OnInit {
+export class NavbarComponent {
+  constructor(private authenticationService: AuthenticationService) {}
+  isLoggedIn = false;
   items: MenuItem[] | undefined;
 
   logIn = {
@@ -38,5 +40,13 @@ export class NavbarComponent implements OnInit {
     },
   };
 
-  ngOnInit() {}
+  logout() {
+    console.log('component logout');
+    this.authenticationService.logout();
+  }
+
+  ngOnInit() {
+    this.isLoggedIn = this.authenticationService.isAuthenticated();
+    console.log(this.isLoggedIn);
+  }
 }

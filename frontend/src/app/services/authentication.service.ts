@@ -2,12 +2,15 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Router } from '@angular/router';
 import { HttpClient, HttpResponse } from '@angular/common/http';
+import { CookieService } from 'ngx-cookie-service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthenticationService {
   private url = 'http://localhost:8080/api';
+
+  private isLoggedIn = false;
 
   register(email: string, username: string, password: string): Observable<any> {
     const body = {
@@ -23,6 +26,9 @@ export class AuthenticationService {
       email: email,
       password: password,
     };
+
+    localStorage.setItem('isAuth', '1');
+
     return this.http.post(
       `${this.url}/login`,
       { email, password },
@@ -30,21 +36,19 @@ export class AuthenticationService {
     );
   }
 
-  storeJWT(jwt: string): void {
-    localStorage.setItem('jwt', jwt);
-  }
-
-  getJWT(): string | null {
-    return localStorage.getItem('jwt');
-  }
-
   logout() {
-    localStorage.removeItem('jwt');
+    // this.isLoggedIn = false;
+    localStorage.removeItem('isAuth');
     this.router.navigate(['/login']);
   }
 
   isAuthenticated(): boolean {
-    return !!this.getJWT();
+    let isAuth = localStorage.getItem('isAuth');
+    return !!isAuth;
   }
-  constructor(private router: Router, private http: HttpClient) {}
+  constructor(
+    private router: Router,
+    private http: HttpClient,
+    private cookieService: CookieService
+  ) {}
 }

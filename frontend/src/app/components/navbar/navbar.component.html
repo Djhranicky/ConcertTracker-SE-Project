@@ -7,15 +7,32 @@
       <ng-template #end>
         <div class="buttons">
           <p-button
+            *ngIf="!isLoggedIn"
             routerLink="/login"
             label="Log In"
             class="log-in"
             [link]="true"
           />
           <p-button
+            *ngIf="!isLoggedIn"
             routerLink="/signup"
             label="Sign up"
             class="p-button p-button-rounded p-0"
+          />
+
+          <p-button
+            *ngIf="isLoggedIn"
+            routerLink="/"
+            label="Log Out"
+            class="p-button p-button-rounded p-0"
+            (onClick)="logout()"
+          />
+
+          <p-avatar
+            *ngIf="isLoggedIn"
+            image="https://primefaces.org/cdn/primevue/images/avatar/amyelsner.png"
+            shape="circle"
+            class="avatar"
           />
         </div>
       </ng-template>

@@ -34,3 +34,8 @@
   display: flex;
   gap: 2rem;
 }
+
+.avatar {
+  height: 2.8rem;
+  width: auto;
+}
