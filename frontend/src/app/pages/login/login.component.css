@@ -70,10 +70,8 @@
   background: #f3f0e6;
   padding: 2rem;
   border-radius: 8px;
-  /* box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); */
   width: 80%;
   max-width: 25rem;
-
 }
 
 .login-card h2 {
@@ -87,9 +85,8 @@
   justify-content: end;
 }
 
-
 .forgot-password a {
-  margin-top: -0.6rem;
+  margin-top: -1rem;
   color: #8a8a8a;
 }
 
@@ -100,7 +97,7 @@
 }
 
 .form-group {
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.7rem;
 }
 
 .form-group label {
@@ -112,7 +109,7 @@
 
 .form-group input {
   background-color: #f4f4f4;
-  box-shadow: 0rem 0rem .5rem 0rem #b4b4b4;
+  box-shadow: 0rem 0rem 0.5rem 0rem #b4b4b4;
 }
 
 /* PrimeNG Input styling */
