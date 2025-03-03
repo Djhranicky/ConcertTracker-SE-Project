@@ -27,6 +27,7 @@ func (h *Handler) RegisterRoutes(router *mux.Router) {
 	router.HandleFunc("/", h.handleHome).Methods("GET")
 	router.HandleFunc("/login", h.handleLogin).Methods("POST", "OPTIONS")
 	router.HandleFunc("/register", h.handleRegister).Methods("POST", "OPTIONS")
+	router.HandleFunc("/validate", h.handleValidate).Methods("GET", "OPTIONS")
 
 	// Serve Swagger UI
 	router.PathPrefix("/swagger/").Handler(httpSwagger.WrapHandler)
@@ -160,6 +161,12 @@ func (h *Handler) handleRegister(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) handleValidate(w http.ResponseWriter, r *http.Request) {
+	utils.SetCORSHeaders(w)
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
 	w.Header().Add("Content-Type", "application/json")
 
 	err := auth.VerifyJWTCookie(auth.GetJWTCookie(r))
@@ -169,5 +176,6 @@ func (h *Handler) handleValidate(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(`{"message":"user session validated}`))
+	w.Write([]byte(`{"message":"user session validated"}`))
+	// add tests to routes_test
 }
