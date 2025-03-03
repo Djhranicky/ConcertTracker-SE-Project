@@ -177,5 +177,4 @@ func (h *Handler) handleValidate(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte(`{"message":"user session validated"}`))
-	// add tests to routes_test
 }

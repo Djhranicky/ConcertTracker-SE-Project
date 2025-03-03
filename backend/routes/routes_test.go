@@ -247,7 +247,7 @@ func TestUserServiceHandleValidate(t *testing.T) {
 	handler, database := initTestHandler()
 	defer database.Migrator().DropTable(&types.User{})
 
-	t.Run("should fail when no cookie is present", func(t *testing.T) {
+	t.Run("should fail when no id cookie is present", func(t *testing.T) {
 		req, err := http.NewRequest(http.MethodGet, "/validate", nil)
 		if err != nil {
 			t.Fatal(err)
@@ -260,7 +260,67 @@ func TestUserServiceHandleValidate(t *testing.T) {
 
 		router.ServeHTTP(rr, req)
 
-		if rr.Code != http.StatusBadRequest {
+		if rr.Code != http.StatusUnauthorized {
+			t.Errorf("expected status code %v, got status code %v", http.StatusBadRequest, rr.Code)
+		}
+	})
+
+	t.Run("should fail when invalid jwt string is present", func(t *testing.T) {
+		req, err := http.NewRequest(http.MethodGet, "/validate", nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+		req.AddCookie(&http.Cookie{
+			Name:  "id",
+			Value: "invalid jwt token",
+		})
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/validate", handler.handleValidate)
+
+		router.ServeHTTP(rr, req)
+
+		if rr.Code != http.StatusUnauthorized {
+			t.Errorf("expected status code %v, got status code %v", http.StatusBadRequest, rr.Code)
+		}
+	})
+
+	t.Run("should pass when valid cookie is present", func(t *testing.T) {
+		payload := &types.UserRegisterPayload{
+			Name:     "John Doe",
+			Email:    "test@example.com",
+			Password: "test",
+		}
+		marshalled, _ := json.Marshal(payload)
+
+		req, err := http.NewRequest(http.MethodPost, "/login", bytes.NewBuffer(marshalled))
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/login", handler.handleLogin)
+		router.ServeHTTP(rr, req)
+
+		cookie := rr.Result().Cookies()
+		req, err = http.NewRequest(http.MethodGet, "/validate", nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+		req.AddCookie(cookie[0])
+
+		rr = httptest.NewRecorder()
+		router = mux.NewRouter()
+
+		router.HandleFunc("/validate", handler.handleValidate)
+
+		router.ServeHTTP(rr, req)
+
+		if rr.Code != http.StatusOK {
 			t.Errorf("expected status code %v, got status code %v", http.StatusBadRequest, rr.Code)
 		}
 	})
