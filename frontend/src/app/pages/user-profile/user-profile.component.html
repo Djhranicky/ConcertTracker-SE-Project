@@ -1,0 +1,149 @@
+<p>user-profile works!</p>
+<!-- User Profile Container -->
+<div class="user-profile-container">
+  <!-- Profile Header Section -->
+  <div class="profile-header">
+    <div class="profile-info">
+      <div class="profile-image">
+        <img src="assets/images/user-profile.jpg" alt="Jane Smith">
+      </div>
+      <div class="profile-details">
+        <h1 class="user-name">Jane Smith <span class="edit-icon"><i class="fas fa-pencil-alt"></i></span></h1>
+        <p class="user-bio">24. music lover. user description.</p>
+      </div>
+    </div>
+    <div class="profile-stats">
+      <div class="stat-box">
+        <div class="stat-number">23</div>
+        <div class="stat-label">Concerts</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-number">03</div>
+        <div class="stat-label">Lists</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-number">21</div>
+        <div class="stat-label">Following</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-number">19</div>
+        <div class="stat-label">Followers</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Profile Navigation Tabs -->
+  <div class="profile-tabs">
+    <ul class="tab-list">
+      <li [class.active]="activeTab === 'profile'" (click)="setActiveTab('profile')">PROFILE</li>
+      <li [class.active]="activeTab === 'activity'" (click)="setActiveTab('activity')">ACTIVITY</li>
+      <li [class.active]="activeTab === 'concerts'" (click)="setActiveTab('concerts')">CONCERTS</li>
+      <li [class.active]="activeTab === 'lists'" (click)="setActiveTab('lists')">LISTS</li>
+      <li [class.active]="activeTab === 'following'" (click)="setActiveTab('following')">FOLLOWING</li>
+      <li [class.active]="activeTab === 'followers'" (click)="setActiveTab('followers')">FOLLOWERS</li>
+    </ul>
+  </div>
+
+  <!-- Main Content Section -->
+  <div class="main-content" *ngIf="activeTab === 'profile'">
+    <div class="content-grid">
+      <!-- Favorite Concerts Section -->
+      <div class="content-card full-width">
+        <h2 class="section-title">Favorite Concerts</h2>
+        <div class="concert-grid">
+          <div class="concert-card" *ngFor="let concert of favoriteConcerts">
+            <div class="concert-image">
+              <img [src]="concert.image" [alt]="concert.title">
+            </div>
+            <div class="concert-info">
+              <h3 class="concert-title">{{concert.title}}</h3>
+              <p class="artist-name">{{concert.artist}}</p>
+              <p class="concert-date">{{concert.date}}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Attendance Section -->
+      <div class="content-card">
+        <h2 class="section-title">Recent Attendance</h2>
+        <div class="concert-grid">
+          <div class="concert-card" *ngFor="let concert of recentAttendance">
+            <div class="concert-image">
+              <img [src]="concert.image" [alt]="concert.title">
+            </div>
+            <div class="concert-info">
+              <h3 class="concert-title">{{concert.title}}</h3>
+              <p class="artist-name">{{concert.artist}}</p>
+              <p class="concert-date">{{concert.date}}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats Profile Section -->
+      <div class="content-card">
+        <h2 class="section-title">Stats Profile</h2>
+        <div class="stats-info">
+          <p class="stats-text">
+            Mainly attends <span class="highlight">pop</span> and <span class="highlight">indie</span> shows.
+          </p>
+          <p class="stats-text">
+            Typically chooses concerts held in <span class="highlight">arenas</span>, with an average setlist length of <span class="highlight">17 songs</span> in an <span class="highlight">hour and 17 minutes</span>
+          </p>
+        </div>
+      </div>
+
+      <!-- Recent Activity Section -->
+      <div class="content-card">
+        <h2 class="section-title">Recent Activity</h2>
+        <ul class="activity-list">
+          <li *ngFor="let activity of recentActivity" class="activity-item">
+            <span class="activity-dot"></span>
+            <span [innerHTML]="activity.text"></span>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Recent Lists Section -->
+      <div class="content-card">
+        <h2 class="section-title">Recent Lists</h2>
+        <div class="lists-container">
+          <div class="list-category">
+            <h3 class="list-title">2025 Shows</h3>
+            <div class="list-thumbnails">
+              <div class="thumbnail" *ngFor="let thumbnail of recentLists.shows">
+                <img [src]="thumbnail" alt="Show thumbnail">
+              </div>
+            </div>
+          </div>
+          <div class="list-category">
+            <h3 class="list-title">Festivals</h3>
+            <div class="list-thumbnails">
+              <div class="thumbnail" *ngFor="let thumbnail of recentLists.festivals">
+                <img [src]="thumbnail" alt="Festival thumbnail">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bucket List Section -->
+      <div class="content-card">
+        <h2 class="section-title">Bucket List</h2>
+        <div class="concert-grid">
+          <div class="concert-card" *ngFor="let concert of bucketList">
+            <div class="concert-image">
+              <img [src]="concert.image" [alt]="concert.title">
+            </div>
+            <div class="concert-info">
+              <h3 class="concert-title">{{concert.title}}</h3>
+              <p class="artist-name">{{concert.artist}}</p>
+              <p class="concert-date">{{concert.date}}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
