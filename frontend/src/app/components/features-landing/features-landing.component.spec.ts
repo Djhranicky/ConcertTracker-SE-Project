@@ -9,6 +9,7 @@ describe('FeaturesLandingComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [FeaturesLandingComponent],
+      teardown: { destroyAfterEach: false },
     }).compileComponents();
 
     fixture = TestBed.createComponent(FeaturesLandingComponent);
