@@ -1,9 +1,14 @@
 import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { NavbarComponent } from '../../components/navbar/navbar.component';
 
 @Component({
   selector: 'app-user-profile',
+  standalone: true,
+  imports: [CommonModule, FormsModule, NavbarComponent],
   templateUrl: './user-profile.component.html',
-  styleUrls: ['./user-profile.component.css']
+  styleUrl: './user-profile.component.css'
 })
 export class UserProfileComponent implements OnInit {
   // Active tab state
@@ -13,7 +18,7 @@ export class UserProfileComponent implements OnInit {
   userData = {
     name: 'Jane Smith',
     bio: '24. music lover. user description.',
-    profileImage: 'assets/images/user-profile.png',
+    profileImage: 'assets/images/user-profile.jpg',
     stats: {
       concerts: 23,
       lists: 3,
@@ -28,31 +33,31 @@ export class UserProfileComponent implements OnInit {
       title: 'HIT ME HARD AND SOFT',
       artist: 'Billie Eilish',
       date: 'Feb 19, 2025',
-      image: 'assets/images/billie-eilish.png'
+      image: 'assets/images/billie-eilish.jpg'
     },
     {
       title: 'HIT ME HARD AND SOFT',
       artist: 'Billie Eilish',
       date: 'Feb 19, 2025',
-      image: 'assets/images/billie-eilish.png'
+      image: 'assets/images/billie-eilish.jpg'
     },
     {
       title: 'HIT ME HARD AND SOFT',
       artist: 'Billie Eilish',
       date: 'Feb 19, 2025',
-      image: 'assets/images/billie-eilish.png'
+      image: 'assets/images/billie-eilish.jpg'
     },
     {
       title: 'HIT ME HARD AND SOFT',
       artist: 'Billie Eilish',
       date: 'Feb 19, 2025',
-      image: 'assets/images/billie-eilish.png'
+      image: 'assets/images/billie-eilish.jpg'
     },
     {
       title: 'HIT ME HARD AND SOFT',
       artist: 'Billie Eilish',
       date: 'Feb 19, 2025',
-      image: 'assets/images/billie-eilish.png'
+      image: 'assets/images/billie-eilish.jpg'
     }
   ];
 
@@ -62,19 +67,19 @@ export class UserProfileComponent implements OnInit {
       title: 'HIT ME HARD AND SOFT',
       artist: 'Billie Eilish',
       date: 'Feb 19, 2025',
-      image: 'assets/images/billie-eilish.png'
+      image: 'assets/images/billie-eilish.jpg'
     },
     {
       title: 'HIT ME HARD AND SOFT',
       artist: 'Billie Eilish',
       date: 'Feb 19, 2025',
-      image: 'assets/images/billie-eilish.png'
+      image: 'assets/images/billie-eilish.jpg'
     },
     {
       title: 'HIT ME HARD AND SOFT',
       artist: 'Billie Eilish',
       date: 'Feb 19, 2025',
-      image: 'assets/images/billie-eilish.png'
+      image: 'assets/images/billie-eilish.jpg'
     }
   ];
 
@@ -84,19 +89,19 @@ export class UserProfileComponent implements OnInit {
       title: 'HIT ME HARD AND SOFT',
       artist: 'Billie Eilish',
       date: 'Feb 19, 2025',
-      image: 'assets/images/billie-eilish.png'
+      image: 'assets/images/billie-eilish.jpg'
     },
     {
       title: 'HIT ME HARD AND SOFT',
       artist: 'Billie Eilish',
       date: 'Feb 19, 2025',
-      image: 'assets/images/billie-eilish.png'
+      image: 'assets/images/billie-eilish.jpg'
     },
     {
       title: 'HIT ME HARD AND SOFT',
       artist: 'Billie Eilish',
       date: 'Feb 19, 2025',
-      image: 'assets/images/billie-eilish.png'
+      image: 'assets/images/billie-eilish.jpg'
     }
   ];
 
@@ -116,12 +121,12 @@ export class UserProfileComponent implements OnInit {
   // Mock data for recent lists
   recentLists = {
     shows: [
-      'assets/images/post-malone.png',
-      'assets/images/bille-eilish.png'
+      'assets/images/post-malone.jpg',
+      'assets/images/concert-poster.jpg'
     ],
     festivals: [
-      'assets/images/post-malone.png',
-      'assets/images/bille-eilish.png'
+      'assets/images/post-malone.jpg',
+      'assets/images/concert-poster.jpg'
     ]
   };
 

@@ -9,6 +9,8 @@ export const appRoutes: Routes = [
   { path: '', component: LandingComponent },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: SignupComponent },
-  { path: '**', component: NotFoundComponent },
   {path: 'user-profile', component: UserProfileComponent},
+  { path: '**', component: NotFoundComponent },
+
+  
 ];
