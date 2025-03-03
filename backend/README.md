@@ -6,18 +6,36 @@ To start a local development server, run:
 make run
 ```
 
+Once the server is running, test requests can be made to `localhost:8080` using postman or other API testing software
+
 To update swagger documentation, run:
+1. Add comments like this before corresponding function in `routes.go`:
+```ts
+// @Summary Register user
+// @Description Registers a new user
+// @Tags Auth
+// @Accept json
+// @Produce json
+// @Param request body types.UserRegisterPayload true "Register Payload"
+// @Success 201 {string} string "User registered successfully"
+// @Failure 400 {string} string "Invalid payload or user already exists"
+// @Router /register [post]
+```
+2. Run:
 ```bash
 swag init -g cmd/main.go
 ```
 
-Once the server is running, test requests can be made to `localhost:8080` using postman or other API testing software
+Note: for linux, if `swag` command is not recognised, make sure to set your path using:
+```bash
+export PATH=$(go env GOPATH)/bin:$PATH
+```
 
 ## Functionality
 
 The API is started up through cmd/main.go. This sets up the database connection and the http server.
 
-When the http server is ran, a new router is created which sets up different routes and functions to handle requests to those routes.
+When the http server is run, a new router is created which sets up different routes and functions to handle requests to those routes.
 
 ## References/Documentation
 
