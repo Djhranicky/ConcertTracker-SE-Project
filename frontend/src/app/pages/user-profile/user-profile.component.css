@@ -1,0 +1,441 @@
+.navbar-container + .user-profile-container, 
+.navbar + .user-profile-container {
+  padding-top: 20px; 
+  margin-top: 0;
+}
+
+
+/* Global container */
+.user-profile-container {
+  font-family: Poppins;
+  color: #313131;
+  background-color: #f5f2ea;
+  padding-bottom: 20px;
+  
+}
+
+.edit-icon {
+  margin-left: 10px;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.edit-icon svg {
+  width: 20px;
+  height: 20px;
+  stroke:#B0B0B0; 
+}
+
+.username {
+  font-family: Poppins;
+  font-size: 16px;
+  color: #777777; 
+  margin: 0 0 5px 0;
+}
+/* Profile Header Section */
+.profile-header {
+  padding: 30px 48px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  background-color: white;
+  border-radius: 0;
+  margin-bottom: 0;
+  border-bottom: 1px solid #e0e0e0;
+  border-top: 1px solid #f5f2ea;
+  
+}
+
+.profile-card {
+  background-color: white;
+  border-radius: 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  margin-bottom: 20px;
+  overflow: hidden; 
+}
+.profile-info {
+  display: flex;
+  align-items: center;
+}
+
+.profile-image {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin-right: 15px;
+}
+
+.profile-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-name {
+  margin: 0 0 5px 0;
+  display: flex;
+  align-items: center;
+  color: #F21414; 
+  font-family: Poppins;
+  font-size: 36px;
+  font-weight: bold;
+}
+
+.edit-icon {
+  margin-left: 10px;
+  font-family: Poppins;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.user-bio {
+  color: #313131;
+  font-size: 16px;
+  font-family: Poppins;
+  margin-top: 5px;
+  
+}
+
+.profile-stats {
+  display: flex;
+  gap: 15px;
+}
+
+.stat-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stat-number {
+  background-color: #f5f2ea; 
+  border-radius: 12px; 
+  width: 86px;
+  height: 75px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: Poppins;
+  font-size: 54px;
+  font-weight: bold;
+  color: #313131; 
+  margin-bottom: 8px;
+}
+
+.stat-label {
+  font-size: 16px;
+  font-weight: 500;
+  font-family: Poppins;
+  color: #313131;
+  text-align: center;
+}
+
+
+/* Profile Tab Navigation */
+.profile-tabs {
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  background-color: white;
+  border-bottom: 1px solid #e0e0e0;
+  margin-top: 0;
+}
+
+
+.tab-list {
+  border-bottom: 1px; 
+  border-color: white; 
+  display: flex;
+  list-style: none;
+  justify-content: center;
+  padding: 0;
+  margin: 0;
+}
+
+
+.tab-list li {
+  padding: 15px 20px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: #555;
+  border-bottom: 3px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.tab-list li:hover {
+  background-color: #f9f9f9;
+}
+
+.tab-list li.active {
+  color: #01BCD2; 
+  border-bottom-color: #01BCD2;
+  
+}
+
+/* Main Content Grid */
+.main-content {
+  padding: 0 90px;
+}
+
+.content-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.content-card {
+  background-color: white;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  margin-bottom: 20px;
+  width: 1180;
+  height: 390.90362548828125;
+  padding-top: 30px;
+  padding-right: 48px;
+  padding-bottom: 30px;
+  padding-left: 40px;
+  gap: 20px;
+  border-radius: 19px;
+}
+
+
+.full-width {
+  grid-column: span 2;
+}
+
+.section-title {
+  margin-top: 0;
+  font-size: 24px;
+  font-weight: bold;
+  font-family: Poppins;
+  color: #333;
+  margin-bottom: 25px;
+}
+
+/* Concert Card Grid */
+.concert-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 20px;
+}
+
+
+.concert-card {
+  border-radius: 6px;
+  overflow: hidden;
+  transition: transform 0.2s ease;
+}
+
+
+
+.concert-card:hover {
+  transform: translateY(-5px);
+}
+
+.concert-image {
+  height: 120px;
+  overflow: hidden;
+}
+
+.concert-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.concert-info {
+  padding: 10px;
+}
+
+.concert-title {
+  margin: 0 0 5px 0;
+  font-size: 14px;
+  font-weight: bold;
+  font-family: Poppins
+}
+
+.artist-name, .concert-date {
+  margin: 0;
+  font-size: 12px;
+  font-family: Poppins;
+  color: #666;
+}
+
+/* Stats Profile Styling */
+.stats-info {
+  line-height: 1.9;
+}
+
+.stats-text {
+  margin: 0 0 20px 0;
+  font-size: 23px;
+}
+
+.highlight {
+  color: #F21414;
+  font-weight: bold;
+  font-family: Poppins;
+  font-size: 110%;
+}
+
+/* Activity List Styling */
+.activity-list {
+  list-style: none;
+  padding: 0 20px;
+  margin: 0;
+}
+
+.activity-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 25px;
+  line-height: 1.9;
+  font-size: 23px;
+}
+
+.activity-item .highlight {
+  color: #F21414;
+  font-weight: 500;
+}
+
+.activity-dot {
+  width: 15px;
+  height: 15px;
+  background-color: #01BCD2;
+  border-radius: 50%;
+  margin-right: 15px;
+  flex-shrink: 0;
+}
+
+/* Recent Lists Styling */
+.list-category {
+  margin-bottom: 35px;
+}
+
+
+.list-title {
+  font-size: 18px;
+  margin: 0 0 15px 0;
+  font-family: Poppins;
+  font-weight: 500;
+}
+
+
+.list-thumbnails {
+  display: flex;
+  gap: 0px;
+  position: relative;
+  margin: 15px 0;
+}
+
+.thumbnail {
+  width: 110px;
+  height: 110px;
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  border: 2px solid white;
+}
+.thumbnail:not(:first-child) {
+  margin-left: -30px; 
+}
+.thumbnail:nth-child(1) {
+  transform: rotate(-3deg);
+  z-index: 3;
+}
+.thumbnail:nth-child(2) {
+  transform: rotate(0deg);
+  z-index: 2;
+}
+.thumbnail:nth-child(3) {
+  transform: rotate(3deg);
+  z-index: 1;
+}
+
+.thumbnail img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .profile-header {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .profile-info {
+    flex-direction: column;
+    margin-bottom: 20px;
+  }
+  
+  .profile-image {
+    margin-right: 0;
+    margin-bottom: 10px;
+  }
+  
+ .profile-stats {
+  display: flex;
+  gap: 15px;
+}
+  
+  .tab-list {
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+  
+  .tab-list li {
+    padding: 10px 15px;
+  }
+  
+  .content-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .full-width {
+    grid-column: span 1;
+  }
+  
+  .concert-grid {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  }
+  .stat-number {
+    width: 70px;
+    height: 70px;
+    font-size: 28px
+    
+  }
+  
+  .stat-label {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .stat-box {
+    min-width: auto;
+    padding: 8px;
+  }
+  
+  .stat-number {
+    width: 60px;
+    height: 60px;
+    font-size: 24px;
+  }
+  
+  .stat-label {
+    font-size: 12px;
+  }
+  
+  .concert-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
