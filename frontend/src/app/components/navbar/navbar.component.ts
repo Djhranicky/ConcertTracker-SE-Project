@@ -41,12 +41,10 @@ export class NavbarComponent {
   };
 
   logout() {
-    console.log('component logout');
     this.authenticationService.logout();
   }
 
   ngOnInit() {
     this.isLoggedIn = this.authenticationService.isAuthenticated();
-    console.log(this.isLoggedIn);
   }
 }

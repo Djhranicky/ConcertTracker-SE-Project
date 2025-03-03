@@ -103,7 +103,7 @@
 
 .form-group input {
   background-color: #f4f4f4;
-  box-shadow: 0rem 0rem .5rem 0rem #b4b4b4;
+  box-shadow: 0rem 0rem 0.5rem 0rem #b4b4b4;
 }
 
 /* PrimeNG Input styling */
@@ -141,6 +141,11 @@
 :host ::ng-deep .signup-button .p-button:hover {
   background-color: #128b98;
 }
+
+:host ::ng-deep .p-inputtext:enabled:focus {
+  border-color: #d3d3d3;
+}
+
 /* Make the form full width */
 .signup-form {
   width: 100%;

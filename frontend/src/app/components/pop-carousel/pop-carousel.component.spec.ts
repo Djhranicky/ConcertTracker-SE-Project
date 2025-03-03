@@ -12,6 +12,7 @@ describe('PopCarouselComponent', () => {
     await TestBed.configureTestingModule({
       imports: [PopCarouselComponent],
       providers: [provideHttpClient(), provideHttpClientTesting()],
+      teardown: { destroyAfterEach: false },
     }).compileComponents();
 
     fixture = TestBed.createComponent(PopCarouselComponent);

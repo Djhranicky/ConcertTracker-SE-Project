@@ -16,8 +16,8 @@
   <div class="right-section">
     <div class="login-card">
       <h2>Sign in</h2>
-      <form class="login-form">
-        <div class="form-group">
+      <form [formGroup]="loginForm" class="login-form" (ngSubmit)="login()">
+        <div class="form-group field">
           <span class="p-input-icon-left">
             <p-floatlabel variant="in">
               <input
@@ -25,13 +25,24 @@
                 id="email"
                 type="email"
                 name="email"
-                [(ngModel)]="email"
+                formControlName="email"
               />
               <label for="in_label">Enter email</label>
             </p-floatlabel>
+            <p-message
+              severity="error"
+              size="small"
+              class="p-error block"
+              *ngIf="
+                loginForm.get('email')?.invalid &&
+                loginForm.get('email')?.touched
+              "
+            >
+              Please enter a valid email.
+            </p-message>
           </span>
         </div>
-        <div class="form-group">
+        <div class="form-group field">
           <span class="p-input-icon-left">
             <p-floatlabel variant="in">
               <input
@@ -39,19 +50,31 @@
                 id="password"
                 type="password"
                 name="password"
-                [(ngModel)]="password"
+                formControlName="password"
               />
               <label for="in_label">Enter password</label>
             </p-floatlabel>
+            <p-message
+              class="p-error block"
+              severity="error"
+              size="small"
+              *ngIf="
+                loginForm.get('password')?.invalid &&
+                loginForm.get('password')?.touched
+              "
+            >
+              Please enter password
+            </p-message>
           </span>
         </div>
         <div class="forgot-password">
           <a href="/">Forgot password?</a>
         </div>
         <p-button
-          (click)="login()"
+          type="Submit"
           label="Login"
           class="p-button p-button-rounded login-button"
+          [disabled]="loginForm.invalid"
         ></p-button>
       </form>
     </div>
