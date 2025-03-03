@@ -7,7 +7,7 @@
         <h1 class="main-title">Sign in</h1>
         <h2 class="subtitle">to Concerto</h2>
         <p class="description">
-          If you don't have an account, <a href="/signup">register</a>.
+          If you don't have an account, <a href="/register">register</a>.
         </p>
       </section>
     </div>
@@ -19,28 +19,37 @@
       <form class="login-form">
         <div class="form-group">
           <span class="p-input-icon-left">
-            <input
-              pInputText
-              id="email"
-              type="email"
-              placeholder="Enter email or username"
-            />
+            <p-floatlabel variant="in">
+              <input
+                pInputText
+                id="email"
+                type="email"
+                name="email"
+                [(ngModel)]="email"
+              />
+              <label for="in_label">Enter email</label>
+            </p-floatlabel>
           </span>
         </div>
         <div class="form-group">
           <span class="p-input-icon-left">
-            <input
-              pInputText
-              id="password"
-              type="password"
-              placeholder="Enter password"
-            />
+            <p-floatlabel variant="in">
+              <input
+                pInputText
+                id="password"
+                type="password"
+                name="password"
+                [(ngModel)]="password"
+              />
+              <label for="in_label">Enter password</label>
+            </p-floatlabel>
           </span>
         </div>
         <div class="forgot-password">
           <a href="/">Forgot password?</a>
         </div>
         <p-button
+          (click)="login()"
           label="Login"
           class="p-button p-button-rounded login-button"
         ></p-button>
