@@ -242,6 +242,30 @@ func TestUserServiceHandleLogin(t *testing.T) {
 	})
 }
 
+func TestUserServiceHandleValidate(t *testing.T) {
+	utils.Init()
+	handler, database := initTestHandler()
+	defer database.Migrator().DropTable(&types.User{})
+
+	t.Run("should fail when no cookie is present", func(t *testing.T) {
+		req, err := http.NewRequest(http.MethodGet, "/validate", nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/validate", handler.handleValidate)
+
+		router.ServeHTTP(rr, req)
+
+		if rr.Code != http.StatusBadRequest {
+			t.Errorf("expected status code %v, got status code %v", http.StatusBadRequest, rr.Code)
+		}
+	})
+}
+
 func initTestDatabase(dbName string) *gorm.DB {
 	mockDatabase, err := db.NewSqliteStorage(dbName)
 	if err != nil {
