@@ -2,47 +2,50 @@
 
 <!-- User Profile Container -->
 <div class="user-profile-container">
-  <!-- Profile Header Section -->
-  <div class="profile-header">
-    <div class="profile-info">
-      <div class="profile-image">
-        <img src="imgs/user-profile.jpeg" alt="Jane Smith">
+  <!-- Profile Card - Contains both header and tabs -->
+  <div class="profile-card">
+    <!-- Profile Header Section -->
+    <div class="profile-header">
+      <div class="profile-info">
+        <div class="profile-image">
+          <img src="imgs/user-profile.jpeg" alt="Jane Smith">
+        </div>
+        <div class="profile-details">
+          <h1 class="user-name">Jane Smith <span class="edit-icon"><i class="fas fa-pencil-alt"></i></span></h1>
+          <p class="user-bio">24. music lover. user description.</p>
+        </div>
       </div>
-      <div class="profile-details">
-        <h1 class="user-name">Jane Smith <span class="edit-icon"><i class="fas fa-pencil-alt"></i></span></h1>
-        <p class="user-bio">24. music lover. user description.</p>
+      <div class="profile-stats">
+        <div class="stat-box active">
+          <div class="stat-number">23</div>
+          <div class="stat-label">Concerts</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-number">03</div>
+          <div class="stat-label">Lists</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-number">21</div>
+          <div class="stat-label">Following</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-number">19</div>
+          <div class="stat-label">Followers</div>
+        </div>
       </div>
     </div>
-    <div class="profile-stats">
-      <div class="stat-box">
-        <div class="stat-number">23</div>
-        <div class="stat-label">Concerts</div>
-      </div>
-      <div class="stat-box">
-        <div class="stat-number">03</div>
-        <div class="stat-label">Lists</div>
-      </div>
-      <div class="stat-box">
-        <div class="stat-number">21</div>
-        <div class="stat-label">Following</div>
-      </div>
-      <div class="stat-box">
-        <div class="stat-number">19</div>
-        <div class="stat-label">Followers</div>
-      </div>
-    </div>
-  </div>
 
-  <!-- Profile Navigation Tabs -->
-  <div class="profile-tabs">
-    <ul class="tab-list">
-      <li [class.active]="activeTab === 'profile'" (click)="setActiveTab('profile')">PROFILE</li>
-      <li [class.active]="activeTab === 'activity'" (click)="setActiveTab('activity')">ACTIVITY</li>
-      <li [class.active]="activeTab === 'concerts'" (click)="setActiveTab('concerts')">CONCERTS</li>
-      <li [class.active]="activeTab === 'lists'" (click)="setActiveTab('lists')">LISTS</li>
-      <li [class.active]="activeTab === 'following'" (click)="setActiveTab('following')">FOLLOWING</li>
-      <li [class.active]="activeTab === 'followers'" (click)="setActiveTab('followers')">FOLLOWERS</li>
-    </ul>
+    <!-- Profile Navigation Tabs -->
+    <div class="profile-tabs">
+      <ul class="tab-list">
+        <li [class.active]="activeTab === 'profile'" (click)="setActiveTab('profile')">PROFILE</li>
+        <li [class.active]="activeTab === 'activity'" (click)="setActiveTab('activity')">ACTIVITY</li>
+        <li [class.active]="activeTab === 'concerts'" (click)="setActiveTab('concerts')">CONCERTS</li>
+        <li [class.active]="activeTab === 'lists'" (click)="setActiveTab('lists')">LISTS</li>
+        <li [class.active]="activeTab === 'following'" (click)="setActiveTab('following')">FOLLOWING</li>
+        <li [class.active]="activeTab === 'followers'" (click)="setActiveTab('followers')">FOLLOWERS</li>
+      </ul>
+    </div>
   </div>
 
   <!-- Main Content Section -->
@@ -99,13 +102,22 @@
       <div class="content-card">
         <h2 class="section-title">Recent Activity</h2>
         <ul class="activity-list">
-          <li *ngFor="let activity of recentActivity" class="activity-item">
+          <li class="activity-item">
             <span class="activity-dot"></span>
-            <span [innerHTML]="activity.text"></span>
+            <span>You followed <span class="highlight">John Doe</span></span>
+          </li>
+          <li class="activity-item">
+            <span class="activity-dot"></span>
+            <span>You added a show to <span class="highlight">2025 shows</span> list</span>
+          </li>
+          <li class="activity-item">
+            <span class="activity-dot"></span>
+            <span>You attended Billie Eilish's <span class="highlight">HIT ME HARD AND SOFT</span></span>
           </li>
         </ul>
       </div>
 
+      
       <!-- Recent Lists Section -->
       <div class="content-card">
         <h2 class="section-title">Recent Lists</h2>
@@ -113,16 +125,28 @@
           <div class="list-category">
             <h3 class="list-title">2025 Shows</h3>
             <div class="list-thumbnails">
-              <div class="thumbnail" *ngFor="let thumbnail of recentLists.shows">
-                <img [src]="thumbnail" alt="Show thumbnail">
+              <div class="thumbnail">
+                <img src="imgs/post-malone.png" alt="Show thumbnail">
+              </div>
+              <div class="thumbnail">
+                <img src="imgs/starboy.png" alt="Show thumbnail">
+              </div>
+              <div class="thumbnail">
+                <img src="imgs/linkin.png" alt="Show thumbnail">
               </div>
             </div>
           </div>
           <div class="list-category">
             <h3 class="list-title">Festivals</h3>
             <div class="list-thumbnails">
-              <div class="thumbnail" *ngFor="let thumbnail of recentLists.festivals">
-                <img [src]="thumbnail" alt="Festival thumbnail">
+              <div class="thumbnail">
+                <img src="imgs/post-malone.png" alt="Show thumbnail">
+              </div>
+              <div class="thumbnail">
+                <img src="imgs/starboy.png" alt="Show thumbnail">
+              </div>
+              <div class="thumbnail">
+                <img src="imgs/linkin.png" alt="Show thumbnail">
               </div>
             </div>
           </div>

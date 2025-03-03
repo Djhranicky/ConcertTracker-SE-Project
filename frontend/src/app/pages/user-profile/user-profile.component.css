@@ -5,30 +5,47 @@
   --text-color: #333333;
   --card-background: #ffffff;
   --highlight-color: #ff0000; /* Red for highlights */
-  --tab-active-color: #0078d7; /* Blue for active tab */
   --border-color: #e0e0e0;
   --shadow-color: rgba(0, 0, 0, 0.1);
+}
+.navbar-container + .user-profile-container, 
+.navbar + .user-profile-container {
+  margin-top: 20px; 
+  
 }
 
 /* Global container */
 .user-profile-container {
-  background-color: var(--secondary-color);
-  font-family: Arial, Helvetica, sans-serif;
-  color: var(--text-color);
-  padding-bottom: 30px;
+  font-family: Poppins;
+  color: #313131;
+  background-color: #f5f2ea;
+  padding-bottom: 20px;
+  
 }
+
 
 /* Profile Header Section */
 .profile-header {
-  background-color: var(--card-background);
-  padding: 20px;
+  padding: 30px 48px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 15px;
-  box-shadow: 0 2px 5px var(--shadow-color);
+  background-color: white;
+  border-radius: 0;
+  margin-bottom: 0;
+  border-bottom: 1px solid #e0e0e0;
+  border-top: 1px solid #f5f2ea;
+  
 }
 
+.profile-card {
+  background-color: white;
+  border-radius: 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  margin-bottom: 20px;
+  overflow: hidden; 
+}
 .profile-info {
   display: flex;
   align-items: center;
@@ -54,23 +71,28 @@
 }
 
 .user-name {
-  color: var(--highlight-color);
-  font-size: 24px;
   margin: 0 0 5px 0;
   display: flex;
   align-items: center;
+  color: #F21414; 
+  font-family: Poppins;
+  font-size: 36px;
+  font-weight: bold;
 }
 
 .edit-icon {
   margin-left: 10px;
+  font-family: Poppins;
   font-size: 16px;
   cursor: pointer;
 }
 
 .user-bio {
-  margin: 0;
-  font-size: 14px;
-  color: #666;
+  color: #313131;
+  font-size: 16px;
+  font-family: Poppins;
+  margin-top: 5px;
+  
 }
 
 .profile-stats {
@@ -79,42 +101,60 @@
 }
 
 .stat-box {
-  background-color: #f5f5f5;
-  border-radius: 4px;
-  padding: 10px 15px;
-  text-align: center;
-  min-width: 70px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .stat-number {
-  font-size: 24px;
+  background-color: #f5f2ea; 
+  border-radius: 12px; 
+  width: 86px;
+  height: 75px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: Poppins;
+  font-size: 54px;
   font-weight: bold;
+  color: #313131; 
+  margin-bottom: 8px;
 }
 
 .stat-label {
-  font-size: 12px;
+  font-size: 16px;
+  font-weight: 500;
+  font-family: Poppins;
+  color: #313131;
+  text-align: center;
 }
+
 
 /* Profile Tab Navigation */
 .profile-tabs {
-  background-color: var(--card-background);
-  margin-bottom: 20px;
   box-shadow: 0 2px 5px var(--shadow-color);
+  background-color: white;
+  border-bottom: 1px solid #e0e0e0;
+  margin-top: 0;
 }
 
+
 .tab-list {
+  border-bottom: 1px solid var(--border-color);
   display: flex;
   list-style: none;
+  justify-content: center;
   padding: 0;
   margin: 0;
-  border-bottom: 1px solid var(--border-color);
 }
+
 
 .tab-list li {
   padding: 15px 20px;
   cursor: pointer;
   font-size: 14px;
-  font-weight: bold;
+  font-weight: 500;
+  color: #555;
   border-bottom: 3px solid transparent;
   transition: all 0.2s ease;
 }
@@ -124,13 +164,14 @@
 }
 
 .tab-list li.active {
-  border-bottom-color: var(--tab-active-color);
-  color: var(--tab-active-color);
+  color: #01BCD2; 
+  border-bottom-color: #01BCD2;
+  
 }
 
 /* Main Content Grid */
 .main-content {
-  padding: 0 20px;
+  padding: 0 90px;
 }
 
 .content-grid {
@@ -140,35 +181,48 @@
 }
 
 .content-card {
-  background-color: var(--card-background);
-  border-radius: 8px;
-  padding: 20px;
-  box-shadow: 0 2px 8px var(--shadow-color);
+  background-color: white;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  margin-bottom: 20px;
+  width: 1180;
+  height: 390.90362548828125;
+  padding-top: 30px;
+  padding-right: 48px;
+  padding-bottom: 30px;
+  padding-left: 40px;
+  gap: 20px;
+  border-radius: 19px;
 }
+
 
 .full-width {
   grid-column: span 2;
 }
 
 .section-title {
-  font-size: 18px;
   margin-top: 0;
-  margin-bottom: 15px;
+  font-size: 24px;
   font-weight: bold;
+  font-family: Poppins;
+  color: #333;
+  margin-bottom: 25px;
 }
 
 /* Concert Card Grid */
 .concert-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  gap: 15px;
+  gap: 20px;
 }
+
 
 .concert-card {
   border-radius: 6px;
   overflow: hidden;
   transition: transform 0.2s ease;
 }
+
+
 
 .concert-card:hover {
   transform: translateY(-5px);
@@ -193,71 +247,114 @@
   margin: 0 0 5px 0;
   font-size: 14px;
   font-weight: bold;
+  font-family: Poppins
 }
 
 .artist-name, .concert-date {
   margin: 0;
   font-size: 12px;
+  font-family: Poppins;
   color: #666;
 }
 
 /* Stats Profile Styling */
 .stats-info {
-  line-height: 1.6;
+  line-height: 1.9;
 }
 
 .stats-text {
-  margin: 0 0 10px 0;
+  margin: 0 0 20px 0;
+  font-size: 23px;
 }
 
 .highlight {
-  color: var(--highlight-color);
+  color: #F21414;
   font-weight: bold;
+  font-family: Poppins;
+  font-size: 110%;
 }
 
 /* Activity List Styling */
 .activity-list {
   list-style: none;
-  padding: 0;
+  padding: 0 20px;
   margin: 0;
 }
 
 .activity-item {
   display: flex;
   align-items: center;
-  margin-bottom: 15px;
-  line-height: 1.4;
+  margin-bottom: 25px;
+  line-height: 1.9;
+  font-size: 23px;
+}
+.activity-item:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  left: 6px; 
+  top: 15px;
+  bottom: -15px;
+  width: 1px;
+  background-color: #e0e0e0;
+}
+.activity-item .highlight {
+  color: #F21414;
+  font-weight: 500;
 }
 
 .activity-dot {
-  width: 8px;
-  height: 8px;
-  background-color: #2196f3;
+  width: 15px;
+  height: 15px;
+  background-color: #01BCD2;
   border-radius: 50%;
-  margin-right: 10px;
+  margin-right: 15px;
   flex-shrink: 0;
 }
 
 /* Recent Lists Styling */
 .list-category {
-  margin-bottom: 20px;
+  margin-bottom: 35px;
 }
 
+
 .list-title {
-  font-size: 16px;
-  margin: 0 0 10px 0;
+  font-size: 18px;
+  margin: 0 0 15px 0;
+  font-family: Poppins;
+  font-weight: 500;
 }
+
 
 .list-thumbnails {
   display: flex;
-  gap: 10px;
+  gap: 0px;
+  position: relative;
+  margin: 15px 0;
 }
 
 .thumbnail {
-  width: 70px;
-  height: 70px;
-  border-radius: 4px;
+  width: 110px;
+  height: 110px;
+  border-radius: 12px;
   overflow: hidden;
+  position: relative;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  border: 2px solid white;
+}
+.thumbnail:not(:first-child) {
+  margin-left: -30px; 
+}
+.thumbnail:nth-child(1) {
+  transform: rotate(-3deg);
+  z-index: 3;
+}
+.thumbnail:nth-child(2) {
+  transform: rotate(0deg);
+  z-index: 2;
+}
+.thumbnail:nth-child(3) {
+  transform: rotate(3deg);
+  z-index: 1;
 }
 
 .thumbnail img {
@@ -283,10 +380,10 @@
     margin-bottom: 10px;
   }
   
-  .profile-stats {
-    width: 100%;
-    justify-content: space-between;
-  }
+ .profile-stats {
+  display: flex;
+  gap: 15px;
+}
   
   .tab-list {
     overflow-x: auto;
@@ -308,6 +405,16 @@
   .concert-grid {
     grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
   }
+  .stat-number {
+    width: 70px;
+    height: 70px;
+    font-size: 28px
+    
+  }
+  
+  .stat-label {
+    font-size: 14px;
+  }
 }
 
 @media (max-width: 480px) {
@@ -317,11 +424,13 @@
   }
   
   .stat-number {
-    font-size: 18px;
+    width: 60px;
+    height: 60px;
+    font-size: 24px;
   }
   
   .stat-label {
-    font-size: 10px;
+    font-size: 12px;
   }
   
   .concert-grid {
