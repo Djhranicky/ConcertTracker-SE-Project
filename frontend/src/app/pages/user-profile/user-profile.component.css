@@ -1,18 +1,9 @@
-/* Base styles and variables */
-:root {
-  --primary-color: #ff0000; /* Red for brand elements */
-  --secondary-color: #f5f2ea; /* Light beige for background */
-  --text-color: #333333;
-  --card-background: #ffffff;
-  --highlight-color: #ff0000; /* Red for highlights */
-  --border-color: #e0e0e0;
-  --shadow-color: rgba(0, 0, 0, 0.1);
-}
 .navbar-container + .user-profile-container, 
 .navbar + .user-profile-container {
-  margin-top: 20px; 
-  
+  padding-top: 20px; 
+  margin-top: 0;
 }
+
 
 /* Global container */
 .user-profile-container {
@@ -132,7 +123,7 @@
 
 /* Profile Tab Navigation */
 .profile-tabs {
-  box-shadow: 0 2px 5px var(--shadow-color);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   background-color: white;
   border-bottom: 1px solid #e0e0e0;
   margin-top: 0;
@@ -140,7 +131,8 @@
 
 
 .tab-list {
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px; 
+  border-color: white; 
   display: flex;
   list-style: none;
   justify-content: center;
@@ -288,15 +280,7 @@
   line-height: 1.9;
   font-size: 23px;
 }
-.activity-item:not(:last-child)::after {
-  content: '';
-  position: absolute;
-  left: 6px; 
-  top: 15px;
-  bottom: -15px;
-  width: 1px;
-  background-color: #e0e0e0;
-}
+
 .activity-item .highlight {
   color: #F21414;
   font-weight: 500;
