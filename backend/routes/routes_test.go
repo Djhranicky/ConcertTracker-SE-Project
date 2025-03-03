@@ -17,37 +17,11 @@ import (
 	"gorm.io/gorm"
 )
 
-// TODO: fix these tests
-func initTestDatabase(dbName string) *gorm.DB {
-	mockDatabase, err := db.NewSqliteStorage(dbName)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	mockDatabase.AutoMigrate(&types.User{})
-
-	return mockDatabase
-}
-
-func TestUserServiceHandlers(t *testing.T) {
+func TestUserServiceHandleRegister(t *testing.T) {
 	utils.Init()
-	database := initTestDatabase("test.db")
-	userStore := user.NewStore(database)
-	handler := NewHandler(userStore)
+	handler, database := initTestHandler()
+	defer database.Migrator().DropTable(&types.User{})
 
-	hashedPassword, err := auth.HashPassword("test")
-	if err != nil {
-		log.Fatal(err)
-	}
-	user := types.User{
-		Name:     "John Doe",
-		Email:    "test@example.com",
-		Password: hashedPassword,
-	}
-
-	database.Create(&user)
-
-	// Testing handleRegister
 	t.Run("Should fail if request body is empty", func(t *testing.T) {
 		req, err := http.NewRequest(http.MethodPost, "/register", nil)
 		if err != nil {
@@ -142,8 +116,13 @@ func TestUserServiceHandlers(t *testing.T) {
 			t.Errorf("expected status code %v, got status code %v", http.StatusCreated, rr.Code)
 		}
 	})
+}
 
-	// Testing handleLogin
+func TestUserServiceHandleLogin(t *testing.T) {
+	utils.Init()
+	handler, database := initTestHandler()
+	defer database.Migrator().DropTable(&types.User{})
+
 	t.Run("Should fail if request body is empty", func(t *testing.T) {
 		req, err := http.NewRequest(http.MethodPost, "/login", nil)
 		if err != nil {
@@ -261,8 +240,37 @@ func TestUserServiceHandlers(t *testing.T) {
 			t.Errorf("expected status code %v, got status code %v. JSON Body: %v", http.StatusOK, rr.Code, rr.Body)
 		}
 	})
+}
 
-	database.Migrator().DropTable(&types.User{})
+func initTestDatabase(dbName string) *gorm.DB {
+	mockDatabase, err := db.NewSqliteStorage(dbName)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	mockDatabase.AutoMigrate(&types.User{})
+
+	return mockDatabase
+}
+
+func initTestHandler() (*Handler, *gorm.DB) {
+	database := initTestDatabase("test.db")
+	userStore := user.NewStore(database)
+	handler := NewHandler(userStore)
+
+	hashedPassword, err := auth.HashPassword("test")
+	if err != nil {
+		log.Fatal(err)
+	}
+	user := types.User{
+		Name:     "John Doe",
+		Email:    "test@example.com",
+		Password: hashedPassword,
+	}
+
+	database.Create(&user)
+
+	return handler, database
 }
 
 type MockUserStore struct {
