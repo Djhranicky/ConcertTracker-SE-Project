@@ -160,6 +160,13 @@ func (h *Handler) handleRegister(w http.ResponseWriter, r *http.Request) {
 	utils.WriteJSON(w, http.StatusCreated, nil)
 }
 
+// @Summary Validate user session
+// @Description Verifies if a user's session cookie contains an authenticated token
+// @Tags Auth
+// @Produce json
+// @Success 200 {string} string "user session validated"
+// @Failure 400 {string} string "missing or invalid authorization token"
+// @Router /validate [get]
 func (h *Handler) handleValidate(w http.ResponseWriter, r *http.Request) {
 	utils.SetCORSHeaders(w)
 	if r.Method == "OPTIONS" {
