@@ -1,8 +1,12 @@
 # Sprint 2
 
-## Work completed
+## Frontend
 
-### Backend
+### Frontend Unit Tests
+
+## Backend
+
+### Work completed
 
 Added session management by storing a JWT string in the browser cookie. This can be checked in the future to ensure that a user's "session" is still active and does not need to log back in.
 
@@ -12,11 +16,7 @@ Began investigating utilizing the setlist.fm api for concert information. Applie
 
 Began architecting needed database tables. Deciding what information needs to be stored and how best to design database to accomodate application needs.
 
-## Unit Tests
-
-### Frontend Unit Tests
-
-### Backend Unit Tests
+### Unit Tests
 
 Wrote unit tests for each route implemented so far and for managing the session with JWT tokens stored in cookies
 
@@ -33,3 +33,17 @@ Unit tests written so far:
   - Should fail if user does not exist
   - Should fail if user enters wrong password
   - Should pass if user enters correct user name and password
+
+### API Documentation
+
+The API currently consists of five endpoints mostly focused on authentication functionality.
+
+The `"/"` endpoint (home route) is a basic endpoint that currently only returns a status code 200 and a hello world message. This may be adapted for later use to serve information to the landing page if necessary, and mostly exists to verify the API can serve responses.
+
+`"/register"`
+
+`"/login"`
+
+`"/validate"`
+
+`"/swagger"`
