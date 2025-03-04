@@ -41,6 +41,13 @@ Unit tests written so far:
   - should fail when no id cookie is present
   - should fail when invalid jwt string is present
   - should pass when valid cookie is present
+- TestSessionMethods
+  - should fail if request has no cookie
+  - should pass if request has cookie
+  - verification should fail if no cookie present
+  - verification should fail if no JWT token present
+  - verification should fail if JWT token is expired
+  - verification should succeed if JWT token is valid
 
 ### API Documentation
 
