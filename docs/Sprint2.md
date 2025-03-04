@@ -2,6 +2,10 @@
 
 ## Frontend
 
+### Work completed
+
+Created the frontend for the User-Profile page. This page can only be accessed if the user is logged in. The page is currently populated with mock user data.
+
 ### Frontend Unit Tests
 
 ## Backend
