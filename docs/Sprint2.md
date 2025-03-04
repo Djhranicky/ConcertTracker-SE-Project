@@ -26,17 +26,21 @@ Wrote unit tests for each route implemented so far and for managing the session 
 
 Unit tests written so far:
 
-- Testing handleRegister
+- TestUserServiceHandleRegister
   - Should fail if request body is empty
   - Should fail if the user payload is invalid
   - Should fail if user exists
   - Should succeed when new user is created
-- Testing handleLogin
+- TestUserServiceHandleLogin
   - Should fail if request body is empty
   - Should fail if payload is invalid
   - Should fail if user does not exist
   - Should fail if user enters wrong password
   - Should pass if user enters correct user name and password
+- TestUserServiceHandleValidate
+  - should fail when no id cookie is present
+  - should fail when invalid jwt string is present
+  - should pass when valid cookie is present
 
 ### API Documentation
 
