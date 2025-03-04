@@ -27,6 +27,7 @@ func (h *Handler) RegisterRoutes(router *mux.Router) {
 	router.HandleFunc("/", h.handleHome).Methods("GET")
 	router.HandleFunc("/login", h.handleLogin).Methods("POST", "OPTIONS")
 	router.HandleFunc("/register", h.handleRegister).Methods("POST", "OPTIONS")
+	router.HandleFunc("/validate", h.handleValidate).Methods("GET", "OPTIONS")
 
 	// Serve Swagger UI
 	router.PathPrefix("/swagger/").Handler(httpSwagger.WrapHandler)
@@ -41,13 +42,6 @@ func (h *Handler) RegisterRoutes(router *mux.Router) {
 // @Router / [get]
 func (h *Handler) handleHome(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Content-Type", "application/json")
-
-	err := auth.VerifyJWTCookie(auth.GetJWTCookie(r))
-	if err != nil {
-		utils.WriteError(w, http.StatusUnauthorized, err)
-		return
-	}
-
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte(`{"message":"hello world"}`))
 }
@@ -164,4 +158,30 @@ func (h *Handler) handleRegister(w http.ResponseWriter, r *http.Request) {
 	}
 
 	utils.WriteJSON(w, http.StatusCreated, nil)
+}
+
+// @Summary Validate user session
+// @Description Verifies if a user's session cookie contains an authenticated token
+// @Tags Auth
+// @Produce json
+// @Success 200 {string} string "user session validated"
+// @Failure 400 {string} string "missing or invalid authorization token"
+// @Router /validate [get]
+func (h *Handler) handleValidate(w http.ResponseWriter, r *http.Request) {
+	utils.SetCORSHeaders(w)
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
+	w.Header().Add("Content-Type", "application/json")
+
+	err := auth.VerifyJWTCookie(auth.GetJWTCookie(r))
+	if err != nil {
+		utils.WriteError(w, http.StatusUnauthorized, err)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(`{"message":"user session validated"}`))
 }
