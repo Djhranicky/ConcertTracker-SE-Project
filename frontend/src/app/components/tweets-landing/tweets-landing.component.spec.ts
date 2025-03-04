@@ -9,6 +9,7 @@ describe('TweetsLandingComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [TweetsLandingComponent],
+      teardown: { destroyAfterEach: false },
     }).compileComponents();
 
     fixture = TestBed.createComponent(TweetsLandingComponent);

@@ -6,6 +6,8 @@ import { NotFoundComponent } from './pages/not-found/not-found.component';
 import { AuthGuard } from './authentication.guard';
 import { GuestGuard } from './guest.guard';
 import { UserProfileComponent } from './pages/user-profile/user-profile.component';
+import { AuthGuard } from './utils/authentication.guard';
+import { GuestGuard } from './utils/guest.guard';
 
 export const appRoutes: Routes = [
   { path: '', component: LandingComponent },

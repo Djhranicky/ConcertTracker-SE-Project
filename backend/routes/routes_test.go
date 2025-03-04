@@ -17,37 +17,11 @@ import (
 	"gorm.io/gorm"
 )
 
-// TODO: fix these tests
-func initTestDatabase(dbName string) *gorm.DB {
-	mockDatabase, err := db.NewSqliteStorage(dbName)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	mockDatabase.AutoMigrate(&types.User{})
-
-	return mockDatabase
-}
-
-func TestUserServiceHandlers(t *testing.T) {
+func TestUserServiceHandleRegister(t *testing.T) {
 	utils.Init()
-	database := initTestDatabase("test.db")
-	userStore := user.NewStore(database)
-	handler := NewHandler(userStore)
+	handler, database := initTestHandler()
+	defer database.Migrator().DropTable(&types.User{})
 
-	hashedPassword, err := auth.HashPassword("test")
-	if err != nil {
-		log.Fatal(err)
-	}
-	user := types.User{
-		Name:     "John Doe",
-		Email:    "test@example.com",
-		Password: hashedPassword,
-	}
-
-	database.Create(&user)
-
-	// Testing handleRegister
 	t.Run("Should fail if request body is empty", func(t *testing.T) {
 		req, err := http.NewRequest(http.MethodPost, "/register", nil)
 		if err != nil {
@@ -142,8 +116,13 @@ func TestUserServiceHandlers(t *testing.T) {
 			t.Errorf("expected status code %v, got status code %v", http.StatusCreated, rr.Code)
 		}
 	})
+}
 
-	// Testing handleLogin
+func TestUserServiceHandleLogin(t *testing.T) {
+	utils.Init()
+	handler, database := initTestHandler()
+	defer database.Migrator().DropTable(&types.User{})
+
 	t.Run("Should fail if request body is empty", func(t *testing.T) {
 		req, err := http.NewRequest(http.MethodPost, "/login", nil)
 		if err != nil {
@@ -261,8 +240,121 @@ func TestUserServiceHandlers(t *testing.T) {
 			t.Errorf("expected status code %v, got status code %v. JSON Body: %v", http.StatusOK, rr.Code, rr.Body)
 		}
 	})
+}
 
-	database.Migrator().DropTable(&types.User{})
+func TestUserServiceHandleValidate(t *testing.T) {
+	utils.Init()
+	handler, database := initTestHandler()
+	defer database.Migrator().DropTable(&types.User{})
+
+	t.Run("should fail when no id cookie is present", func(t *testing.T) {
+		req, err := http.NewRequest(http.MethodGet, "/validate", nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/validate", handler.handleValidate)
+
+		router.ServeHTTP(rr, req)
+
+		if rr.Code != http.StatusUnauthorized {
+			t.Errorf("expected status code %v, got status code %v", http.StatusBadRequest, rr.Code)
+		}
+	})
+
+	t.Run("should fail when invalid jwt string is present", func(t *testing.T) {
+		req, err := http.NewRequest(http.MethodGet, "/validate", nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+		req.AddCookie(&http.Cookie{
+			Name:  "id",
+			Value: "invalid jwt token",
+		})
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/validate", handler.handleValidate)
+
+		router.ServeHTTP(rr, req)
+
+		if rr.Code != http.StatusUnauthorized {
+			t.Errorf("expected status code %v, got status code %v", http.StatusBadRequest, rr.Code)
+		}
+	})
+
+	t.Run("should pass when valid cookie is present", func(t *testing.T) {
+		payload := &types.UserRegisterPayload{
+			Name:     "John Doe",
+			Email:    "test@example.com",
+			Password: "test",
+		}
+		marshalled, _ := json.Marshal(payload)
+
+		req, err := http.NewRequest(http.MethodPost, "/login", bytes.NewBuffer(marshalled))
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/login", handler.handleLogin)
+		router.ServeHTTP(rr, req)
+
+		cookie := rr.Result().Cookies()
+		req, err = http.NewRequest(http.MethodGet, "/validate", nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+		req.AddCookie(cookie[0])
+
+		rr = httptest.NewRecorder()
+		router = mux.NewRouter()
+
+		router.HandleFunc("/validate", handler.handleValidate)
+
+		router.ServeHTTP(rr, req)
+
+		if rr.Code != http.StatusOK {
+			t.Errorf("expected status code %v, got status code %v", http.StatusBadRequest, rr.Code)
+		}
+	})
+}
+
+func initTestDatabase(dbName string) *gorm.DB {
+	mockDatabase, err := db.NewSqliteStorage(dbName)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	mockDatabase.AutoMigrate(&types.User{})
+
+	return mockDatabase
+}
+
+func initTestHandler() (*Handler, *gorm.DB) {
+	database := initTestDatabase("test.db")
+	userStore := user.NewStore(database)
+	handler := NewHandler(userStore)
+
+	hashedPassword, err := auth.HashPassword("test")
+	if err != nil {
+		log.Fatal(err)
+	}
+	user := types.User{
+		Name:     "John Doe",
+		Email:    "test@example.com",
+		Password: hashedPassword,
+	}
+
+	database.Create(&user)
+
+	return handler, database
 }
 
 type MockUserStore struct {

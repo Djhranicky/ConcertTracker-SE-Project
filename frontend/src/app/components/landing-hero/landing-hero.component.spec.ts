@@ -28,6 +28,7 @@ describe('LandingHeroComponent', () => {
         provideHttpClient(),
         provideHttpClientTesting(),
       ],
+      teardown: { destroyAfterEach: false },
     }).compileComponents();
 
     fixture = TestBed.createComponent(LandingHeroComponent);

@@ -135,6 +135,10 @@
   width: 100%;
 }
 
+:host ::ng-deep .p-inputtext:enabled:focus {
+  border-color: #d3d3d3;
+}
+
 /* Make the form full width */
 .login-form {
   width: 100%;

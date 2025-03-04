@@ -8,6 +8,7 @@ describe('DiscussLandingComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [DiscussLandingComponent],
+      teardown: { destroyAfterEach: false },
     }).compileComponents();
 
     fixture = TestBed.createComponent(DiscussLandingComponent);
