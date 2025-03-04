@@ -40,10 +40,29 @@ The API currently consists of five endpoints mostly focused on authentication fu
 
 The `"/"` endpoint (home route) is a basic endpoint that currently only returns a status code 200 and a hello world message. This may be adapted for later use to serve information to the landing page if necessary, and mostly exists to verify the API can serve responses.
 
-`"/register"`
+The `"/register"` endpoint is used to register a new user in the system. Users currently have a name, email and password stored in the database. The JSON payload expected looks like
 
-`"/login"`
+```json
+{
+  "Name":"Name",
+  "Email":"test@example.com",
+  "Password":"Password",
+}
+```
 
-`"/validate"`
+The payload is first validated to ensure that the inputs meet the expected format. Then if the user does not already exist in the system, a new user is created in the database and the endpoint returns a 201 code indicating the account was created successfully.
+
+The `"/login"` endpoint is used to authenticate a user and create a session. The JSON payload expected looks like
+
+```json
+{
+  "Email":"test@example.com",
+  "Password":"Password",
+}
+```
+
+The endpiont first verifies that a valid email and password combination was supplied. This returns a 400 code with an `"invalid email or password"` message if the credentials are not valid. This then creates a new JSON Web Token that encodes a userId number and an expiration time with a private secret key. Finally, this JWT is stored as a cookie in the response and a status code of 200 is returned.
+
+The `"/validate"`endpoint
 
 `"/swagger"`
