@@ -1,0 +1,27 @@
+<p-card>
+  <ng-template #title>
+    <p-avatar icon="pi pi-user" class="mr-2" size="large" shape="circle" />
+    <a href="/user/">{{ post.username }}</a> reviewed:
+  </ng-template>
+  <div class="concert">
+    <img [src]="post.img" />
+    <div class="concert-text">
+      <div class="date-name">
+        <span class="tour-name">{{ post.tour }}</span>
+        <span class="tour-date">{{ post.date }}</span>
+      </div>
+      <span class="tour-artist">{{ post.artist }}</span>
+      <span class="tour-venue">{{ post.venue }} </span>
+      <div class="rating">
+        <span class="rating-number">{{ post.rating }} </span>
+        <span class="pi pi-star-fill"></span>
+        <span class="pi pi-star-fill"></span>
+        <span class="pi pi-star-fill"></span>
+        <span class="pi pi-star-fill"></span>
+      </div>
+    </div>
+  </div>
+  <p>
+    {{ post.reviewText }}
+  </p>
+</p-card>
