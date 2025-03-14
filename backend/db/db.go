@@ -19,5 +19,14 @@ func NewSqliteStorage(dbName string) (*gorm.DB, error) {
 }
 
 func InitDatabase(db *gorm.DB) {
-	db.AutoMigrate(&types.User{})
+	err := db.AutoMigrate(
+		&types.User{},
+		&types.Artist{},
+		&types.Tour{},
+		&types.Venue{},
+		&types.Concert{},
+	)
+	if err != nil {
+		log.Fatal("Failed to migrate database:", err)
+	}
 }
