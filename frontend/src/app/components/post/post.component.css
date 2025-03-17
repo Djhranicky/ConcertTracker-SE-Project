@@ -1,11 +1,32 @@
 :host ::ng-deep .p-card {
   background-color: #ffffff;
   margin-bottom: 1rem;
-  width: 75vw;
+  width: 70vw;
   overflow: hidden;
 }
+:host ::ng-deep .p-card-title {
+  display: flex;
+  align-content: stretch;
+  justify-content: space-between;
+}
+.card-body {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+.footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.date {
+  font-weight: 400;
+  font-size: medium;
+  color: #717171;
+}
 img {
-  width: 150px;
+  width: 8rem;
   border-radius: 12px;
 }
 a {
@@ -14,7 +35,7 @@ a {
 }
 .concert {
   display: flex;
-  align-items: center;
+  align-items: top;
   align-self: stretch;
   flex-wrap: nowrap;
   flex-shrink: 0;
@@ -22,30 +43,16 @@ a {
   position: relative;
 }
 .tour-name {
-  flex-shrink: 0;
-  flex-basis: auto;
-  position: relative;
   height: 24px;
   color: #313131;
   font-size: 20px;
   font-weight: 700;
-  line-height: 36px;
-  text-align: left;
-  white-space: nowrap;
 }
 
 .tour-date {
-  flex-shrink: 0;
-  flex-basis: auto;
-  position: relative;
-  align-items: flex-end;
-  height: 21px;
-  color: #f21414;
+  color: #919191;
   font-size: 14px;
   font-weight: 400;
-  line-height: 21px;
-  text-align: left;
-  white-space: nowrap;
 }
 
 .tour-artist {
@@ -91,11 +98,16 @@ a {
 }
 .date-name {
   display: flex;
-  align-self: stretch;
-  gap: 20px;
+  align-items: baseline;
+  gap: 10px;
   position: relative;
 }
 
 .pi-star-fill {
   color: #ffd700;
+}
+
+.pi-heart-fill {
+  font-family: "primeicons" !important;
+  color: #f21414;
 }

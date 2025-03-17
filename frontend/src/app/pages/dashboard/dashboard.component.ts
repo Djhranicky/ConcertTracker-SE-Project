@@ -3,9 +3,20 @@ import { CommonModule } from '@angular/common';
 import { PostComponent } from '../../components/post/post.component';
 import { PostService, Post } from '../../services/post.service';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
+import { Button } from 'primeng/button';
+import { Card } from 'primeng/card';
+import { AvatarModule } from 'primeng/avatar';
+
 @Component({
   selector: 'app-dashboard',
-  imports: [PostComponent, CommonModule, NavbarComponent],
+  imports: [
+    PostComponent,
+    CommonModule,
+    NavbarComponent,
+    Button,
+    Card,
+    AvatarModule,
+  ],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css',
   providers: [PostService],

@@ -41,8 +41,8 @@ export class PostService {
     reviewText: null,
     attachedImg: null,
     rating: 4,
-    likes: 3,
-    comments: 10,
+    likes: 10,
+    comments: 3,
   };
 
   post2: Post = {
@@ -63,7 +63,7 @@ export class PostService {
   };
 
   post3: Post = {
-    type: 'Review',
+    type: 'review',
     username: 'Jane Doe',
     avatar: 'imgurl',
     postDate: 'Feb 20, 2025',

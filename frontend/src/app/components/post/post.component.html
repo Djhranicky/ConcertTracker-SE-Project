@@ -1,27 +1,86 @@
-<p-card>
-  <ng-template #title>
-    <p-avatar icon="pi pi-user" class="mr-2" size="large" shape="circle" />
-    <a href="/user/">{{ post.username }}</a> reviewed:
+<p-card *ngIf="post.type === 'review'">
+  <ng-template #title class="template">
+    <div class="head">
+      <p-avatar icon="pi pi-user" class="mr-2" size="large" shape="circle" />
+      <a href="/user/">{{ post.username }}</a> reviewed:
+    </div>
+    <div class="date">{{ post.postDate | timeAgo }}</div>
   </ng-template>
-  <div class="concert">
-    <img [src]="post.img" />
-    <div class="concert-text">
-      <div class="date-name">
-        <span class="tour-name">{{ post.tour }}</span>
-        <span class="tour-date">{{ post.date }}</span>
+  <div class="card-body">
+    <div class="review">
+      <div class="concert">
+        <img [src]="post.img" />
+        <div class="concert-text">
+          <div class="date-name">
+            <span class="tour-name">{{ post.tour }}</span>
+            <span class="tour-date">{{ post.date }}</span>
+          </div>
+          <span class="tour-artist">{{ post.artist }}</span>
+          <span class="tour-venue">{{ post.venue }} </span>
+          <div class="rating">
+            <span class="rating-number">{{ post.rating }} </span>
+            <span
+              *ngFor="let star of getStars(post.rating || 0)"
+              class="pi pi-star-fill"
+            ></span>
+            <!-- <span
+          *ngFor="let star of getStars(5 - post.rating)"
+          class="pi pi-star"
+        ></span> -->
+          </div>
+        </div>
       </div>
-      <span class="tour-artist">{{ post.artist }}</span>
-      <span class="tour-venue">{{ post.venue }} </span>
-      <div class="rating">
-        <span class="rating-number">{{ post.rating }} </span>
-        <span class="pi pi-star-fill"></span>
-        <span class="pi pi-star-fill"></span>
-        <span class="pi pi-star-fill"></span>
-        <span class="pi pi-star-fill"></span>
-      </div>
+      <p>
+        {{ post.reviewText }}
+      </p>
+    </div>
+    <div class="footer">
+      <span class="pi pi-comments" style="font-size: 1.5rem"></span>
+      <p *ngIf="post.comments > 0">x{{ post.comments }}</p>
+      <!-- <span class="pi pi-heart"></span> -->
+      <span
+        [ngClass]="{ 'pi pi-heart-fill': isLiked, 'pi pi-heart': !isLiked }"
+        (click)="toggleLike()"
+        style="font-size: 1.5rem"
+      ></span>
+      <p *ngIf="post.likes > 0">x{{ post.likes }}</p>
+
+      <span class="pi pi-upload" style="font-size: 1.5rem"> </span>
     </div>
   </div>
-  <p>
-    {{ post.reviewText }}
-  </p>
+</p-card>
+
+<p-card *ngIf="post.type === 'wishlist'">
+  <ng-template #title>
+    <div class="head">
+      <p-avatar icon="pi pi-user" class="mr-2" size="large" shape="circle" />
+      <a href="/user/">{{ post.username }}</a> wants to attend:
+    </div>
+    <div class="date">{{ post.postDate | timeAgo }}</div>
+  </ng-template>
+  <div></div>
+  <div class="card-body">
+    <div class="concert">
+      <img [src]="post.img" />
+      <div class="concert-text">
+        <div class="date-name">
+          <span class="tour-name">{{ post.tour }}</span>
+          <span class="tour-date">{{ post.date }}</span>
+        </div>
+        <span class="tour-artist">{{ post.artist }}</span>
+        <span class="tour-venue">{{ post.venue }} </span>
+      </div>
+    </div>
+    <div class="footer">
+      <span class="pi pi-comments" style="font-size: 1.5rem"></span>
+      <p *ngIf="post.comments > 0">x{{ post.comments }}</p>
+      <span
+        [ngClass]="{ 'pi pi-heart-fill': isLiked, 'pi pi-heart': !isLiked }"
+        (click)="toggleLike()"
+        style="font-size: 1.5rem"
+      ></span>
+      <p *ngIf="post.likes > 0">x{{ post.likes }}</p>
+      <span class="pi pi-upload" style="font-size: 1.5rem"> </span>
+    </div>
+  </div>
 </p-card>
