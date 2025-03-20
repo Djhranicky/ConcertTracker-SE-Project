@@ -44,3 +44,23 @@ func (s *Store) CreateUser(user types.User) error {
 
 	return nil
 }
+
+func (s *Store) GetArtistByMBID(mbid string) (*types.Artist, error) {
+	var artist types.Artist
+	err := s.db.First(&artist, "mb_id = ?", mbid).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, err
+	}
+
+	return &artist, nil
+}
+
+func (s *Store) CreateArtist(artist types.Artist) error {
+	result := s.db.Create(&artist)
+
+	if result.Error != nil {
+		return result.Error
+	}
+
+	return nil
+}
