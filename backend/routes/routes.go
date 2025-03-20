@@ -28,6 +28,7 @@ func (h *Handler) RegisterRoutes(router *mux.Router) {
 	router.HandleFunc("/login", h.handleLogin).Methods("POST", "OPTIONS")
 	router.HandleFunc("/register", h.handleRegister).Methods("POST", "OPTIONS")
 	router.HandleFunc("/validate", h.handleValidate).Methods("GET", "OPTIONS")
+	router.HandleFunc("/artist", h.handleArtist).Methods("GET", "OPTIONS")
 
 	// Serve Swagger UI
 	router.PathPrefix("/swagger/").Handler(httpSwagger.WrapHandler)
@@ -184,4 +185,19 @@ func (h *Handler) handleValidate(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte(`{"message":"user session validated"}`))
+}
+
+// @Summary Serve information for a given artist
+// @Description Gets information for requested artist. If information does not exist in database, it is retrieved from setlist.fm API and entered into database
+// @Tags
+// @Produce json
+// @Success 200 {string} string "TODO"
+// @Failure 400 {string} string "TODO"
+// @Router /artist [post]
+func (h *Handler) handleArtist(w http.ResponseWriter, r *http.Request) {
+	utils.SetCORSHeaders(w)
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
 }
