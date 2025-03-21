@@ -1,7 +1,6 @@
 package routes
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
@@ -216,8 +215,7 @@ func (h *Handler) handleArtist(w http.ResponseWriter, r *http.Request) {
 
 	// If so, return info from there
 	if err == nil {
-		marshaled, _ := json.Marshal(*artist)
-		utils.WriteJSON(w, http.StatusOK, marshaled)
+		utils.WriteJSON(w, http.StatusOK, *artist)
 		return
 	}
 
@@ -236,6 +234,5 @@ func (h *Handler) handleArtist(w http.ResponseWriter, r *http.Request) {
 		utils.WriteError(w, http.StatusInternalServerError, err)
 		return
 	}
-	marshaled, _ := json.Marshal(*artist)
-	utils.WriteJSON(w, http.StatusOK, marshaled)
+	utils.WriteJSON(w, http.StatusOK, *artist)
 }
