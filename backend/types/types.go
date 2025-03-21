@@ -29,6 +29,7 @@ type Store interface {
 	GetUserByID(id uint) (*User, error)
 	CreateUser(User) error
 	GetArtistByMBID(artist string) (*Artist, error)
+	GetArtistByName(name string) (*Artist, error)
 	CreateArtist(Artist) error
 }
 
