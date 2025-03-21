@@ -24,10 +24,12 @@ type User struct {
 	UpdatedAt time.Time
 }
 
-type UserStore interface {
+type Store interface {
 	GetUserByEmail(email string) (*User, error)
 	GetUserByID(id uint) (*User, error)
 	CreateUser(User) error
+	GetArtistByMBID(artist string) (*Artist, error)
+	CreateArtist(Artist) error
 }
 
 type Artist struct {

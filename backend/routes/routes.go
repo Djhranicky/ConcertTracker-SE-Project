@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"os"
@@ -16,11 +17,11 @@ import (
 )
 
 type Handler struct {
-	UserStore types.UserStore
+	Store types.Store
 }
 
-func NewHandler(store types.UserStore) *Handler {
-	return &Handler{UserStore: store}
+func NewHandler(store types.Store) *Handler {
+	return &Handler{Store: store}
 }
 
 func (h *Handler) RegisterRoutes(router *mux.Router) {
@@ -76,7 +77,7 @@ func (h *Handler) handleLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	u, err := h.UserStore.GetUserByEmail(user.Email)
+	u, err := h.Store.GetUserByEmail(user.Email)
 	if err != nil {
 		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("invalid email or password"))
 		return
@@ -136,7 +137,7 @@ func (h *Handler) handleRegister(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// check if the user already exists
-	_, err := h.UserStore.GetUserByEmail(payload.Email)
+	_, err := h.Store.GetUserByEmail(payload.Email)
 	if err == nil {
 		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("user with email %s already exists", payload.Email))
 		return
@@ -148,7 +149,7 @@ func (h *Handler) handleRegister(w http.ResponseWriter, r *http.Request) {
 		utils.WriteError(w, http.StatusInternalServerError, err)
 		return
 	}
-	err = h.UserStore.CreateUser(types.User{
+	err = h.Store.CreateUser(types.User{
 		Name:     payload.Name,
 		Email:    payload.Email,
 		Password: hashedPassword,
@@ -189,7 +190,7 @@ func (h *Handler) handleValidate(w http.ResponseWriter, r *http.Request) {
 
 // @Summary Serve information for a given artist
 // @Description Gets information for requested artist. If information does not exist in database, it is retrieved from setlist.fm API and entered into database
-// @Tags
+// @Params artist
 // @Produce json
 // @Success 200 {string} string "TODO"
 // @Failure 400 {string} string "TODO"
@@ -200,4 +201,17 @@ func (h *Handler) handleArtist(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		return
 	}
+
+	// Get artist search from request
+	searchString := r.URL.Query().Get("name")
+	if searchString == "" {
+		utils.WriteError(w, http.StatusBadRequest, errors.New("artist name not provided"))
+	}
+
+	// Check if artist exists in db
+	// artist, err := h
+	// If so, return info from there
+	// If not, check if artist exists on setlist.fm
+	// If so, create info in database and return info
+	// If not, return not found error
 }
