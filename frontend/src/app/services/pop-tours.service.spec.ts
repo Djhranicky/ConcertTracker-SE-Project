@@ -1,7 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { Observable, of, map } from 'rxjs';
 import { PopToursService, Tour } from './pop-tours.service';
 
 describe('PopToursService', () => {

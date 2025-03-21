@@ -1,0 +1,113 @@
+:host ::ng-deep .p-card {
+  background-color: #ffffff;
+  margin-bottom: 1rem;
+  width: 70vw;
+  overflow: hidden;
+}
+:host ::ng-deep .p-card-title {
+  display: flex;
+  align-content: stretch;
+  justify-content: space-between;
+}
+.card-body {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+.footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.date {
+  font-weight: 400;
+  font-size: medium;
+  color: #717171;
+}
+img {
+  width: 8rem;
+  border-radius: 12px;
+}
+a {
+  color: #f21414;
+  text-decoration: none;
+}
+.concert {
+  display: flex;
+  align-items: top;
+  align-self: stretch;
+  flex-wrap: nowrap;
+  flex-shrink: 0;
+  gap: 10px;
+  position: relative;
+}
+.tour-name {
+  height: 24px;
+  color: #313131;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.tour-date {
+  color: #919191;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.tour-artist {
+  align-self: stretch;
+  position: relative;
+  height: 33px;
+  color: #313131;
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 33px;
+}
+.tour-venue {
+  align-self: stretch;
+  flex-shrink: 0;
+  flex-basis: auto;
+  position: relative;
+  height: 25px;
+  color: #313131;
+  font-family: Poppins, var(--default-font-family);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 20px;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.concert-text {
+  display: flex;
+  flex-direction: column;
+  align-items: left;
+  /* justify-content: center; */
+  flex-wrap: nowrap;
+  flex-shrink: 0;
+  gap: 4px;
+  position: relative;
+}
+.rating-number {
+  height: 20px;
+  color: #313131;
+  font-size: 18px;
+  font-weight: 900;
+  line-height: 20px;
+}
+.date-name {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  position: relative;
+}
+
+.pi-star-fill {
+  color: #ffd700;
+}
+
+.pi-heart-fill {
+  font-family: "primeicons" !important;
+  color: #f21414;
+}
