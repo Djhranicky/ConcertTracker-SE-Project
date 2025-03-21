@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
@@ -8,6 +9,7 @@ import (
 
 	_ "github.com/djhranicky/ConcertTracker-SE-Project/docs"
 	"github.com/djhranicky/ConcertTracker-SE-Project/service/auth"
+	"github.com/djhranicky/ConcertTracker-SE-Project/service/setlist"
 	"github.com/djhranicky/ConcertTracker-SE-Project/types"
 	"github.com/djhranicky/ConcertTracker-SE-Project/utils"
 	"github.com/go-playground/validator/v10"
@@ -206,12 +208,34 @@ func (h *Handler) handleArtist(w http.ResponseWriter, r *http.Request) {
 	searchString := r.URL.Query().Get("name")
 	if searchString == "" {
 		utils.WriteError(w, http.StatusBadRequest, errors.New("artist name not provided"))
+		return
 	}
 
 	// Check if artist exists in db
-	// artist, err := h
+	artist, err := h.Store.GetArtistByName(searchString)
+
 	// If so, return info from there
+	if err == nil {
+		marshaled, _ := json.Marshal(*artist)
+		utils.WriteJSON(w, http.StatusOK, marshaled)
+		return
+	}
+
 	// If not, check if artist exists on setlist.fm
-	// If so, create info in database and return info
+	artist = setlist.ArtistSearch(searchString)
+
 	// If not, return not found error
+	if artist == nil {
+		utils.WriteError(w, http.StatusBadRequest, errors.New("artist not found"))
+		return
+	}
+
+	// If so, create info in database and return info
+	err = h.Store.CreateArtist(*artist)
+	if err != nil {
+		utils.WriteError(w, http.StatusInternalServerError, err)
+		return
+	}
+	marshaled, _ := json.Marshal(*artist)
+	utils.WriteJSON(w, http.StatusOK, marshaled)
 }
