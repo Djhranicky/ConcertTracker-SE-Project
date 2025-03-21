@@ -2,12 +2,12 @@ package setlist
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
 	"log"
 	"net/http"
 	"os"
 
+	"github.com/djhranicky/ConcertTracker-SE-Project/types"
 	"github.com/joho/godotenv"
 )
 
@@ -25,11 +25,11 @@ type ArtistResponse struct {
 	} `json:"artist"`
 }
 
-func ArtistSearch(artist string) {
+func ArtistSearch(artist string) *types.Artist {
 	err := godotenv.Load("./.env")
 	if err != nil {
 		log.Print(err)
-		return
+		return nil
 	}
 
 	xAPIKey := []byte(os.Getenv("SETLIST_API_KEY"))
@@ -39,7 +39,7 @@ func ArtistSearch(artist string) {
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		log.Print(err)
-		return
+		return nil
 	}
 
 	req.Header.Add("Accept", "application/json")
@@ -55,27 +55,31 @@ func ArtistSearch(artist string) {
 	resp, err := client.Do(req)
 	if err != nil {
 		log.Print(err)
-		return
+		return nil
 	}
 
 	if resp.StatusCode != http.StatusOK {
 		log.Print("No results found")
-		return
+		return nil
 	}
 
 	defer resp.Body.Close()
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		log.Print(err)
-		return
+		return nil
 	}
 
 	var jsonData ArtistResponse
 	err = json.Unmarshal(body, &jsonData)
 	if err != nil {
 		log.Print(err)
-		return
+		return nil
 	}
 
-	fmt.Println(jsonData.Artist[0].Mbid)
+	returnArtist := types.Artist{
+		MBID: jsonData.Artist[0].Mbid,
+		Name: jsonData.Artist[0].Name,
+	}
+	return &returnArtist
 }
