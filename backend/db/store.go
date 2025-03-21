@@ -55,6 +55,16 @@ func (s *Store) GetArtistByMBID(mbid string) (*types.Artist, error) {
 	return &artist, nil
 }
 
+func (s *Store) GetArtistByName(name string) (*types.Artist, error) {
+	var artist types.Artist
+	err := s.db.First(&artist, "lower(name) = lower(?)", name).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, err
+	}
+
+	return &artist, nil
+}
+
 func (s *Store) CreateArtist(artist types.Artist) error {
 	result := s.db.Create(&artist)
 
