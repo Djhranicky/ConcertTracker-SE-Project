@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"net/http/httptest"
+	"reflect"
 	"testing"
 
 	"github.com/djhranicky/ConcertTracker-SE-Project/db"
@@ -325,6 +326,140 @@ func TestUserServiceHandleValidate(t *testing.T) {
 	})
 }
 
+func TestArtistServiceHandleArtist(t *testing.T) {
+	utils.Init()
+	handler, database := initTestHandler()
+	defer destroyDatabase(database)
+
+	t.Run("should fail with no name query parameter", func(t *testing.T) {
+		req, err := http.NewRequest(http.MethodGet, "/artist", nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/artist", handler.handleArtist(""))
+
+		router.ServeHTTP(rr, req)
+
+		assertEqual(t, http.StatusBadRequest, rr.Code)
+	})
+
+	t.Run("should pass if artist already in database", func(t *testing.T) {
+		req, err := http.NewRequest(http.MethodGet, "/artist?name=Artist1", nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/artist", handler.handleArtist(""))
+
+		router.ServeHTTP(rr, req)
+
+		var unmarshaled types.Artist
+		json.Unmarshal(rr.Body.Bytes(), &unmarshaled)
+
+		assertEqual(t, http.StatusOK, rr.Code)
+		assertEqual(t, "mbid1", unmarshaled.MBID)
+		assertEqual(t, "Artist1", unmarshaled.Name)
+	})
+
+	t.Run("should fail if artist not found in external API", func(t *testing.T) {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusNotFound)
+			w.Write([]byte(`{
+								"code": 404,
+								"status": "Not Found",
+								"message": "not found",
+								"timestamp": "2025-03-22T22:19:29.358+0000"
+							}`))
+		}))
+		defer server.Close()
+
+		req, err := http.NewRequest(http.MethodGet, "/artist?name=NotFound", nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/artist", handler.handleArtist(server.URL))
+
+		router.ServeHTTP(rr, req)
+
+		var unmarshaled types.Artist
+		json.Unmarshal(rr.Body.Bytes(), &unmarshaled)
+
+		assertEqual(t, http.StatusBadRequest, rr.Code)
+	})
+
+	t.Run("should pass if artist found in external API", func(t *testing.T) {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusOK)
+			w.Write([]byte(`{
+							"type": "artists",
+							"itemsPerPage": 30,
+							"page": 1,
+							"total": 1,
+							"artist": [
+								{
+									"mbid": "mbid2",
+									"name": "Artist2",
+									"sortName": "Artist2",
+									"disambiguation": "",
+									"url": "https://www.setlist.fm/setlists/Artist2.html"
+								}
+							]
+						}`))
+		}))
+		defer server.Close()
+
+		req, err := http.NewRequest(http.MethodGet, "/artist?name=Artist2", nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/artist", handler.handleArtist(server.URL))
+
+		router.ServeHTTP(rr, req)
+
+		var unmarshaled types.Artist
+		json.Unmarshal(rr.Body.Bytes(), &unmarshaled)
+
+		assertEqual(t, http.StatusOK, rr.Code)
+	})
+
+	t.Run("should pass if previously missing artist was found in external API", func(t *testing.T) {
+		req, err := http.NewRequest(http.MethodGet, "/artist?name=Artist2", nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/artist", handler.handleArtist(""))
+
+		router.ServeHTTP(rr, req)
+
+		var unmarshaled types.Artist
+		json.Unmarshal(rr.Body.Bytes(), &unmarshaled)
+
+		assertEqual(t, http.StatusOK, rr.Code)
+		assertEqual(t, uint(2), unmarshaled.ID)
+		assertEqual(t, "mbid2", unmarshaled.MBID)
+		assertEqual(t, "Artist2", unmarshaled.Name)
+	})
+}
+
 func initTestDatabase(dbName string) *gorm.DB {
 	mockDatabase, err := db.NewSqliteStorage(dbName)
 	if err != nil {
@@ -379,7 +514,7 @@ func destroyDatabase(database *gorm.DB) {
 
 func assertEqual(t *testing.T, a interface{}, b interface{}) {
 	if a != b {
-		t.Errorf("expected %v, received %v", a, b)
+		t.Errorf("expected %v (type %v), received %v (type %v)", a, reflect.TypeOf(a), b, reflect.TypeOf(b))
 	}
 }
 
