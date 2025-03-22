@@ -19,7 +19,7 @@ import (
 func TestUserServiceHandleRegister(t *testing.T) {
 	utils.Init()
 	handler, database := initTestHandler()
-	defer database.Migrator().DropTable(&types.User{})
+	defer destroyDatabase(database)
 
 	t.Run("Should fail if request body is empty", func(t *testing.T) {
 		req, err := http.NewRequest(http.MethodPost, "/register", nil)
@@ -120,7 +120,7 @@ func TestUserServiceHandleRegister(t *testing.T) {
 func TestUserServiceHandleLogin(t *testing.T) {
 	utils.Init()
 	handler, database := initTestHandler()
-	defer database.Migrator().DropTable(&types.User{})
+	defer destroyDatabase(database)
 
 	t.Run("Should fail if request body is empty", func(t *testing.T) {
 		req, err := http.NewRequest(http.MethodPost, "/login", nil)
@@ -244,7 +244,7 @@ func TestUserServiceHandleLogin(t *testing.T) {
 func TestUserServiceHandleValidate(t *testing.T) {
 	utils.Init()
 	handler, database := initTestHandler()
-	defer database.Migrator().DropTable(&types.User{})
+	defer destroyDatabase(database)
 
 	t.Run("should fail when no id cookie is present", func(t *testing.T) {
 		req, err := http.NewRequest(http.MethodGet, "/validate", nil)
@@ -331,7 +331,13 @@ func initTestDatabase(dbName string) *gorm.DB {
 		log.Fatal(err)
 	}
 
-	mockDatabase.AutoMigrate(&types.User{})
+	mockDatabase.AutoMigrate(
+		&types.User{},
+		&types.Artist{},
+		&types.Tour{},
+		&types.Venue{},
+		&types.Concert{},
+	)
 
 	return mockDatabase
 }
@@ -354,6 +360,16 @@ func initTestHandler() (*Handler, *gorm.DB) {
 	database.Create(&user)
 
 	return handler, database
+}
+
+func destroyDatabase(database *gorm.DB) {
+	database.Migrator().DropTable(
+		&types.User{},
+		&types.Artist{},
+		&types.Tour{},
+		&types.Venue{},
+		&types.Concert{},
+	)
 }
 
 type MockUserStore struct {
