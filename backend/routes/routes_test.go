@@ -517,19 +517,3 @@ func assertEqual(t *testing.T, a interface{}, b interface{}) {
 		t.Errorf("expected %v (type %v), received %v (type %v)", a, reflect.TypeOf(a), b, reflect.TypeOf(b))
 	}
 }
-
-type MockUserStore struct {
-	db *gorm.DB
-}
-
-func (m *MockUserStore) GetUserByEmail(email string) (*types.User, error) {
-	return nil, nil
-}
-
-func (m *MockUserStore) GetUserByID(id uint) (*types.User, error) {
-	return nil, nil
-}
-
-func (m *MockUserStore) CreateUser(types.User) error {
-	return nil
-}
