@@ -356,8 +356,13 @@ func initTestHandler() (*Handler, *gorm.DB) {
 		Email:    "test@example.com",
 		Password: hashedPassword,
 	}
+	artist := types.Artist{
+		MBID: "mbid1",
+		Name: "Artist1",
+	}
 
 	database.Create(&user)
+	database.Create(&artist)
 
 	return handler, database
 }
@@ -370,6 +375,12 @@ func destroyDatabase(database *gorm.DB) {
 		&types.Venue{},
 		&types.Concert{},
 	)
+}
+
+func assertEqual(t *testing.T, a interface{}, b interface{}) {
+	if a != b {
+		t.Errorf("expected %v, received %v", a, b)
+	}
 }
 
 type MockUserStore struct {
