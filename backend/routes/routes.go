@@ -3,6 +3,7 @@ package routes
 import (
 	"errors"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 
@@ -16,6 +17,8 @@ import (
 	"github.com/joho/godotenv"
 	httpSwagger "github.com/swaggo/http-swagger"
 )
+
+const baseURL = "https://api.setlist.fm/rest/1.0"
 
 type Handler struct {
 	Store types.Store
@@ -220,7 +223,9 @@ func (h *Handler) handleArtist(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// If not, check if artist exists on setlist.fm
-	artist = setlist.ArtistSearch(searchString)
+	url := fmt.Sprintf("%s/%s", baseURL, "search/artists")
+	log.Println(url)
+	artist = setlist.ArtistSearch(url, searchString)
 
 	// If not, return not found error
 	if artist == nil {

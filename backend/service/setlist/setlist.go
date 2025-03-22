@@ -11,7 +11,7 @@ import (
 	"github.com/joho/godotenv"
 )
 
-type ArtistResponse struct {
+type SetlistArtist struct {
 	Type         string `json:"type"`
 	ItemsPerPage int    `json:"itemsPerPage"`
 	Page         int    `json:"page"`
@@ -25,7 +25,7 @@ type ArtistResponse struct {
 	} `json:"artist"`
 }
 
-func ArtistSearch(artist string) *types.Artist {
+func ArtistSearch(url string, artist string) *types.Artist {
 	err := godotenv.Load("./.env")
 	if err != nil {
 		log.Print(err)
@@ -33,8 +33,6 @@ func ArtistSearch(artist string) *types.Artist {
 	}
 
 	xAPIKey := []byte(os.Getenv("SETLIST_API_KEY"))
-
-	url := "https://api.setlist.fm/rest/1.0/search/artists"
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
@@ -70,7 +68,7 @@ func ArtistSearch(artist string) *types.Artist {
 		return nil
 	}
 
-	var jsonData ArtistResponse
+	var jsonData SetlistArtist
 	err = json.Unmarshal(body, &jsonData)
 	if err != nil {
 		log.Print(err)
