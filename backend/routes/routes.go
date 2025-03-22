@@ -3,7 +3,6 @@ package routes
 import (
 	"errors"
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 
@@ -33,7 +32,7 @@ func (h *Handler) RegisterRoutes(router *mux.Router) {
 	router.HandleFunc("/login", h.handleLogin).Methods("POST", "OPTIONS")
 	router.HandleFunc("/register", h.handleRegister).Methods("POST", "OPTIONS")
 	router.HandleFunc("/validate", h.handleValidate).Methods("GET", "OPTIONS")
-	router.HandleFunc("/artist", h.handleArtist).Methods("GET", "OPTIONS")
+	router.HandleFunc("/artist", h.handleArtist(baseURL)).Methods("GET", "OPTIONS")
 
 	// Serve Swagger UI
 	router.PathPrefix("/swagger/").Handler(httpSwagger.WrapHandler)
@@ -199,45 +198,46 @@ func (h *Handler) handleValidate(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {string} string "TODO"
 // @Failure 400 {string} string "TODO"
 // @Router /artist [post]
-func (h *Handler) handleArtist(w http.ResponseWriter, r *http.Request) {
-	utils.SetCORSHeaders(w)
-	if r.Method == "OPTIONS" {
-		w.WriteHeader(http.StatusOK)
-		return
-	}
+func (h *Handler) handleArtist(inputURL string) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		utils.SetCORSHeaders(w)
+		if r.Method == "OPTIONS" {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
 
-	// Get artist search from request
-	searchString := r.URL.Query().Get("name")
-	if searchString == "" {
-		utils.WriteError(w, http.StatusBadRequest, errors.New("artist name not provided"))
-		return
-	}
+		// Get artist search from request
+		searchString := r.URL.Query().Get("name")
+		if searchString == "" {
+			utils.WriteError(w, http.StatusBadRequest, errors.New("artist name not provided"))
+			return
+		}
 
-	// Check if artist exists in db
-	artist, err := h.Store.GetArtistByName(searchString)
+		// Check if artist exists in db
+		artist, err := h.Store.GetArtistByName(searchString)
 
-	// If so, return info from there
-	if err == nil {
+		// If so, return info from there
+		if err == nil {
+			utils.WriteJSON(w, http.StatusOK, *artist)
+			return
+		}
+
+		// If not, check if artist exists on setlist.fm
+		url := fmt.Sprintf("%s/%s", inputURL, "search/artists")
+		artist = setlist.ArtistSearch(url, searchString)
+
+		// If not, return not found error
+		if artist == nil {
+			utils.WriteError(w, http.StatusBadRequest, errors.New("artist not found"))
+			return
+		}
+
+		// If so, create info in database and return info
+		err = h.Store.CreateArtist(*artist)
+		if err != nil {
+			utils.WriteError(w, http.StatusInternalServerError, err)
+			return
+		}
 		utils.WriteJSON(w, http.StatusOK, *artist)
-		return
 	}
-
-	// If not, check if artist exists on setlist.fm
-	url := fmt.Sprintf("%s/%s", baseURL, "search/artists")
-	log.Println(url)
-	artist = setlist.ArtistSearch(url, searchString)
-
-	// If not, return not found error
-	if artist == nil {
-		utils.WriteError(w, http.StatusBadRequest, errors.New("artist not found"))
-		return
-	}
-
-	// If so, create info in database and return info
-	err = h.Store.CreateArtist(*artist)
-	if err != nil {
-		utils.WriteError(w, http.StatusInternalServerError, err)
-		return
-	}
-	utils.WriteJSON(w, http.StatusOK, *artist)
 }
