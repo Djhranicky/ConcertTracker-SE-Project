@@ -2,8 +2,8 @@ package setlist
 
 import (
 	"encoding/json"
+	"errors"
 	"io"
-	"log"
 	"net/http"
 	"os"
 
@@ -25,19 +25,17 @@ type SetlistArtist struct {
 	} `json:"artist"`
 }
 
-func ArtistSearch(url string, artist string) *types.Artist {
+func ArtistSearch(url string, artist string) (*types.Artist, error) {
 	err := godotenv.Load("./.env")
 	if err != nil {
-		log.Print(err)
-		return nil
+		return nil, err
 	}
 
 	xAPIKey := []byte(os.Getenv("SETLIST_API_KEY"))
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		log.Print(err)
-		return nil
+		return nil, err
 	}
 
 	req.Header.Add("Accept", "application/json")
@@ -52,32 +50,28 @@ func ArtistSearch(url string, artist string) *types.Artist {
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		log.Print(err)
-		return nil
+		return nil, err
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		log.Print("No results found")
-		return nil
+		return nil, errors.New("no results found")
 	}
 
 	defer resp.Body.Close()
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		log.Print(err)
-		return nil
+		return nil, err
 	}
 
 	var jsonData SetlistArtist
 	err = json.Unmarshal(body, &jsonData)
 	if err != nil {
-		log.Print(err)
-		return nil
+		return nil, err
 	}
 
 	returnArtist := types.Artist{
 		MBID: jsonData.Artist[0].Mbid,
 		Name: jsonData.Artist[0].Name,
 	}
-	return &returnArtist
+	return &returnArtist, nil
 }

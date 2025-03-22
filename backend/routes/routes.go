@@ -224,11 +224,10 @@ func (h *Handler) handleArtist(inputURL string) http.HandlerFunc {
 
 		// If not, check if artist exists on setlist.fm
 		url := fmt.Sprintf("%s/%s", inputURL, "search/artists")
-		artist = setlist.ArtistSearch(url, searchString)
+		artist, err = setlist.ArtistSearch(url, searchString)
 
-		// If not, return not found error
-		if artist == nil {
-			utils.WriteError(w, http.StatusBadRequest, errors.New("artist not found"))
+		if err != nil {
+			utils.WriteError(w, http.StatusBadRequest, err)
 			return
 		}
 
