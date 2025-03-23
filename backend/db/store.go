@@ -74,3 +74,32 @@ func (s *Store) CreateArtist(artist types.Artist) error {
 
 	return nil
 }
+
+func (s *Store) CreateVenue(venue types.Venue) error {
+	result := s.db.Create(&venue)
+
+	if result.Error != nil {
+		return result.Error
+	}
+
+	return nil
+}
+
+func (s *Store) CreateVenueIfMissing(venue types.Venue) {
+	var Exists bool
+	s.db.Raw("SELECT EXISTS(SELECT 1 FROM venues WHERE name = ?)", venue.Name).Scan(&Exists)
+
+	if !Exists {
+		s.db.Create(&venue)
+	}
+}
+
+func (s *Store) GetVenueByName(name string) (*types.Venue, error) {
+	var venue types.Venue
+	err := s.db.First(&venue, "lower(name) = lower(?)", name).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, err
+	}
+
+	return &venue, nil
+}
