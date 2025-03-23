@@ -31,6 +31,9 @@ type Store interface {
 	GetArtistByMBID(artist string) (*Artist, error)
 	GetArtistByName(name string) (*Artist, error)
 	CreateArtist(Artist) error
+	CreateVenue(Venue) error
+	CreateVenueIfMissing(Venue)
+	GetVenueByName(string) (*Venue, error)
 }
 
 type Artist struct {
