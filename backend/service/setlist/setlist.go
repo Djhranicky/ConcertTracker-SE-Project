@@ -11,20 +11,6 @@ import (
 	"github.com/joho/godotenv"
 )
 
-type SetlistArtist struct {
-	Type         string `json:"type"`
-	ItemsPerPage int    `json:"itemsPerPage"`
-	Page         int    `json:"page"`
-	Total        int    `json:"total"`
-	Artist       []struct {
-		Mbid           string `json:"mbid"`
-		Name           string `json:"name"`
-		SortName       string `json:"sortName"`
-		Disambiguation string `json:"disambiguation"`
-		URL            string `json:"url"`
-	} `json:"artist"`
-}
-
 func ArtistSearch(url string, artist string) (*types.Artist, error) {
 	err := godotenv.Load("./.env")
 	if err != nil {
