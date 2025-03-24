@@ -3,6 +3,7 @@ package setlist
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"net/http"
 	"os"
@@ -70,7 +71,13 @@ func ProcessArtistInfo(store types.Store) {
 
 	xAPIKey := []byte(os.Getenv("SETLIST_API_KEY"))
 
-	req, err := http.NewRequest("GET", "https://api.setlist.fm/rest/1.0/artist/f4abc0b5-3f7a-4eff-8f78-ac078dbce533/setlists", nil)
+	artistMBID := "f4abc0b5-3f7a-4eff-8f78-ac078dbce533"
+	artist, err := store.GetArtistByMBID(artistMBID)
+	if err != nil {
+		return
+	}
+
+	req, err := http.NewRequest("GET", fmt.Sprintf("https://api.setlist.fm/rest/1.0/artist/%v/setlists", artistMBID), nil)
 	if err != nil {
 		return
 	}
@@ -107,5 +114,11 @@ func ProcessArtistInfo(store types.Store) {
 			City:    current.Venue.City.Name,
 			Country: current.Venue.City.Country.Name,
 		})
+		if current.Tour.Name != "" {
+			store.CreateTourIfMissing(types.Tour{
+				Name:   current.Tour.Name,
+				Artist: *artist,
+			})
+		}
 	}
 }
