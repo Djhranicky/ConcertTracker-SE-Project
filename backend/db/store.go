@@ -103,3 +103,32 @@ func (s *Store) GetVenueByName(name string) (*types.Venue, error) {
 
 	return &venue, nil
 }
+
+func (s *Store) CreateTour(tour types.Tour) error {
+	result := s.db.Create(&tour)
+
+	if result.Error != nil {
+		return result.Error
+	}
+
+	return nil
+}
+
+func (s *Store) CreateTourIfMissing(tour types.Tour) {
+	var Exists bool
+	s.db.Raw("SELECT EXISTS(SELECT 1 FROM tours WHERE name = ?)", tour.Name).Scan(&Exists)
+
+	if !Exists {
+		s.db.Create(&tour)
+	}
+}
+
+func (s *Store) GetTourByName(name string) (*types.Tour, error) {
+	var tour types.Tour
+	err := s.db.First(&tour, "lower(name) = lower(?)", name).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, err
+	}
+
+	return &tour, nil
+}
