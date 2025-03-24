@@ -1,0 +1,84 @@
+<app-navbar></app-navbar>
+<body>
+  <!-- <p>Dashboard</p> -->
+  <div class="dashboard">
+    <div class="column-posts">
+      <app-post *ngFor="let post of posts" [post]="post"></app-post>
+    </div>
+    <div class="column">
+      <p-button
+        class="log-button"
+        label="Log Concert"
+        icon="pi pi-plus-circle"
+      />
+      <p-card>
+        <ng-template #title style="color: #f21414 !important"
+          ><a href="/user/following">Following</a>
+        </ng-template>
+        <div class="following">
+          <div class="user-content">
+            <p-avatar
+              image="https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png"
+              class="mr-2"
+              size="large"
+              shape="circle"
+            />
+            <div class="user-details">
+              <p class="user-name">First Last</p>
+              <p class="user-user">&#64;username</p>
+            </div>
+          </div>
+          <span class="pi pi-check-circle"></span>
+        </div>
+        <div class="following">
+          <div class="user-content">
+            <p-avatar
+              image="https://primefaces.org/cdn/primeng/images/demo/avatar/asiyajavayant.png"
+              class="mr-2"
+              size="large"
+              shape="circle"
+            />
+
+            <div class="user-details">
+              <p class="user-name">First Last</p>
+              <p class="user-user">&#64;username</p>
+            </div>
+          </div>
+          <span class="pi pi-check-circle"></span>
+        </div>
+        <div class="following">
+          <div class="user-content">
+            <p-avatar
+              image="https://primefaces.org/cdn/primeng/images/demo/avatar/onyamalimba.png"
+              class="mr-2"
+              size="large"
+              shape="circle"
+            />
+
+            <div class="user-details">
+              <p class="user-name">First Last</p>
+              <p class="user-user">&#64;username</p>
+            </div>
+          </div>
+          <span class="pi pi-check-circle"></span>
+        </div>
+        <div class="following">
+          <div class="user-content">
+            <p-avatar
+              image="https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png"
+              class="mr-2"
+              size="large"
+              shape="circle"
+            />
+            <div class="user-details">
+              <p class="user-name">First Last</p>
+              <p class="user-user">&#64;username</p>
+            </div>
+          </div>
+          <span class="pi pi-check-circle"></span>
+        </div>
+        <ng-template #footer> See more... </ng-template></p-card
+      >
+    </div>
+  </div>
+</body>

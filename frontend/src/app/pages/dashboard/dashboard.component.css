@@ -1,0 +1,86 @@
+* {
+  font-family: "Poppins";
+  height: 100%;
+}
+
+:host ::ng-deep .p-card {
+  background-color: white;
+  width: 15vw;
+  display: flex;
+  /* gap: 25px; */
+}
+
+:host ::ng-deep .p-card-footer {
+  color: #f21414;
+  font-size: small;
+}
+
+:host ::ng-deep .log-button .p-button {
+  background-color: #01bcd2;
+  width: 15vw;
+  border: none;
+  padding: 15px;
+}
+:host ::ng-deep .log-button .p-button:hover {
+  background-color: #128b98;
+}
+
+body {
+  width: 100vw;
+  background-color: #f3f0e6;
+  display: flex;
+  justify-content: center;
+}
+
+a {
+  color: #f21414;
+  text-decoration: none;
+}
+.following {
+  background-color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 15px;
+}
+.user-name {
+  background-color: white;
+  font-weight: 600;
+}
+.user-user {
+  background-color: white;
+  font-size: small;
+}
+
+.user-content {
+  display: flex;
+}
+.dashboard {
+  display: flex;
+  gap: 30px;
+}
+.column-posts {
+  width: 70vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding-top: 1rem;
+}
+
+.column {
+  width: 15vw;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+  padding-top: 1rem;
+  gap: 30px;
+}
+
+.pi {
+  font-family: "primeicons" !important;
+  background-color: white;
+  color: #01bcd2;
+  font-size: 1.4rem;
+}
