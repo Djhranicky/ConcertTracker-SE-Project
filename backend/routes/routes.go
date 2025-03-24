@@ -1,12 +1,14 @@
 package routes
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"os"
 
 	_ "github.com/djhranicky/ConcertTracker-SE-Project/docs"
 	"github.com/djhranicky/ConcertTracker-SE-Project/service/auth"
+	"github.com/djhranicky/ConcertTracker-SE-Project/service/setlist"
 	"github.com/djhranicky/ConcertTracker-SE-Project/types"
 	"github.com/djhranicky/ConcertTracker-SE-Project/utils"
 	"github.com/go-playground/validator/v10"
@@ -15,12 +17,14 @@ import (
 	httpSwagger "github.com/swaggo/http-swagger"
 )
 
+const baseURL = "https://api.setlist.fm/rest/1.0"
+
 type Handler struct {
-	UserStore types.UserStore
+	Store types.Store
 }
 
-func NewHandler(store types.UserStore) *Handler {
-	return &Handler{UserStore: store}
+func NewHandler(store types.Store) *Handler {
+	return &Handler{Store: store}
 }
 
 func (h *Handler) RegisterRoutes(router *mux.Router) {
@@ -28,6 +32,7 @@ func (h *Handler) RegisterRoutes(router *mux.Router) {
 	router.HandleFunc("/login", h.handleLogin).Methods("POST", "OPTIONS")
 	router.HandleFunc("/register", h.handleRegister).Methods("POST", "OPTIONS")
 	router.HandleFunc("/validate", h.handleValidate).Methods("GET", "OPTIONS")
+	router.HandleFunc("/artist", h.handleArtist(baseURL)).Methods("GET", "OPTIONS")
 
 	// Serve Swagger UI
 	router.PathPrefix("/swagger/").Handler(httpSwagger.WrapHandler)
@@ -75,7 +80,7 @@ func (h *Handler) handleLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	u, err := h.UserStore.GetUserByEmail(user.Email)
+	u, err := h.Store.GetUserByEmail(user.Email)
 	if err != nil {
 		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("invalid email or password"))
 		return
@@ -135,7 +140,7 @@ func (h *Handler) handleRegister(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// check if the user already exists
-	_, err := h.UserStore.GetUserByEmail(payload.Email)
+	_, err := h.Store.GetUserByEmail(payload.Email)
 	if err == nil {
 		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("user with email %s already exists", payload.Email))
 		return
@@ -147,7 +152,7 @@ func (h *Handler) handleRegister(w http.ResponseWriter, r *http.Request) {
 		utils.WriteError(w, http.StatusInternalServerError, err)
 		return
 	}
-	err = h.UserStore.CreateUser(types.User{
+	err = h.Store.CreateUser(types.User{
 		Name:     payload.Name,
 		Email:    payload.Email,
 		Password: hashedPassword,
@@ -184,4 +189,54 @@ func (h *Handler) handleValidate(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte(`{"message":"user session validated"}`))
+}
+
+// @Summary Serve information for a given artist
+// @Description Gets information for requested artist. If information does not exist in database, it is retrieved from setlist.fm API and entered into database
+// @Params artist
+// @Produce json
+// @Success 200 {string} string "TODO"
+// @Failure 400 {string} string "TODO"
+// @Router /artist [post]
+func (h *Handler) handleArtist(inputURL string) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		utils.SetCORSHeaders(w)
+		if r.Method == "OPTIONS" {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+
+		// Get artist search from request
+		searchString := r.URL.Query().Get("name")
+		if searchString == "" {
+			utils.WriteError(w, http.StatusBadRequest, errors.New("artist name not provided"))
+			return
+		}
+
+		// Check if artist exists in db
+		artist, err := h.Store.GetArtistByName(searchString)
+
+		// If so, return info from there
+		if err == nil {
+			utils.WriteJSON(w, http.StatusOK, *artist)
+			return
+		}
+
+		// If not, check if artist exists on setlist.fm
+		url := fmt.Sprintf("%s/%s", inputURL, "search/artists")
+		artist, err = setlist.ArtistSearch(url, searchString)
+
+		if err != nil {
+			utils.WriteError(w, http.StatusBadRequest, err)
+			return
+		}
+
+		// If so, create info in database and return info
+		err = h.Store.CreateArtist(*artist)
+		if err != nil {
+			utils.WriteError(w, http.StatusInternalServerError, err)
+			return
+		}
+		utils.WriteJSON(w, http.StatusOK, *artist)
+	}
 }
