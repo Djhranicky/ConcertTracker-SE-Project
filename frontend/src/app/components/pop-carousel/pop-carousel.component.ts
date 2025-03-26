@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { PopToursService, Tour } from '../../services/pop-tours.service';
+import { PopToursService } from '../../services/pop-tours.service';
+import { Tour } from '../../services/concert.service';
 import { CarouselModule } from 'primeng/carousel';
 import { ButtonModule } from 'primeng/button';
 import { TagModule } from 'primeng/tag';
