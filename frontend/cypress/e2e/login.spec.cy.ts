@@ -40,7 +40,7 @@ describe('Login Page', () => {
     cy.get('button[type="submit"]').click();
     cy.wait('@loginRequest');
 
-    cy.url().should('include', '/dashboard');
+    cy.url().should('include', '/');
   });
 
   //should show error if login failed

@@ -7,12 +7,13 @@ import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { UserProfileComponent } from './pages/user-profile/user-profile.component';
 import { AuthGuard } from './utils/authentication.guard';
 import { GuestGuard } from './utils/guest.guard';
-
+import { HomeComponent } from './pages/home/home.component';
+import { ConcertComponent } from './pages/concert/concert.component';
 export const appRoutes: Routes = [
-  { path: '', component: LandingComponent },
+  { path: '', component: HomeComponent },
   { path: 'login', component: LoginComponent, canActivate: [GuestGuard] },
   { path: 'register', component: SignupComponent, canActivate: [GuestGuard] },
-  { path: 'dashboard', component: DashboardComponent },
+  { path: 'concerts', component: ConcertComponent },
   {
     path: 'user-profile',
     component: UserProfileComponent,

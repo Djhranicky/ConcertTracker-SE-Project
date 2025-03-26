@@ -52,8 +52,8 @@ export class LoginComponent implements OnInit {
         .login(this.loginForm.value.email, this.loginForm.value.password)
         .subscribe({
           next: (response) => {
-            alert('Login successful!');
-            this.router.navigate(['/dashboard']);
+            // alert('Login successful!');
+            this.router.navigate(['/']);
           },
           error: (error) => {
             alert('Login failed: ' + error.message);

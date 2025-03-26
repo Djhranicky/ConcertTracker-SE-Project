@@ -31,9 +31,10 @@ describe('PostService', () => {
         img: 'https://res.cloudinary.com/hits-photos-archive/image/upload/v1736890770/legacy-migration/legacy-hitsdd_photo_gal__photo_1891402125.png',
         reviewText: null,
         attachedImg: null,
+        setlist: null,
         rating: 4,
-        likes: 3,
-        comments: 10,
+        likes: 10,
+        comments: 3,
       },
       {
         type: 'wishlist',
@@ -48,11 +49,12 @@ describe('PostService', () => {
         reviewText: null,
         attachedImg: null,
         rating: 4,
+        setlist: null,
         likes: 2,
         comments: 0,
       },
       {
-        type: 'Review',
+        type: 'review',
         username: 'Jane Doe',
         avatar: 'imgurl',
         postDate: 'Feb 20, 2025',
@@ -64,6 +66,7 @@ describe('PostService', () => {
         reviewText:
           'Lorem ipsum odor amet, consectetuer adipiscing elit. Potenti mus fermentum sed dapibus egestas; aptent faucibus quisque? Fames fringilla consectetur tortor leo potenti at porttitor aenean. Vehicula sociosqu nam in litora malesuada. Lacinia quisque gravida imperdiet magnis magna lacinia senectus. Vestibulum morbi netus nullam; parturient nostra tellus posuere non.',
         attachedImg: null,
+        setlist: null,
         rating: 5,
         likes: 2,
         comments: 0,
@@ -93,6 +96,7 @@ describe('PostService', () => {
         expect(post.rating).toBeDefined();
         expect(post.likes).toBeDefined();
         expect(post.comments).toBeDefined();
+        expect(post.setlist).toBeDefined();
       });
     });
   });

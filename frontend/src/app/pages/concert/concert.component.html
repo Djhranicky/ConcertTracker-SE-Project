@@ -1,0 +1,198 @@
+<app-navbar></app-navbar>
+<body>
+  <p-card class="header">
+    <div class="content">
+      <div class="details">
+        <img class="header-img" src="{{ concert.img }}" />
+        <div class="date-frame">
+          {{ month }}
+          <div class="day-box">
+            {{ day }}
+          </div>
+          {{ year }}
+        </div>
+        <div>
+          <div class="header-artist">{{ concert.artist }}</div>
+          <div class="header-tour">{{ concert.tour }}</div>
+          <div class="header-venue">{{ concert.venue }}</div>
+        </div>
+      </div>
+      <div class="stats">
+        <!-- <div class="log-button-wrapper"> -->
+        <p-button label="Mark as Attended" icon="pi pi-plus-circle"></p-button>
+        <!-- </div> -->
+        <div class="rating">4.2/5</div>
+      </div>
+    </div>
+  </p-card>
+  <div class="grid">
+    <div class="left">
+      <p-card class="setlist">
+        <ng-template #title> Setlist </ng-template>
+        <ol>
+          <li *ngFor="let song of setlist">
+            <span *ngIf="song.tape">
+              {{ song.info }}
+            </span>
+            {{ song.name }}
+          </li>
+        </ol>
+      </p-card>
+      <p-card class="recent">
+        <ng-template #title> Recent Activity </ng-template>
+        <p-timeline [value]="posts" class="w-full md:w-80">
+          <ng-template #content let-post>
+            <span *ngIf="post.type === 'review' && post.reviewText === null">
+              <a href="/user-profile">{{ post.username }}</a> rated
+              <a href="/artists">{{ post.artist }}</a
+              >'s {{ post.tour }} {{ post.rating }} stars out of 5
+            </span>
+            <span *ngIf="post.type === 'review' && post.reviewText !== null">
+              <a href="/user-profile">{{ post.username }}</a> rated and reviewed
+              <a href="/artists">{{ post.artist }}</a
+              >'s
+              {{ post.tour }}
+              {{ post.rating }} stars out of 5
+            </span>
+            <span *ngIf="post.type === 'wishlist'">
+              <a href="/user-profile">{{ post.username }}</a> wants to attend
+              <a href="/artists">{{ post.artist }}</a
+              >'s
+              {{ post.tour }}
+            </span>
+          </ng-template>
+        </p-timeline>
+      </p-card>
+    </div>
+    <div class="right">
+      <p-card class="spotify">
+        <ng-template #title> Spotify Playlist </ng-template>
+        <iframe
+          style="border-radius: 12px"
+          src="https://open.spotify.com/embed/playlist/3Otg0hc0Mv8EGHF3ZuC2d4?utm_source=generator&theme=0"
+          width="100%"
+          height="352"
+          frameBorder="0"
+          allowfullscreen=""
+          allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+          loading="lazy"
+        ></iframe>
+      </p-card>
+      <p-card class="attended">
+        <ng-template #title> Attended by </ng-template>
+        <p-avatar
+          image="https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png"
+          size="normal"
+          class="av-attended"
+          shape="circle"
+        />
+        <p-avatar
+          image="https://primefaces.org/cdn/primeng/images/demo/avatar/asiyajavayant.png"
+          size="normal"
+          shape="circle"
+          class="av-attended"
+        />
+        <p-avatar
+          image="https://primefaces.org/cdn/primeng/images/demo/avatar/onyamalimba.png"
+          size="normal"
+          shape="circle"
+          class="av-attended"
+        />
+        <p-avatar
+          image="https://primefaces.org/cdn/primeng/images/demo/avatar/ionibowcher.png"
+          size="normal"
+          shape="circle"
+          class="av-attended"
+        />
+        <p-avatar
+          image="https://primefaces.org/cdn/primeng/images/demo/avatar/xuxuefeng.png"
+          size="normal"
+          shape="circle"
+          class="av-attended"
+        />
+        <p-avatar
+          image="https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png"
+          size="normal"
+          shape="circle"
+          class="av-attended"
+        />
+        <p-avatar
+          image="https://primefaces.org/cdn/primeng/images/demo/avatar/asiyajavayant.png"
+          size="normal"
+          shape="circle"
+          class="av-attended"
+        />
+        <p-avatar
+          image="https://primefaces.org/cdn/primeng/images/demo/avatar/onyamalimba.png"
+          size="normal"
+          shape="circle"
+          class="av-attended"
+        />
+        <p-avatar
+          image="https://primefaces.org/cdn/primeng/images/demo/avatar/ionibowcher.png"
+          size="normal"
+          shape="circle"
+          class="av-attended"
+        />
+        <p-avatar
+          image="https://primefaces.org/cdn/primeng/images/demo/avatar/xuxuefeng.png"
+          size="normal"
+          shape="circle"
+          class="av-attended"
+        />
+        <p-avatar
+          image="https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png"
+          size="normal"
+          shape="circle"
+          class="av-attended"
+        />
+        <p-avatar
+          image="https://primefaces.org/cdn/primeng/images/demo/avatar/asiyajavayant.png"
+          size="normal"
+          shape="circle"
+          class="av-attended"
+        />
+        <ng-template #footer> <a href="/">See more...</a> </ng-template>
+      </p-card>
+      <p-card class="other">
+        <ng-template #title> Other Shows </ng-template>
+        <p class="p-other">2025 Shows</p>
+        <p-avatar-group>
+          <p-avatar image="{{ concert.img }}" class="av-others" size="xlarge" />
+          <p-avatar image="{{ concert.img }}" class="av-others" size="xlarge" />
+          <p-avatar image="{{ concert.img }}" class="av-others" size="xlarge" />
+          <p-avatar image="{{ concert.img }}" class="av-others" size="xlarge" />
+          <p-avatar label="+2" size="xlarge" class="av-others" />
+        </p-avatar-group>
+        <br />
+        <p class="p-other">Festivals</p>
+        <p-avatar-group>
+          <p-avatar
+            image="https://www.party-accessory.eu/wp-content/uploads/lollapalooza-argentina-2025.jpg"
+            class="av-others"
+            size="xlarge"
+          />
+          <p-avatar
+            image="https://www.party-accessory.eu/wp-content/uploads/lollapalooza-argentina-2025.jpg"
+            class="av-others"
+            size="xlarge"
+          />
+          <p-avatar
+            image="https://www.party-accessory.eu/wp-content/uploads/lollapalooza-argentina-2025.jpg"
+            class="av-others"
+            size="xlarge"
+          />
+          <p-avatar
+            image="https://www.party-accessory.eu/wp-content/uploads/lollapalooza-argentina-2025.jpg"
+            class="av-others"
+            size="xlarge"
+          />
+
+          <p-avatar label="+2" size="xlarge" class="av-others" />
+        </p-avatar-group>
+        <br />
+        <ng-template #footer> <a href="/">See more lists...</a> </ng-template>
+      </p-card>
+    </div>
+  </div>
+</body>
