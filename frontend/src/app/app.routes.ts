@@ -8,12 +8,12 @@ import { UserProfileComponent } from './pages/user-profile/user-profile.componen
 import { AuthGuard } from './utils/authentication.guard';
 import { GuestGuard } from './utils/guest.guard';
 import { HomeComponent } from './pages/home/home.component';
-
+import { ConcertComponent } from './pages/concert/concert.component';
 export const appRoutes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'login', component: LoginComponent, canActivate: [GuestGuard] },
   { path: 'register', component: SignupComponent, canActivate: [GuestGuard] },
-
+  { path: 'concerts', component: ConcertComponent },
   {
     path: 'user-profile',
     component: UserProfileComponent,

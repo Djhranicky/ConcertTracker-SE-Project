@@ -1,0 +1,214 @@
+* {
+  font-family: "Poppins";
+  height: 100%;
+}
+
+body {
+  width: 100vw;
+  background-color: #f3f0e6;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+:host ::ng-deep .p-card {
+  background-color: #ffffff;
+  color: #313131;
+  height: 100%;
+}
+
+:host ::ng-deep .header .p-card {
+  width: 75vw;
+  margin-bottom: 1rem;
+  overflow: hidden;
+  padding: 1.2rem 3vw;
+  font-size: 16px;
+}
+
+.content {
+  align-self: stretch;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0px;
+}
+:host ::ng-deep .p-button {
+  border-radius: 1rem;
+  background-color: #01bcd2;
+  padding: 1rem;
+  border: none;
+}
+:host ::ng-deep .p-button:hover {
+  background-color: #128b98;
+  border: none;
+}
+.header-img {
+  border-radius: 200px;
+  width: 150px;
+}
+.date-frame {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  position: relative;
+}
+.day-box {
+  width: 86px;
+  border-radius: 12px;
+  background-color: #f3f0e6;
+  height: 75px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 16px;
+  box-sizing: border-box;
+  font-size: 48px;
+  font-family: "Gord Qucik";
+  font-weight: 900;
+}
+
+.details {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 20px;
+}
+
+.header-artist {
+  align-self: stretch;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  position: relative;
+  font-weight: 600;
+  font-size: 36px;
+  color: #f21414;
+  line-height: 36px;
+}
+
+.header-tour {
+  align-self: stretch;
+  position: relative;
+  font-size: 20px;
+  color: #313131;
+  margin: 0;
+}
+
+.header-venue {
+  margin: 0;
+  font-size: 16px;
+  color: #313131;
+  font-family: Poppins;
+  font-weight: 300;
+}
+
+.stats {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  font-size: 24px;
+  color: #fff;
+}
+
+.rating {
+  position: relative;
+  font-size: 40px;
+  font-weight: 600;
+  color: #313131;
+}
+
+.grid {
+  height: fit-content;
+  min-height: 61vh;
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 0px 10px;
+  grid-template-areas:
+    "left right"
+    "left right";
+  width: 75vw;
+}
+
+.left {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 2.5fr 1fr;
+  gap: 10px 0px;
+  grid-template-areas:
+    "setlist setlist setlist"
+    "recent recent recent";
+  grid-area: left;
+}
+
+.setlist {
+  grid-area: setlist;
+  margin: 0;
+  padding: 0;
+  justify-content: center;
+}
+
+li {
+  max-height: fit-content;
+}
+.recent {
+  grid-area: recent;
+}
+
+.right {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1.5fr 2fr;
+  gap: 10px 0px;
+  grid-template-areas:
+    "spotify spotify spotify"
+    "attended attended attended"
+    "other other other";
+  grid-area: right;
+}
+.spotify {
+  grid-area: spotify;
+}
+.attended {
+  grid-area: attended;
+  gap: 10px;
+  display: flex;
+  align-items: flex-start;
+  justify-items: flex-start;
+}
+
+:host ::ng-deep .p-card .attended {
+  flex-wrap: wrap;
+  display: flex;
+  align-items: center;
+  justify-items: center;
+}
+
+.av-attended {
+  height: 4rem;
+  width: 4rem;
+  height: auto;
+  margin: 7px;
+}
+
+.other {
+  grid-area: other;
+}
+
+:host ::ng-deep .p-card-footer {
+  color: #f21414;
+  text-decoration: none;
+  /* font-size: small; */
+}
+
+:host ::ng-deep .p-timeline-event-opposite {
+  flex: 0;
+}
