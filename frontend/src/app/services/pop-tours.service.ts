@@ -3,12 +3,6 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { of } from 'rxjs';
 
-export interface Tour {
-  artist: string;
-  tour: string;
-  img: string;
-}
-
 @Injectable({
   providedIn: 'root',
 })
