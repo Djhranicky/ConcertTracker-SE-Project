@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
 import { Card } from 'primeng/card';
 import { AvatarModule } from 'primeng/avatar';
+import { AvatarGroup } from 'primeng/avatargroup';
 import { ImageModule } from 'primeng/image';
 import { Button } from 'primeng/button';
 import { Timeline } from 'primeng/timeline';
@@ -18,6 +19,7 @@ import { Post, PostService } from '../../services/post.service';
     Button,
     CommonModule,
     AvatarModule,
+    AvatarGroup,
     Timeline,
   ],
   templateUrl: './concert.component.html',

@@ -199,6 +199,10 @@ li {
   margin: 7px;
 }
 
+.av-others {
+  width: 8rem;
+  height: 8rem;
+}
 .other {
   grid-area: other;
 }
@@ -211,4 +215,14 @@ li {
 
 :host ::ng-deep .p-timeline-event-opposite {
   flex: 0;
+}
+
+:host ::ng-deep .p-avatar-group {
+  height: fit-content;
+}
+
+.p-other {
+  height: fit-content;
+  font-weight: 600;
+  color: #f21414;
 }
