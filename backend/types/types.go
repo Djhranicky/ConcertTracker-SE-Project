@@ -68,16 +68,18 @@ type Venue struct {
 }
 
 type Concert struct {
-	ID        uint      `gorm:"primaryKey"`
-	ArtistID  uint      `gorm:"index"`
-	TourID    *uint     `gorm:"index"`
-	VenueID   uint      `gorm:"index"`
-	Date      time.Time `json:"date"`
-	Artist    Artist    `gorm:"foreignKey:ArtistID"`
-	Tour      *Tour     `gorm:"foreignKey:TourID"`
-	Venue     Venue     `gorm:"foreignKey:VenueID"`
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	ID                uint      `gorm:"primaryKey"`
+	ArtistID          uint      `gorm:"index"`
+	TourID            *uint     `gorm:"index"`
+	VenueID           uint      `gorm:"index"`
+	Date              time.Time `json:"date"`
+	Artist            Artist    `gorm:"foreignKey:ArtistID"`
+	Tour              *Tour     `gorm:"foreignKey:TourID"`
+	Venue             Venue     `gorm:"foreignKey:VenueID"`
+	ExternalID        string    `json:"externalID"`
+	ExternalVersionID string    `json:"externalVersionID"`
+	CreatedAt         time.Time
+	UpdatedAt         time.Time
 }
 
 type Song struct {
