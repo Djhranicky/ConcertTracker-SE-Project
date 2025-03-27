@@ -140,3 +140,16 @@ func (s *Store) GetTourByName(name string) (*types.Tour, error) {
 
 	return &tour, nil
 }
+
+func (s *Store) CreateConcertIfMissing(concert types.Concert) *types.Concert {
+	var Exists bool
+	var returnConcert types.Concert
+	s.db.Raw("SELECT EXISTS(SELECT 1 FROM concerts WHERE external_id = ?)", concert.ExternalID).Scan(&Exists)
+
+	if !Exists {
+		s.db.Create(&concert)
+	}
+
+	s.db.First(&returnConcert, "external_id = ?", concert.ExternalID)
+	return &returnConcert
+}
