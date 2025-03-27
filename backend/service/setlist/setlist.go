@@ -111,7 +111,7 @@ func ProcessArtistInfo(store types.Store) {
 	for i := 0; i < jsonData.ItemsPerPage; i++ {
 		current := jsonData.Setlist[i]
 		var tour *types.Tour
-		t, _ := time.Parse("02-01-2006", "17-03-2025")
+		t, _ := time.Parse("02-01-2006", current.EventDate)
 		venue := store.CreateVenueIfMissing(types.Venue{
 			Name:       current.Venue.Name,
 			City:       current.Venue.City.Name,
