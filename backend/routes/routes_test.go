@@ -472,6 +472,8 @@ func initTestDatabase(dbName string) *gorm.DB {
 		&types.Tour{},
 		&types.Venue{},
 		&types.Concert{},
+		&types.Song{},
+		&types.ConcertSong{},
 	)
 
 	return mockDatabase
