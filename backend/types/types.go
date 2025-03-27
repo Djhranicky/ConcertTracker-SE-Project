@@ -80,11 +80,27 @@ type Concert struct {
 }
 
 type Song struct {
-	ID     uint   `gorm:"primaryKey"`
-	Name   string `json:"name" gorm:"uniqueIndex:composite"`
-	Info   string `json:"info"`
-	Tape   bool   `json:"tape"`
-	Artist Artist `gorm:"foreignKey:ArtistID;uniqueIndex:composite"`
-	With   Artist `gorm:"foreignKey:ArtistID"`
-	Cover  Artist `gorm:"foreignKey:ArtistID"`
+	ID        uint   `gorm:"primaryKey"`
+	ArtistID  uint   `gorm:"uniqueIndex:compositeIndex;index"`
+	WithID    uint   `gorm:"index"`
+	CoverID   uint   `gorm:"index"`
+	Name      string `json:"name" gorm:"uniqueIndex:compositeIndex"`
+	Info      string `json:"info"`
+	Tape      bool   `json:"tape"`
+	Artist    Artist `gorm:"foreignKey:ArtistID"`
+	With      Artist `gorm:"foreignKey:WithID"`
+	Cover     Artist `gorm:"foreignKey:CoverID"`
+	CreatedAt time.Time
+	UpdatedAt time.Time
+}
+
+type ConcertSong struct {
+	ID        uint    `gorm:"primaryKey"`
+	ConcertID uint    `gorm:"index"`
+	SongID    uint    `gorm:"index"`
+	Concert   Concert `gorm:"foreignKey:ConcertID"`
+	Song      Song    `gorm:"foreignKey:SongID"`
+	Order     uint
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }
