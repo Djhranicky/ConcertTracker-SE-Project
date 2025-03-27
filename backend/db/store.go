@@ -170,7 +170,7 @@ func (s *Store) CreateConcertIfMissing(concert types.Concert) *types.Concert {
 func (s *Store) CreateSongIfMissing(song types.Song) *types.Song {
 	var Exists bool
 	var returnSong types.Song
-	s.db.Raw("SELECT EXISTS(SELECT 1 FROM songs WHERE lower(name) = lower(?) AND artist_id = ?)", song.Name, song.Artist.ID)
+	s.db.Raw("SELECT EXISTS(SELECT 1 FROM songs WHERE lower(name) = lower(?) AND artist_id = ?)", song.Name, song.Artist.ID).Scan(&Exists)
 
 	if !Exists {
 		s.db.Create(&song)
@@ -183,7 +183,7 @@ func (s *Store) CreateSongIfMissing(song types.Song) *types.Song {
 func (s *Store) CreateConcertSongIfMissing(concertSong types.ConcertSong) *types.ConcertSong {
 	var Exists bool
 	var returnConcertSong types.ConcertSong
-	s.db.Raw("SELECT EXISTS(SELECT 1 FROM concert_songs WHERE concert_id = ? AND song_id = ?)", concertSong.Concert.ID, concertSong.Song.ID)
+	s.db.Raw("SELECT EXISTS(SELECT 1 FROM concert_songs WHERE concert_id = ? AND song_id = ?)", concertSong.Concert.ID, concertSong.Song.ID).Scan(&Exists)
 
 	if !Exists {
 		s.db.Create(&concertSong)
