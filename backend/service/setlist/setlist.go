@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/djhranicky/ConcertTracker-SE-Project/types"
 	"github.com/joho/godotenv"
@@ -109,7 +110,9 @@ func ProcessArtistInfo(store types.Store) {
 
 	for i := 0; i < jsonData.ItemsPerPage; i++ {
 		current := jsonData.Setlist[i]
-		store.CreateVenueIfMissing(types.Venue{
+		var tour *types.Tour
+		t, _ := time.Parse("02-01-2006", "17-03-2025")
+		venue := store.CreateVenueIfMissing(types.Venue{
 			Name:       current.Venue.Name,
 			City:       current.Venue.City.Name,
 			Country:    current.Venue.City.Country.Name,
@@ -117,10 +120,18 @@ func ProcessArtistInfo(store types.Store) {
 			URL:        current.Venue.URL,
 		})
 		if current.Tour.Name != "" {
-			store.CreateTourIfMissing(types.Tour{
+			tour = store.CreateTourIfMissing(types.Tour{
 				Name:   current.Tour.Name,
 				Artist: *artist,
 			})
 		}
+		store.CreateConcertIfMissing(types.Concert{
+			Artist:            *artist,
+			Tour:              tour,
+			Venue:             *venue,
+			Date:              t,
+			ExternalID:        current.ID,
+			ExternalVersionID: current.VersionID,
+		})
 	}
 }
