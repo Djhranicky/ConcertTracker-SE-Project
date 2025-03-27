@@ -39,6 +39,7 @@ type Store interface {
 	GetTourByName(string) (*Tour, error)
 	CreateConcertIfMissing(Concert) *Concert
 	CreateSongIfMissing(Song) *Song
+	CreateConcertSongIfMissing(ConcertSong) *ConcertSong
 }
 
 type Artist struct {
