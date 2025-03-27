@@ -166,3 +166,16 @@ func (s *Store) CreateConcertIfMissing(concert types.Concert) *types.Concert {
 	s.db.First(&returnConcert, "external_id = ?", concert.ExternalID)
 	return &returnConcert
 }
+
+func (s *Store) CreateSongIfMissing(song types.Song) *types.Song {
+	var Exists bool
+	var returnSong types.Song
+	s.db.Raw("SELECT EXISTS(SELECT 1 FROM songs WHERE lower(name) = lower(?) AND artist_id = ?)", song.Name, song.Artist.ID)
+
+	if !Exists {
+		s.db.Create(&song)
+	}
+
+	s.db.First(&returnSong, "lower(name) = lower(?) AND artist_id = ?", song.Name, song.Artist.ID)
+	return &returnSong
+}

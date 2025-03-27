@@ -38,6 +38,7 @@ type Store interface {
 	CreateTourIfMissing(Tour) *Tour
 	GetTourByName(string) (*Tour, error)
 	CreateConcertIfMissing(Concert) *Concert
+	CreateSongIfMissing(Song) *Song
 }
 
 type Artist struct {
@@ -88,17 +89,17 @@ type Concert struct {
 type Song struct {
 	ID        uint   `gorm:"primaryKey"`
 	ArtistID  uint   `gorm:"uniqueIndex:compositeIndex;index"`
-	WithID    uint   `gorm:"index"`
-	CoverID   uint   `gorm:"index"`
+	WithID    *uint  `gorm:"index"`
+	CoverID   *uint  `gorm:"index"`
 	Name      string `json:"name" gorm:"uniqueIndex:compositeIndex"`
 	Info      string `json:"info"`
 	Tape      bool   `json:"tape"`
 	CreatedAt time.Time
 	UpdatedAt time.Time
 
-	Artist Artist `gorm:"foreignKey:ArtistID"`
-	With   Artist `gorm:"foreignKey:WithID"`
-	Cover  Artist `gorm:"foreignKey:CoverID"`
+	Artist Artist  `gorm:"foreignKey:ArtistID"`
+	With   *Artist `gorm:"foreignKey:WithID"`
+	Cover  *Artist `gorm:"foreignKey:CoverID"`
 }
 
 type ConcertSong struct {
