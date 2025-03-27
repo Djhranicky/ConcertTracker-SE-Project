@@ -75,6 +75,19 @@ func (s *Store) CreateArtist(artist types.Artist) error {
 	return nil
 }
 
+func (s *Store) CreateArtistIfMissing(artist types.Artist) *types.Artist {
+	var Exists bool
+	var returnArtist types.Artist
+	s.db.Raw("SELECT EXISTS(SELECT 1 FROM artists WHERE mb_id = ?)", artist.MBID).Scan(&Exists)
+
+	if !Exists {
+		s.db.Create(&artist)
+	}
+
+	s.db.First(&returnArtist, "mb_id = ?", artist.MBID)
+	return &returnArtist
+}
+
 func (s *Store) CreateVenue(venue types.Venue) error {
 	result := s.db.Create(&venue)
 
