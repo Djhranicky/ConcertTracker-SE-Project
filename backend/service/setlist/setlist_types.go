@@ -61,6 +61,15 @@ type Artist_MBID_Setlists struct {
 						Disambiguation string `json:"disambiguation"`
 						URL            string `json:"url"`
 					} `json:"with"`
+					Cover struct {
+						Mbid           string `json:"mbid"`
+						Name           string `json:"name"`
+						SortName       string `json:"sortName"`
+						Disambiguation string `json:"disambiguation"`
+						URL            string `json:"url"`
+					} `json:"cover"`
+					Info string `json:"info"`
+					Tape bool   `json:"tape"`
 				} `json:"song"`
 			} `json:"set"`
 		} `json:"sets"`
