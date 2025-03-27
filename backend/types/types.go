@@ -32,7 +32,7 @@ type Store interface {
 	GetArtistByName(name string) (*Artist, error)
 	CreateArtist(Artist) error
 	CreateVenue(Venue) error
-	CreateVenueIfMissing(Venue)
+	CreateVenueIfMissing(Venue) *Venue
 	GetVenueByName(string) (*Venue, error)
 	CreateTour(Tour) error
 	CreateTourIfMissing(Tour)

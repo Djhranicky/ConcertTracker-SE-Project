@@ -110,9 +110,11 @@ func ProcessArtistInfo(store types.Store) {
 	for i := 0; i < jsonData.ItemsPerPage; i++ {
 		current := jsonData.Setlist[i]
 		store.CreateVenueIfMissing(types.Venue{
-			Name:    current.Venue.Name,
-			City:    current.Venue.City.Name,
-			Country: current.Venue.City.Country.Name,
+			Name:       current.Venue.Name,
+			City:       current.Venue.City.Name,
+			Country:    current.Venue.City.Country.Name,
+			ExternalID: current.Venue.ID,
+			URL:        current.Venue.URL,
 		})
 		if current.Tour.Name != "" {
 			store.CreateTourIfMissing(types.Tour{

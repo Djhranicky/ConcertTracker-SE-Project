@@ -85,13 +85,17 @@ func (s *Store) CreateVenue(venue types.Venue) error {
 	return nil
 }
 
-func (s *Store) CreateVenueIfMissing(venue types.Venue) {
+func (s *Store) CreateVenueIfMissing(venue types.Venue) *types.Venue {
 	var Exists bool
-	s.db.Raw("SELECT EXISTS(SELECT 1 FROM venues WHERE name = ?)", venue.Name).Scan(&Exists)
+	var returnVenue types.Venue
+	s.db.Raw("SELECT EXISTS(SELECT 1 FROM venues WHERE external_id = ?)", venue.ExternalID).Scan(&Exists)
 
 	if !Exists {
 		s.db.Create(&venue)
 	}
+
+	s.db.First(&returnVenue, "external_id = ?", venue.ExternalID)
+	return &returnVenue
 }
 
 func (s *Store) GetVenueByName(name string) (*types.Venue, error) {
