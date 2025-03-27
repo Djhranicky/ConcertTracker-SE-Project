@@ -125,7 +125,7 @@ func ProcessArtistInfo(store types.Store) {
 				Artist: *artist,
 			})
 		}
-		store.CreateConcertIfMissing(types.Concert{
+		concert := store.CreateConcertIfMissing(types.Concert{
 			Artist:            *artist,
 			Tour:              tour,
 			Venue:             *venue,
@@ -133,5 +133,43 @@ func ProcessArtistInfo(store types.Store) {
 			ExternalID:        current.ID,
 			ExternalVersionID: current.VersionID,
 		})
+		order := uint(0)
+		numSets := len(current.Sets.Set)
+		for j := 0; j < numSets; j++ {
+			currSet := current.Sets.Set[j]
+			numSongs := len(currSet.Song)
+			for k := 0; k < numSongs; k++ {
+				currSong := currSet.Song[k]
+				var with *types.Artist
+				var cover *types.Artist
+				if currSong.With.Mbid != "" {
+					with = store.CreateArtistIfMissing(types.Artist{
+						MBID: currSong.With.Mbid,
+						Name: currSong.With.Name,
+					})
+				}
+				if currSong.Cover.Mbid != "" {
+					cover = store.CreateArtistIfMissing(types.Artist{
+						MBID: currSong.Cover.Mbid,
+						Name: currSong.Cover.Name,
+					})
+				}
+				song := store.CreateSongIfMissing(types.Song{
+					Artist: *artist,
+					With:   with,
+					Cover:  cover,
+					Name:   currSong.Name,
+					Info:   currSong.Info,
+					Tape:   currSong.Tape,
+				})
+
+				store.CreateConcertSongIfMissing(types.ConcertSong{
+					Concert:   *concert,
+					Song:      *song,
+					SongOrder: order,
+				})
+				order++
+			}
+		}
 	}
 }

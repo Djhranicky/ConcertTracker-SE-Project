@@ -31,6 +31,7 @@ type Store interface {
 	GetArtistByMBID(artist string) (*Artist, error)
 	GetArtistByName(name string) (*Artist, error)
 	CreateArtist(Artist) error
+	CreateArtistIfMissing(Artist) *Artist
 	CreateVenue(Venue) error
 	CreateVenueIfMissing(Venue) *Venue
 	GetVenueByName(string) (*Venue, error)
@@ -107,7 +108,7 @@ type ConcertSong struct {
 	ID        uint `gorm:"primaryKey"`
 	ConcertID uint `gorm:"index"`
 	SongID    uint `gorm:"index"`
-	Order     uint
+	SongOrder uint
 	CreatedAt time.Time
 	UpdatedAt time.Time
 
