@@ -35,7 +35,7 @@ type Store interface {
 	CreateVenueIfMissing(Venue) *Venue
 	GetVenueByName(string) (*Venue, error)
 	CreateTour(Tour) error
-	CreateTourIfMissing(Tour)
+	CreateTourIfMissing(Tour) *Tour
 	GetTourByName(string) (*Tour, error)
 }
 

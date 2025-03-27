@@ -118,13 +118,17 @@ func (s *Store) CreateTour(tour types.Tour) error {
 	return nil
 }
 
-func (s *Store) CreateTourIfMissing(tour types.Tour) {
+func (s *Store) CreateTourIfMissing(tour types.Tour) *types.Tour {
 	var Exists bool
+	var returnTour types.Tour
 	s.db.Raw("SELECT EXISTS(SELECT 1 FROM tours WHERE name = ?)", tour.Name).Scan(&Exists)
 
 	if !Exists {
 		s.db.Create(&tour)
 	}
+
+	s.db.First(&returnTour, "name = ?", tour.Name)
+	return &returnTour
 }
 
 func (s *Store) GetTourByName(name string) (*types.Tour, error) {
