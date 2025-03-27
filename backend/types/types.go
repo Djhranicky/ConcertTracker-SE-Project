@@ -57,13 +57,14 @@ type Tour struct {
 }
 
 type Venue struct {
-	ID        uint   `gorm:"primaryKey"`
-	Name      string `json:"name"`
-	City      string `json:"city"`
-	Country   string `json:"country"`
-	Capacity  *int   `json:"capacity,omitempty"`
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	ID         uint   `gorm:"primaryKey"`
+	Name       string `json:"name"`
+	City       string `json:"city"`
+	Country    string `json:"country"`
+	ExternalID string `json:"externalID"`
+	URL        string `json:"url"`
+	CreatedAt  time.Time
+	UpdatedAt  time.Time
 }
 
 type Concert struct {
