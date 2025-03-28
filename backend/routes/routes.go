@@ -33,7 +33,7 @@ func (h *Handler) RegisterRoutes(router *mux.Router) {
 	router.HandleFunc("/register", h.handleRegister).Methods("POST", "OPTIONS")
 	router.HandleFunc("/validate", h.handleValidate).Methods("GET", "OPTIONS")
 	router.HandleFunc("/artist", h.handleArtist(baseURL)).Methods("GET", "OPTIONS")
-	router.HandleFunc("/import", h.importArtistInfo(baseURL)).Methods("GET", "OPTIONS")
+	router.HandleFunc("/import", h.handleArtistImport(baseURL)).Methods("GET", "OPTIONS")
 
 	// Serve Swagger UI
 	router.PathPrefix("/swagger/").Handler(httpSwagger.WrapHandler)
@@ -242,7 +242,7 @@ func (h *Handler) handleArtist(inputURL string) http.HandlerFunc {
 	}
 }
 
-func (h *Handler) importArtistInfo(inputURL string) http.HandlerFunc {
+func (h *Handler) handleArtistImport(inputURL string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		utils.SetCORSHeaders(w)
 		if r.Method == "OPTIONS" {
