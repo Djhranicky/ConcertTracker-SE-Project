@@ -3,7 +3,6 @@ package setlist
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io"
 	"net/http"
 	"os"
@@ -64,7 +63,7 @@ func ArtistSearch(url string, artist string) (*types.Artist, error) {
 	return &returnArtist, nil
 }
 
-func ProcessArtistInfo(store types.Store) {
+func ProcessArtistInfo(store types.Store, URL string, artist *types.Artist) {
 	err := godotenv.Load("./.env")
 	if err != nil {
 		return
@@ -72,13 +71,7 @@ func ProcessArtistInfo(store types.Store) {
 
 	xAPIKey := []byte(os.Getenv("SETLIST_API_KEY"))
 
-	artistMBID := "f4abc0b5-3f7a-4eff-8f78-ac078dbce533"
-	artist, err := store.GetArtistByMBID(artistMBID)
-	if err != nil {
-		return
-	}
-
-	req, err := http.NewRequest("GET", fmt.Sprintf("https://api.setlist.fm/rest/1.0/artist/%v/setlists", artistMBID), nil)
+	req, err := http.NewRequest("GET", URL, nil)
 	if err != nil {
 		return
 	}

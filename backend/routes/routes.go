@@ -33,7 +33,7 @@ func (h *Handler) RegisterRoutes(router *mux.Router) {
 	router.HandleFunc("/register", h.handleRegister).Methods("POST", "OPTIONS")
 	router.HandleFunc("/validate", h.handleValidate).Methods("GET", "OPTIONS")
 	router.HandleFunc("/artist", h.handleArtist(baseURL)).Methods("GET", "OPTIONS")
-	router.HandleFunc("/import", h.importArtistInfo).Methods("GET", "OPTIONS")
+	router.HandleFunc("/import", h.importArtistInfo(baseURL)).Methods("GET", "OPTIONS")
 
 	// Serve Swagger UI
 	router.PathPrefix("/swagger/").Handler(httpSwagger.WrapHandler)
@@ -242,6 +242,30 @@ func (h *Handler) handleArtist(inputURL string) http.HandlerFunc {
 	}
 }
 
-func (h *Handler) importArtistInfo(w http.ResponseWriter, r *http.Request) {
-	setlist.ProcessArtistInfo(h.Store)
+func (h *Handler) importArtistInfo(inputURL string) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		utils.SetCORSHeaders(w)
+		if r.Method == "OPTIONS" {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+
+		// Get artist search from request
+		mbid := r.URL.Query().Get("mbid")
+		if mbid == "" {
+			utils.WriteError(w, http.StatusBadRequest, errors.New("artist mbid not provided"))
+			return
+		}
+
+		artist, err := h.Store.GetArtistByMBID(mbid)
+		if err != nil {
+			utils.WriteError(w, http.StatusBadRequest, errors.New("artist mbid not in database"))
+			return
+		}
+
+		URL := fmt.Sprintf("%s/artist/%s/setlists?p=1", inputURL, mbid)
+
+		setlist.ProcessArtistInfo(h.Store, URL, artist)
+		utils.WriteJSON(w, http.StatusCreated, map[string]string{"message": "artist information successfully imported"})
+	}
 }
