@@ -63,44 +63,7 @@ func ArtistSearch(url string, artist string) (*types.Artist, error) {
 	return &returnArtist, nil
 }
 
-func ProcessArtistInfo(store types.Store, URL string, artist *types.Artist) {
-	err := godotenv.Load("./.env")
-	if err != nil {
-		return
-	}
-
-	xAPIKey := []byte(os.Getenv("SETLIST_API_KEY"))
-
-	req, err := http.NewRequest("GET", URL, nil)
-	if err != nil {
-		return
-	}
-
-	req.Header.Add("Accept", "application/json")
-	req.Header.Add("x-api-key", string(xAPIKey))
-
-	client := &http.Client{}
-	resp, err := client.Do(req)
-	if err != nil {
-		return
-	}
-
-	if resp.StatusCode != http.StatusOK {
-		return
-	}
-
-	defer resp.Body.Close()
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return
-	}
-
-	var jsonData Artist_MBID_Setlists
-	err = json.Unmarshal(body, &jsonData)
-	if err != nil {
-		return
-	}
-
+func ProcessArtistInfo(store types.Store, jsonData Artist_MBID_Setlists, artist *types.Artist) {
 	for i := 0; i < jsonData.ItemsPerPage; i++ {
 		current := jsonData.Setlist[i]
 		var tour *types.Tour
