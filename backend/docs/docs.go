@@ -41,6 +41,76 @@ const docTemplate = `{
                 }
             }
         },
+        "/artist": {
+            "post": {
+                "description": "Gets information for requested artist. If information does not exist in database, it is retrieved from setlist.fm API and entered into database",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Artist"
+                ],
+                "summary": "Serve information for a given artist",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Artist Name",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Object that holds artist information",
+                        "schema": {
+                            "$ref": "#/definitions/types.Artist"
+                        }
+                    },
+                    "400": {
+                        "description": "Error describing failure",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/import": {
+            "get": {
+                "description": "Gets setlist information from setlist.fm API for given artist, and imports it into database",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Artist"
+                ],
+                "summary": "Import information for a given artist into database",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Artist MBID",
+                        "name": "mbid",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Message indicating success",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Error describing failure",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/login": {
             "post": {
                 "description": "Authenticates a user and returns a JWT token",
@@ -152,6 +222,26 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "types.Artist": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "mbid": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
         "types.UserLoginPayload": {
             "type": "object",
             "required": [
