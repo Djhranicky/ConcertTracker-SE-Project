@@ -482,6 +482,22 @@ func TestArtistServiceHandleImport(t *testing.T) {
 		assertEqual(t, http.StatusBadRequest, rr.Code)
 	})
 
+	t.Run("should fail with invalid full query parameter", func(t *testing.T) {
+		req, err := http.NewRequest(http.MethodGet, "/import?name=test&full=Failure", nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/import", handler.handleArtistImport(""))
+
+		router.ServeHTTP(rr, req)
+
+		assertEqual(t, http.StatusBadRequest, rr.Code)
+	})
+
 	t.Run("should fail if artist mbid not in database", func(t *testing.T) {
 		req, err := http.NewRequest(http.MethodGet, "/import?mbid=mbidNotFound", nil)
 		if err != nil {
@@ -537,6 +553,33 @@ func TestArtistServiceHandleImport(t *testing.T) {
 		defer server.Close()
 
 		req, err := http.NewRequest(http.MethodGet, "/import?mbid=mbid1", nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/import", handler.handleArtistImport(server.URL))
+
+		router.ServeHTTP(rr, req)
+
+		assertEqual(t, http.StatusCreated, rr.Code)
+	})
+
+	t.Run("should pass if artist mbid in database for full import", func(t *testing.T) {
+		data, err := os.ReadFile("./routes/testdata/mock_ArtistMBIDSetlist.json")
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusOK)
+			w.Write(data)
+		}))
+		defer server.Close()
+
+		req, err := http.NewRequest(http.MethodGet, "/import?mbid=mbid1&full=true", nil)
 		if err != nil {
 			t.Fatal(err)
 		}
