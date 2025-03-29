@@ -1,0 +1,208 @@
+{
+    "type": "setlists",
+    "itemsPerPage": 20,
+    "page": 1,
+    "total": 461,
+    "setlist": [
+        {
+            "id": "2358d8fb",
+            "versionId": "g4b420f0a",
+            "eventDate": "17-03-2025",
+            "lastUpdated": "2025-03-18T01:25:51.272+0000",
+            "artist": {
+                "mbid": "f4abc0b5-3f7a-4eff-8f78-ac078dbce533",
+                "name": "Billie Eilish",
+                "sortName": "Eilish, Billie",
+                "disambiguation": "",
+                "url": "https://www.setlist.fm/setlists/billie-eilish-1bc3b540.html"
+            },
+            "venue": {
+                "id": "23d5a8f7",
+                "name": "Dolby Theatre",
+                "city": {
+                    "id": "5368361",
+                    "name": "Los Angeles",
+                    "state": "California",
+                    "stateCode": "CA",
+                    "coords": {
+                        "lat": 34.052,
+                        "long": -118.244
+                    },
+                    "country": {
+                        "code": "US",
+                        "name": "United States"
+                    }
+                },
+                "url": "https://www.setlist.fm/venue/dolby-theatre-los-angeles-ca-usa-23d5a8f7.html"
+            },
+            "sets": {
+                "set": [
+                    {
+                        "song": [
+                            {
+                                "name": "WILDFLOWER",
+                                "with": {
+                                    "mbid": "151cd917-1ee2-4702-859f-90899ad897f8",
+                                    "name": "FINNEAS",
+                                    "sortName": "FINNEAS",
+                                    "disambiguation": "",
+                                    "url": "https://www.setlist.fm/setlists/finneas-3bce50a0.html"
+                                }
+                            }
+                        ]
+                    }
+                ]
+            },
+            "url": "https://www.setlist.fm/setlist/billie-eilish/2025/dolby-theatre-los-angeles-ca-2358d8fb.html"
+        },
+        {
+            "id": "13a84d99",
+            "versionId": "g1b456124",
+            "eventDate": "08-03-2025",
+            "lastUpdated": "2025-03-11T00:59:34.820+0000",
+            "artist": {
+                "mbid": "f4abc0b5-3f7a-4eff-8f78-ac078dbce533",
+                "name": "Billie Eilish",
+                "sortName": "Eilish, Billie",
+                "disambiguation": "",
+                "url": "https://www.setlist.fm/setlists/billie-eilish-1bc3b540.html"
+            },
+            "venue": {
+                "id": "bd6cdfe",
+                "name": "Rod Laver Arena",
+                "city": {
+                    "id": "2158177",
+                    "name": "Melbourne",
+                    "state": "Victoria",
+                    "stateCode": "VIC",
+                    "coords": {
+                        "lat": -37.8139965641595,
+                        "long": 144.963322877884
+                    },
+                    "country": {
+                        "code": "AU",
+                        "name": "Australia"
+                    }
+                },
+                "url": "https://www.setlist.fm/venue/rod-laver-arena-melbourne-australia-bd6cdfe.html"
+            },
+            "tour": {
+                "name": "HIT ME HARD AND SOFT"
+            },
+            "sets": {
+                "set": [
+                    {
+                        "name": "A-Stage",
+                        "song": [
+                            {
+                                "name": "CHIHIRO"
+                            },
+                            {
+                                "name": "LUNCH"
+                            },
+                            {
+                                "name": "NDA",
+                                "info": "Shortened"
+                            },
+                            {
+                                "name": "Therefore I Am"
+                            },
+                            {
+                                "name": "WILDFLOWER"
+                            },
+                            {
+                                "name": "when the party's over",
+                                "info": "live looped vocal layers intro"
+                            },
+                            {
+                                "name": "THE DINER"
+                            },
+                            {
+                                "name": "ilomilo"
+                            },
+                            {
+                                "name": "bad guy"
+                            },
+                            {
+                                "name": "THE GREATEST"
+                            },
+                            {
+                                "name": "Your Power"
+                            },
+                            {
+                                "name": "SKINNY"
+                            },
+                            {
+                                "name": "TV"
+                            },
+                            {
+                                "name": "BITTERSUITE",
+                                "tape": true,
+                                "info": "Transition"
+                            },
+                            {
+                                "name": "bury a friend"
+                            },
+                            {
+                                "name": "Oxytocin"
+                            }
+                        ]
+                    },
+                    {
+                        "name": "B-Stage",
+                        "song": [
+                            {
+                                "name": "Guess",
+                                "cover": {
+                                    "mbid": "260b6184-8828-48eb-945c-bc4cb6fc34ca",
+                                    "name": "Charli xcx",
+                                    "sortName": "Charli xcx",
+                                    "disambiguation": "",
+                                    "url": "https://www.setlist.fm/setlists/charli-xcx-33d5dcdd.html"
+                                },
+                                "info": "featuring Billie Eilish"
+                            },
+                            {
+                                "name": "everything i wanted"
+                            }
+                        ]
+                    },
+                    {
+                        "name": "A-Stage",
+                        "song": [
+                            {
+                                "name": "BLUE",
+                                "tape": true,
+                                "info": "\"TRUE BLUE\" version"
+                            },
+                            {
+                                "name": "lovely / BLUE / ocean eyes",
+                                "info": "\"BORN BLUE\" version performed"
+                            },
+                            {
+                                "name": "L'AMOUR DE MA VIE",
+                                "info": "OVER NOW EXTENDED EDIT"
+                            },
+                            {
+                                "name": "What Was I Made For?"
+                            },
+                            {
+                                "name": "Happier Than Ever",
+                                "info": "Shortened"
+                            },
+                            {
+                                "name": "BIRDS OF A FEATHER"
+                            },
+                            {
+                                "name": "BLUE",
+                                "tape": true,
+                                "info": "\"BORN BLUE\" version"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "url": "https://www.setlist.fm/setlist/billie-eilish/2025/rod-laver-arena-melbourne-australia-13a84d99.html"
+        }
+    ]
+}

@@ -64,7 +64,8 @@ func ArtistSearch(url string, artist string) (*types.Artist, error) {
 }
 
 func ProcessArtistInfo(store types.Store, jsonData Artist_MBID_Setlists, artist *types.Artist) {
-	for i := 0; i < jsonData.ItemsPerPage; i++ {
+	numSetlists := len(jsonData.Setlist)
+	for i := 0; i < numSetlists; i++ {
 		current := jsonData.Setlist[i]
 		var tour *types.Tour
 		t, _ := time.Parse("02-01-2006", current.EventDate)

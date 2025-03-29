@@ -292,19 +292,21 @@ func (h *Handler) handleArtistImport(inputURL string) http.HandlerFunc {
 		}
 
 		if resp.StatusCode != http.StatusOK {
-			utils.WriteError(w, http.StatusInternalServerError, errors.New("artist not found in external API"))
+			utils.WriteError(w, http.StatusBadRequest, errors.New("artist not found in external API"))
 			return
 		}
 
 		defer resp.Body.Close()
 		body, err := io.ReadAll(resp.Body)
 		if err != nil {
+			utils.WriteError(w, http.StatusInternalServerError, err)
 			return
 		}
 
 		var jsonData setlist.Artist_MBID_Setlists
 		err = json.Unmarshal(body, &jsonData)
 		if err != nil {
+			utils.WriteError(w, http.StatusInternalServerError, err)
 			return
 		}
 
