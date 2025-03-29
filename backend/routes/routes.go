@@ -196,10 +196,11 @@ func (h *Handler) handleValidate(w http.ResponseWriter, r *http.Request) {
 
 // @Summary Serve information for a given artist
 // @Description Gets information for requested artist. If information does not exist in database, it is retrieved from setlist.fm API and entered into database
-// @Params artist
+// @Tags Artist
+// @Param name path string true "Artist Name"
 // @Produce json
-// @Success 200 {string} string "TODO"
-// @Failure 400 {string} string "TODO"
+// @Success 200 {object} types.Artist "Object that holds artist information"
+// @Failure 400 {string} error "Error describing failure"
 // @Router /artist [post]
 func (h *Handler) handleArtist(inputURL string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -244,6 +245,14 @@ func (h *Handler) handleArtist(inputURL string) http.HandlerFunc {
 	}
 }
 
+// @Summary Import information for a given artist into database
+// @Description Gets setlist information from setlist.fm API for given artist, and imports it into database
+// @Tags Artist
+// @Param mbid path string true "Artist MBID"
+// @Produce json
+// @Success 201 {string} string "Message indicating success"
+// @Failure 400 {string} error "Error describing failure"
+// @Router /import [get]
 func (h *Handler) handleArtistImport(inputURL string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		utils.SetCORSHeaders(w)
