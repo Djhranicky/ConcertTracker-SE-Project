@@ -3,8 +3,10 @@ package routes
 import (
 	"errors"
 	"fmt"
+	"math"
 	"net/http"
 	"os"
+	"time"
 
 	_ "github.com/djhranicky/ConcertTracker-SE-Project/docs"
 	"github.com/djhranicky/ConcertTracker-SE-Project/service/auth"
@@ -266,6 +268,12 @@ func (h *Handler) handleArtistImport(inputURL string) http.HandlerFunc {
 			return
 		}
 
+		fullImport := r.URL.Query().Get("full")
+		if !(fullImport == "true" || fullImport == "") {
+			utils.WriteError(w, http.StatusBadRequest, errors.New("invalid option for full parameter"))
+			return
+		}
+
 		artist, err := h.Store.GetArtistByMBID(mbid)
 		if err != nil {
 			utils.WriteError(w, http.StatusBadRequest, errors.New("artist mbid not in database"))
@@ -278,6 +286,18 @@ func (h *Handler) handleArtistImport(inputURL string) http.HandlerFunc {
 		}
 
 		setlist.ProcessArtistInfo(h.Store, *jsonData, artist)
+
+		numPages := 1
+		if fullImport != "" {
+			numPages = int(math.Ceil(float64(jsonData.Total) / float64(jsonData.ItemsPerPage)))
+		}
+
+		for i := 2; i <= numPages; i++ {
+			time.Sleep(2 * time.Second)
+			jsonData, _ = utils.GetArtistSetlistsFromAPI(w, inputURL, mbid, i)
+			setlist.ProcessArtistInfo(h.Store, *jsonData, artist)
+		}
+
 		utils.WriteJSON(w, http.StatusCreated, map[string]string{"message": "artist information successfully imported"})
 	}
 }
