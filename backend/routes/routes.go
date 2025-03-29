@@ -292,10 +292,14 @@ func (h *Handler) handleArtistImport(inputURL string) http.HandlerFunc {
 			numPages = int(math.Ceil(float64(jsonData.Total) / float64(jsonData.ItemsPerPage)))
 		}
 
-		for i := 2; i <= numPages; i++ {
-			time.Sleep(2 * time.Second)
+		i := 2
+		for range time.Tick(1 * time.Second) {
+			if i > numPages {
+				break
+			}
 			jsonData, _ = utils.GetArtistSetlistsFromAPI(w, inputURL, mbid, i)
 			setlist.ProcessArtistInfo(h.Store, *jsonData, artist)
+			i++
 		}
 
 		utils.WriteJSON(w, http.StatusCreated, map[string]string{"message": "artist information successfully imported"})
