@@ -1,10 +1,8 @@
 package routes
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
-	"io"
 	"net/http"
 	"os"
 
@@ -274,52 +272,12 @@ func (h *Handler) handleArtistImport(inputURL string) http.HandlerFunc {
 			return
 		}
 
-		URL := fmt.Sprintf("%s/artist/%s/setlists?p=1", inputURL, mbid)
-
-		err = godotenv.Load("./.env")
+		jsonData, err := utils.GetArtistSetlistsFromAPI(w, inputURL, mbid, 1)
 		if err != nil {
-			utils.WriteError(w, http.StatusInternalServerError, err)
 			return
 		}
 
-		xAPIKey := []byte(os.Getenv("SETLIST_API_KEY"))
-
-		req, err := http.NewRequest("GET", URL, nil)
-		if err != nil {
-			utils.WriteError(w, http.StatusInternalServerError, err)
-			return
-		}
-
-		req.Header.Add("Accept", "application/json")
-		req.Header.Add("x-api-key", string(xAPIKey))
-
-		client := &http.Client{}
-		resp, err := client.Do(req)
-		if err != nil {
-			utils.WriteError(w, http.StatusInternalServerError, err)
-			return
-		}
-
-		if resp.StatusCode != http.StatusOK {
-			utils.WriteError(w, http.StatusBadRequest, errors.New("artist not found in external API"))
-			return
-		}
-
-		defer resp.Body.Close()
-		body, err := io.ReadAll(resp.Body)
-		if err != nil {
-			utils.WriteError(w, http.StatusInternalServerError, err)
-			return
-		}
-
-		var jsonData setlist.Artist_MBID_Setlists
-		err = json.Unmarshal(body, &jsonData)
-		if err != nil {
-			utils.WriteError(w, http.StatusInternalServerError, err)
-			return
-		}
-
-		setlist.ProcessArtistInfo(h.Store, jsonData, artist)
+		setlist.ProcessArtistInfo(h.Store, *jsonData, artist)
 		utils.WriteJSON(w, http.StatusCreated, map[string]string{"message": "artist information successfully imported"})
 	}
 }
