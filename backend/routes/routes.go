@@ -1,8 +1,10 @@
 package routes
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"net/http"
 	"os"
 
@@ -33,6 +35,7 @@ func (h *Handler) RegisterRoutes(router *mux.Router) {
 	router.HandleFunc("/register", h.handleRegister).Methods("POST", "OPTIONS")
 	router.HandleFunc("/validate", h.handleValidate).Methods("GET", "OPTIONS")
 	router.HandleFunc("/artist", h.handleArtist(baseURL)).Methods("GET", "OPTIONS")
+	router.HandleFunc("/import", h.handleArtistImport(baseURL)).Methods("GET", "OPTIONS")
 
 	// Serve Swagger UI
 	router.PathPrefix("/swagger/").Handler(httpSwagger.WrapHandler)
@@ -193,10 +196,11 @@ func (h *Handler) handleValidate(w http.ResponseWriter, r *http.Request) {
 
 // @Summary Serve information for a given artist
 // @Description Gets information for requested artist. If information does not exist in database, it is retrieved from setlist.fm API and entered into database
-// @Params artist
+// @Tags Artist
+// @Param name path string true "Artist Name"
 // @Produce json
-// @Success 200 {string} string "TODO"
-// @Failure 400 {string} string "TODO"
+// @Success 200 {object} types.Artist "Object that holds artist information"
+// @Failure 400 {string} error "Error describing failure"
 // @Router /artist [post]
 func (h *Handler) handleArtist(inputURL string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -238,5 +242,84 @@ func (h *Handler) handleArtist(inputURL string) http.HandlerFunc {
 			return
 		}
 		utils.WriteJSON(w, http.StatusOK, *artist)
+	}
+}
+
+// @Summary Import information for a given artist into database
+// @Description Gets setlist information from setlist.fm API for given artist, and imports it into database
+// @Tags Artist
+// @Param mbid path string true "Artist MBID"
+// @Produce json
+// @Success 201 {string} string "Message indicating success"
+// @Failure 400 {string} error "Error describing failure"
+// @Router /import [get]
+func (h *Handler) handleArtistImport(inputURL string) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		utils.SetCORSHeaders(w)
+		if r.Method == "OPTIONS" {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+
+		// Get artist search from request
+		mbid := r.URL.Query().Get("mbid")
+		if mbid == "" {
+			utils.WriteError(w, http.StatusBadRequest, errors.New("artist mbid not provided"))
+			return
+		}
+
+		artist, err := h.Store.GetArtistByMBID(mbid)
+		if err != nil {
+			utils.WriteError(w, http.StatusBadRequest, errors.New("artist mbid not in database"))
+			return
+		}
+
+		URL := fmt.Sprintf("%s/artist/%s/setlists?p=1", inputURL, mbid)
+
+		err = godotenv.Load("./.env")
+		if err != nil {
+			utils.WriteError(w, http.StatusInternalServerError, err)
+			return
+		}
+
+		xAPIKey := []byte(os.Getenv("SETLIST_API_KEY"))
+
+		req, err := http.NewRequest("GET", URL, nil)
+		if err != nil {
+			utils.WriteError(w, http.StatusInternalServerError, err)
+			return
+		}
+
+		req.Header.Add("Accept", "application/json")
+		req.Header.Add("x-api-key", string(xAPIKey))
+
+		client := &http.Client{}
+		resp, err := client.Do(req)
+		if err != nil {
+			utils.WriteError(w, http.StatusInternalServerError, err)
+			return
+		}
+
+		if resp.StatusCode != http.StatusOK {
+			utils.WriteError(w, http.StatusBadRequest, errors.New("artist not found in external API"))
+			return
+		}
+
+		defer resp.Body.Close()
+		body, err := io.ReadAll(resp.Body)
+		if err != nil {
+			utils.WriteError(w, http.StatusInternalServerError, err)
+			return
+		}
+
+		var jsonData setlist.Artist_MBID_Setlists
+		err = json.Unmarshal(body, &jsonData)
+		if err != nil {
+			utils.WriteError(w, http.StatusInternalServerError, err)
+			return
+		}
+
+		setlist.ProcessArtistInfo(h.Store, jsonData, artist)
+		utils.WriteJSON(w, http.StatusCreated, map[string]string{"message": "artist information successfully imported"})
 	}
 }

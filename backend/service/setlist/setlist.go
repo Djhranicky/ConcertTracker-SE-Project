@@ -6,24 +6,11 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/djhranicky/ConcertTracker-SE-Project/types"
 	"github.com/joho/godotenv"
 )
-
-type SetlistArtist struct {
-	Type         string `json:"type"`
-	ItemsPerPage int    `json:"itemsPerPage"`
-	Page         int    `json:"page"`
-	Total        int    `json:"total"`
-	Artist       []struct {
-		Mbid           string `json:"mbid"`
-		Name           string `json:"name"`
-		SortName       string `json:"sortName"`
-		Disambiguation string `json:"disambiguation"`
-		URL            string `json:"url"`
-	} `json:"artist"`
-}
 
 func ArtistSearch(url string, artist string) (*types.Artist, error) {
 	err := godotenv.Load("./.env")
@@ -74,4 +61,72 @@ func ArtistSearch(url string, artist string) (*types.Artist, error) {
 		Name: jsonData.Artist[0].Name,
 	}
 	return &returnArtist, nil
+}
+
+func ProcessArtistInfo(store types.Store, jsonData Artist_MBID_Setlists, artist *types.Artist) {
+	numSetlists := len(jsonData.Setlist)
+	for i := 0; i < numSetlists; i++ {
+		current := jsonData.Setlist[i]
+		var tour *types.Tour
+		t, _ := time.Parse("02-01-2006", current.EventDate)
+		venue := store.CreateVenueIfMissing(types.Venue{
+			Name:       current.Venue.Name,
+			City:       current.Venue.City.Name,
+			Country:    current.Venue.City.Country.Name,
+			ExternalID: current.Venue.ID,
+			URL:        current.Venue.URL,
+		})
+		if current.Tour.Name != "" {
+			tour = store.CreateTourIfMissing(types.Tour{
+				Name:   current.Tour.Name,
+				Artist: *artist,
+			})
+		}
+		concert := store.CreateConcertIfMissing(types.Concert{
+			Artist:            *artist,
+			Tour:              tour,
+			Venue:             *venue,
+			Date:              t,
+			ExternalID:        current.ID,
+			ExternalVersionID: current.VersionID,
+		})
+		order := uint(0)
+		numSets := len(current.Sets.Set)
+		for j := 0; j < numSets; j++ {
+			currSet := current.Sets.Set[j]
+			numSongs := len(currSet.Song)
+			for k := 0; k < numSongs; k++ {
+				currSong := currSet.Song[k]
+				var with *types.Artist
+				var cover *types.Artist
+				if currSong.With.Mbid != "" {
+					with = store.CreateArtistIfMissing(types.Artist{
+						MBID: currSong.With.Mbid,
+						Name: currSong.With.Name,
+					})
+				}
+				if currSong.Cover.Mbid != "" {
+					cover = store.CreateArtistIfMissing(types.Artist{
+						MBID: currSong.Cover.Mbid,
+						Name: currSong.Cover.Name,
+					})
+				}
+				song := store.CreateSongIfMissing(types.Song{
+					Artist: *artist,
+					With:   with,
+					Cover:  cover,
+					Name:   currSong.Name,
+					Info:   currSong.Info,
+					Tape:   currSong.Tape,
+				})
+
+				store.CreateConcertSongIfMissing(types.ConcertSong{
+					Concert:   *concert,
+					Song:      *song,
+					SongOrder: order,
+				})
+				order++
+			}
+		}
+	}
 }

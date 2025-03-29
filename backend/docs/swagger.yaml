@@ -1,5 +1,18 @@
 basePath: /api
 definitions:
+  types.Artist:
+    properties:
+      createdAt:
+        type: string
+      id:
+        type: integer
+      mbid:
+        type: string
+      name:
+        type: string
+      updatedAt:
+        type: string
+    type: object
   types.UserLoginPayload:
     properties:
       email:
@@ -49,6 +62,54 @@ paths:
       summary: Home Route
       tags:
       - Home
+  /artist:
+    post:
+      description: Gets information for requested artist. If information does not
+        exist in database, it is retrieved from setlist.fm API and entered into database
+      parameters:
+      - description: Artist Name
+        in: path
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Object that holds artist information
+          schema:
+            $ref: '#/definitions/types.Artist'
+        "400":
+          description: Error describing failure
+          schema:
+            type: string
+      summary: Serve information for a given artist
+      tags:
+      - Artist
+  /import:
+    get:
+      description: Gets setlist information from setlist.fm API for given artist,
+        and imports it into database
+      parameters:
+      - description: Artist MBID
+        in: path
+        name: mbid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Message indicating success
+          schema:
+            type: string
+        "400":
+          description: Error describing failure
+          schema:
+            type: string
+      summary: Import information for a given artist into database
+      tags:
+      - Artist
   /login:
     post:
       consumes:
