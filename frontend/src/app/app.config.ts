@@ -18,7 +18,7 @@ const MyPreset = definePreset(Aura, {
       colorScheme: {
         light: {
           root: {
-            background: '#fefbf2',
+            background: '#fefcf7',
             top: '0px',
             position: 'sticky',
             zIndex: '99999',
@@ -540,7 +540,7 @@ const MyPreset = definePreset(Aura, {
         },
         navigation: {
           item: {
-            focusBackground: '{surface.100}',
+            focusBackground: '#f3f0e6',
             activeBackground: '{surface.100}',
             color: '{text.color}',
             focusColor: '{text.hover.color}',
