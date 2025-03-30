@@ -2,138 +2,83 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
+import { PostComponent } from '../../components/post/post.component';
+import { UserService, UserProfile, ConcertCard, Activity, List } from '../../services/user.service';
+import { Post } from '../../services/post.service';
+import { Button } from 'primeng/button';
+import { Card } from 'primeng/card';
+import { AvatarModule } from 'primeng/avatar';
 
 @Component({
   selector: 'app-user-profile',
   standalone: true,
-  imports: [CommonModule, FormsModule, NavbarComponent],
+  imports: [
+    CommonModule, 
+    FormsModule, 
+    NavbarComponent, 
+    PostComponent,
+    Button,
+    Card,
+    AvatarModule
+  ],
   templateUrl: './user-profile.component.html',
-  styleUrl: './user-profile.component.css'
+  styleUrl: './user-profile.component.css',
+  providers: [UserService]
 })
 export class UserProfileComponent implements OnInit {
   // Active tab state
   activeTab: string = 'profile';
 
-  // Mock data for user profile
-  userData = {
-    name: 'Jane Smith',
-    bio: '24. music lover. user description.',
-    profileImage: 'imgs/user-profile.jpg',
-    stats: {
-      concerts: 23,
-      lists: 3,
-      following: 21,
-      followers: 19
-    }
-  };
+  // User profile data
+  userProfile!: UserProfile;
+  favoriteConcerts: ConcertCard[] = [];
+  recentAttendance: ConcertCard[] = [];
+  bucketList: ConcertCard[] = [];
+  recentActivity: Activity[] = [];
+  recentLists: List[] = [];
+  
+  // Posts for concert-related tabs
+  userPosts: Post[] = [];
+  favoritePosts: Post[] = [];
+  bucketListPosts: Post[] = [];
 
-  // Mock data for favorite concerts
-  favoriteConcerts = [
-    {
-      title: 'HIT ME HARD AND SOFT',
-      artist: 'Billie Eilish',
-      date: 'Feb 19, 2025',
-      image: 'imgs/billie-eilish.png'
-    },
-    {
-      title: 'HIT ME HARD AND SOFT',
-      artist: 'Billie Eilish',
-      date: 'Feb 19, 2025',
-      image: 'imgs/billie-eilish.png'
-    },
-    {
-      title: 'HIT ME HARD AND SOFT',
-      artist: 'Billie Eilish',
-      date: 'Feb 19, 2025',
-      image: 'imgs/billie-eilish.png'
-    },
-    {
-      title: 'HIT ME HARD AND SOFT',
-      artist: 'Billie Eilish',
-      date: 'Feb 19, 2025',
-      image: 'imgs/billie-eilish.png'
-    },
-    {
-      title: 'HIT ME HARD AND SOFT',
-      artist: 'Billie Eilish',
-      date: 'Feb 19, 2025',
-      image: 'imgs/billie-eilish.png'
-    }
-  ];
-
-  // Mock data for recent attendance
-  recentAttendance = [
-    {
-      title: 'HIT ME HARD AND SOFT',
-      artist: 'Billie Eilish',
-      date: 'Feb 19, 2025',
-      image: 'imgs/billie-eilish.png'
-    },
-    {
-      title: 'HIT ME HARD AND SOFT',
-      artist: 'Billie Eilish',
-      date: 'Feb 19, 2025',
-      image: 'imgs/billie-eilish.png'
-    },
-    {
-      title: 'HIT ME HARD AND SOFT',
-      artist: 'Billie Eilish',
-      date: 'Feb 19, 2025',
-      image: 'imgs/billie-eilish.png'
-    }
-  ];
-
-  // Mock data for bucket list
-  bucketList = [
-    {
-      title: 'HIT ME HARD AND SOFT',
-      artist: 'Billie Eilish',
-      date: 'Feb 19, 2025',
-      image: 'imgs/billie-eilish.png'
-    },
-    {
-      title: 'HIT ME HARD AND SOFT',
-      artist: 'Billie Eilish',
-      date: 'Feb 19, 2025',
-      image: 'imgs/billie-eilish.png'
-    },
-    {
-      title: 'HIT ME HARD AND SOFT',
-      artist: 'Billie Eilish',
-      date: 'Feb 19, 2025',
-      image: 'imgs/billie-eilish.png'
-    }
-  ];
-
-  // Mock data for recent activity with HTML formatting
-  recentActivity = [
-    { 
-      text: 'You followed <span class="highlight">John Doe</span>'
-    },
-    { 
-      text: 'You added a show to <span class="highlight">2025 shows</span> list'
-    },
-    { 
-      text: 'You attended Billie Eilish\'s <span class="highlight">HIT ME HARD AND SOFT</span>'
-    }
-  ];
-
-  // Mock data for recent lists
-  recentLists = {
-    shows: [
-      'imgs/post-malone.png',
-      'imgs/billie-eilish.png'
-    ],
-    festivals: [
-      'imgs/post-malone.png',
-      'imgs/billie-eilish.png'
-    ]
-  };
-
-  constructor() { }
+  constructor(private userService: UserService) { }
 
   ngOnInit(): void {
-    // Any initialization logic goes here
+    // Get user profile data
+    this.userService.getUserProfile().subscribe(profile => {
+      this.userProfile = profile;
+    });
+
+    // Get concert data
+    this.userService.getFavoriteConcerts().subscribe(concerts => {
+      this.favoriteConcerts = concerts;
+    });
+
+    this.userService.getRecentAttendance().subscribe(concerts => {
+      this.recentAttendance = concerts;
+    });
+
+    this.userService.getBucketList().subscribe(concerts => {
+      this.bucketList = concerts;
+    });
+
+    this.userService.getRecentActivity().subscribe(activities => {
+      this.recentActivity = activities;
+    });
+
+    this.userService.getRecentLists().subscribe(lists => {
+      this.recentLists = lists;
+    });
+
+    // Get posts for modular concert display
+    this.userService.getUserPosts().subscribe(posts => {
+      this.userPosts = posts;
+      
+      // Filter posts by type for different tabs
+      this.favoritePosts = posts.filter(post => post.type === 'review');
+      this.bucketListPosts = posts.filter(post => post.type === 'wishlist');
+    });
   }
 
   // Method to change active tab

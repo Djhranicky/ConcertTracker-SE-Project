@@ -8,36 +8,36 @@
     <div class="profile-header">
       <div class="profile-info">
         <div class="profile-image">
-          <img src="imgs/user-profile.jpeg" alt="Jane Smith">
+          <img [src]="userProfile?.profileImage || 'imgs/user-profile.jpeg'" [alt]="userProfile?.name">
         </div>
         <div class="profile-details">
           <h1 class="user-name">
-            Jane Smith 
+            {{userProfile?.name}} 
             <span class="edit-icon">
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
               </svg>
             </span>
           </h1>
-          <p class="username">&#64;janesmith</p>
-          <p class="user-bio">24. music lover. love pop music.</p>
+          <p class="username">&#64;{{userProfile?.username}}</p>
+          <p class="user-bio">{{userProfile?.bio}}</p>
         </div>
       </div>
       <div class="profile-stats">
-        <div class="stat-box active">
-          <div class="stat-number">23</div>
+        <div class="stat-box">
+          <div class="stat-number">{{userProfile?.stats?.concerts || 0}}</div>
           <div class="stat-label">Concerts</div>
         </div>
         <div class="stat-box">
-          <div class="stat-number">03</div>
+          <div class="stat-number">{{userProfile?.stats?.lists || 0}}</div>
           <div class="stat-label">Lists</div>
         </div>
         <div class="stat-box">
-          <div class="stat-number">21</div>
+          <div class="stat-number">{{userProfile?.stats?.following || 0}}</div>
           <div class="stat-label">Following</div>
         </div>
         <div class="stat-box">
-          <div class="stat-number">19</div>
+          <div class="stat-number">{{userProfile?.stats?.followers || 0}}</div>
           <div class="stat-label">Followers</div>
         </div>
       </div>
@@ -56,7 +56,7 @@
     </div>
   </div>
 
-  <!-- Main Content Section -->
+  <!-- Main Content Section - Profile Tab -->
   <div class="main-content" *ngIf="activeTab === 'profile'">
     <div class="content-grid">
       <!-- Favorite Concerts Section -->
@@ -110,51 +110,22 @@
       <div class="content-card">
         <h2 class="section-title">Recent Activity</h2>
         <ul class="activity-list">
-          <li class="activity-item">
+          <li class="activity-item" *ngFor="let activity of recentActivity">
             <span class="activity-dot"></span>
-            <span>You followed <span class="highlight">John Doe</span></span>
-          </li>
-          <li class="activity-item">
-            <span class="activity-dot"></span>
-            <span>You added a show to <span class="highlight">2025 shows</span> list</span>
-          </li>
-          <li class="activity-item">
-            <span class="activity-dot"></span>
-            <span>You attended Billie Eilish's <span class="highlight">HIT ME HARD AND SOFT</span></span>
+            <span [innerHTML]="activity.text"></span>
           </li>
         </ul>
       </div>
 
-      
       <!-- Recent Lists Section -->
       <div class="content-card">
         <h2 class="section-title">Recent Lists</h2>
         <div class="lists-container">
-          <div class="list-category">
-            <h3 class="list-title">2025 Shows</h3>
+          <div class="list-category" *ngFor="let list of recentLists">
+            <h3 class="list-title">{{list.title}}</h3>
             <div class="list-thumbnails">
-              <div class="thumbnail">
-                <img src="imgs/post-malone.png" alt="Show thumbnail">
-              </div>
-              <div class="thumbnail">
-                <img src="imgs/starboy.png" alt="Show thumbnail">
-              </div>
-              <div class="thumbnail">
-                <img src="imgs/linkin.png" alt="Show thumbnail">
-              </div>
-            </div>
-          </div>
-          <div class="list-category">
-            <h3 class="list-title">Festivals</h3>
-            <div class="list-thumbnails">
-              <div class="thumbnail">
-                <img src="imgs/post-malone.png" alt="Show thumbnail">
-              </div>
-              <div class="thumbnail">
-                <img src="imgs/starboy.png" alt="Show thumbnail">
-              </div>
-              <div class="thumbnail">
-                <img src="imgs/linkin.png" alt="Show thumbnail">
+              <div class="thumbnail" *ngFor="let thumbnail of list.thumbnails; let i = index" [style.zIndex]="3-i">
+                <img [src]="thumbnail" [alt]="list.title">
               </div>
             </div>
           </div>
@@ -177,6 +148,137 @@
           </div>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- Concerts Tab - Using Post Component -->
+  <div class="main-content" *ngIf="activeTab === 'concerts'">
+    <div class="column-posts">
+      <app-post *ngFor="let post of favoritePosts" [post]="post"></app-post>
+    </div>
+  </div>
+
+  <!-- Activity Tab Content -->
+  <div class="main-content" *ngIf="activeTab === 'activity'">
+    <div class="column-posts">
+      <app-post *ngFor="let post of userPosts" [post]="post"></app-post>
+    </div>
+  </div>
+
+  <!-- Lists Tab Content -->
+  <div class="main-content" *ngIf="activeTab === 'lists'">
+    <div class="content-grid">
+      <div class="content-card full-width" *ngFor="let list of recentLists">
+        <h2 class="section-title">{{list.title}}</h2>
+        <div class="list-thumbnails">
+          <div class="thumbnail" *ngFor="let thumbnail of list.thumbnails; let i = index" [style.zIndex]="3-i">
+            <img [src]="thumbnail" [alt]="list.title">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Following Tab Content -->
+  <div class="main-content" *ngIf="activeTab === 'following'">
+    <div class="column">
+      <p-card>
+        <ng-template pTemplate="header">
+          <div style="color: #f21414; font-weight: bold; padding: 1rem;">Following</div>
+        </ng-template>
+        <div class="following">
+          <div class="user-content">
+            <p-avatar
+              image="https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png"
+              class="mr-2"
+              size="large"
+              shape="circle"
+            />
+            <div class="user-details">
+              <p class="user-name">First Last</p>
+              <p class="user-user">&#64;username</p>
+            </div>
+          </div>
+          <span class="pi pi-check-circle"></span>
+        </div>
+        <div class="following">
+          <div class="user-content">
+            <p-avatar
+              image="https://primefaces.org/cdn/primeng/images/demo/avatar/asiyajavayant.png"
+              class="mr-2"
+              size="large"
+              shape="circle"
+            />
+            <div class="user-details">
+              <p class="user-name">First Last</p>
+              <p class="user-user">&#64;username</p>
+            </div>
+          </div>
+          <span class="pi pi-check-circle"></span>
+        </div>
+        <div class="following">
+          <div class="user-content">
+            <p-avatar
+              image="https://primefaces.org/cdn/primeng/images/demo/avatar/onyamalimba.png"
+              class="mr-2"
+              size="large"
+              shape="circle"
+            />
+            <div class="user-details">
+              <p class="user-name">First Last</p>
+              <p class="user-user">&#64;username</p>
+            </div>
+          </div>
+          <span class="pi pi-check-circle"></span>
+        </div>
+        <ng-template pTemplate="footer">
+          <div style="color: #f21414; cursor: pointer; text-align: center;">See more...</div>
+        </ng-template>
+      </p-card>
+    </div>
+  </div>
+
+  <!-- Followers Tab Content -->
+  <div class="main-content" *ngIf="activeTab === 'followers'">
+    <div class="column">
+      <p-card>
+        <ng-template pTemplate="header">
+          <div style="color: #f21414; font-weight: bold; padding: 1rem;">Followers</div>
+        </ng-template>
+        <div class="following">
+          <div class="user-content">
+            <p-avatar
+              image="https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png"
+              class="mr-2"
+              size="large"
+              shape="circle"
+            />
+            <div class="user-details">
+              <p class="user-name">First Last</p>
+              <p class="user-user">&#64;username</p>
+            </div>
+          </div>
+          <span class="pi pi-check-circle"></span>
+        </div>
+        <div class="following">
+          <div class="user-content">
+            <p-avatar
+              image="https://primefaces.org/cdn/primeng/images/demo/avatar/asiyajavayant.png"
+              class="mr-2"
+              size="large"
+              shape="circle"
+            />
+            <div class="user-details">
+              <p class="user-name">First Last</p>
+              <p class="user-user">&#64;username</p>
+            </div>
+          </div>
+          <span class="pi pi-check-circle"></span>
+        </div>
+        <ng-template pTemplate="footer">
+          <div style="color: #f21414; cursor: pointer; text-align: center;">See more...</div>
+        </ng-template>
+      </p-card>
     </div>
   </div>
 </div>
