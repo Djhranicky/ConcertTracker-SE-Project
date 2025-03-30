@@ -3,8 +3,10 @@ package routes
 import (
 	"errors"
 	"fmt"
+	"math"
 	"net/http"
 	"os"
+	"time"
 
 	_ "github.com/djhranicky/ConcertTracker-SE-Project/docs"
 	"github.com/djhranicky/ConcertTracker-SE-Project/service/auth"
@@ -33,6 +35,7 @@ func (h *Handler) RegisterRoutes(router *mux.Router) {
 	router.HandleFunc("/register", h.handleRegister).Methods("POST", "OPTIONS")
 	router.HandleFunc("/validate", h.handleValidate).Methods("GET", "OPTIONS")
 	router.HandleFunc("/artist", h.handleArtist(baseURL)).Methods("GET", "OPTIONS")
+	router.HandleFunc("/import", h.handleArtistImport(baseURL)).Methods("GET", "OPTIONS")
 
 	// Serve Swagger UI
 	router.PathPrefix("/swagger/").Handler(httpSwagger.WrapHandler)
@@ -193,10 +196,11 @@ func (h *Handler) handleValidate(w http.ResponseWriter, r *http.Request) {
 
 // @Summary Serve information for a given artist
 // @Description Gets information for requested artist. If information does not exist in database, it is retrieved from setlist.fm API and entered into database
-// @Params artist
+// @Tags Artist
+// @Param name path string true "Artist Name"
 // @Produce json
-// @Success 200 {string} string "TODO"
-// @Failure 400 {string} string "TODO"
+// @Success 200 {object} types.Artist "Object that holds artist information"
+// @Failure 400 {string} error "Error describing failure"
 // @Router /artist [post]
 func (h *Handler) handleArtist(inputURL string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -238,5 +242,66 @@ func (h *Handler) handleArtist(inputURL string) http.HandlerFunc {
 			return
 		}
 		utils.WriteJSON(w, http.StatusOK, *artist)
+	}
+}
+
+// @Summary Import information for a given artist into database
+// @Description Gets setlist information from setlist.fm API for given artist, and imports it into database
+// @Tags Artist
+// @Param mbid path string true "Artist MBID"
+// @Produce json
+// @Success 201 {string} string "Message indicating success"
+// @Failure 400 {string} error "Error describing failure"
+// @Router /import [get]
+func (h *Handler) handleArtistImport(inputURL string) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		utils.SetCORSHeaders(w)
+		if r.Method == "OPTIONS" {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+
+		// Get artist search from request
+		mbid := r.URL.Query().Get("mbid")
+		if mbid == "" {
+			utils.WriteError(w, http.StatusBadRequest, errors.New("artist mbid not provided"))
+			return
+		}
+
+		fullImport := r.URL.Query().Get("full")
+		if !(fullImport == "true" || fullImport == "") {
+			utils.WriteError(w, http.StatusBadRequest, errors.New("invalid option for full parameter"))
+			return
+		}
+
+		artist, err := h.Store.GetArtistByMBID(mbid)
+		if err != nil {
+			utils.WriteError(w, http.StatusBadRequest, errors.New("artist mbid not in database"))
+			return
+		}
+
+		jsonData, err := utils.GetArtistSetlistsFromAPI(w, inputURL, mbid, 1)
+		if err != nil {
+			return
+		}
+
+		setlist.ProcessArtistInfo(h.Store, *jsonData, artist)
+
+		numPages := 1
+		if fullImport != "" {
+			numPages = int(math.Ceil(float64(jsonData.Total) / float64(jsonData.ItemsPerPage)))
+		}
+
+		i := 2
+		for range time.Tick(1 * time.Second) {
+			if i > numPages {
+				break
+			}
+			jsonData, _ = utils.GetArtistSetlistsFromAPI(w, inputURL, mbid, i)
+			setlist.ProcessArtistInfo(h.Store, *jsonData, artist)
+			i++
+		}
+
+		utils.WriteJSON(w, http.StatusCreated, map[string]string{"message": "artist information successfully imported"})
 	}
 }

@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"reflect"
 	"testing"
 
@@ -460,6 +461,140 @@ func TestArtistServiceHandleArtist(t *testing.T) {
 	})
 }
 
+func TestArtistServiceHandleImport(t *testing.T) {
+	utils.Init()
+	handler, database := initTestHandler()
+	defer destroyDatabase(database)
+
+	t.Run("should fail with no name query parameter", func(t *testing.T) {
+		req, err := http.NewRequest(http.MethodGet, "/import", nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/import", handler.handleArtistImport(""))
+
+		router.ServeHTTP(rr, req)
+
+		assertEqual(t, http.StatusBadRequest, rr.Code)
+	})
+
+	t.Run("should fail with invalid full query parameter", func(t *testing.T) {
+		req, err := http.NewRequest(http.MethodGet, "/import?name=test&full=Failure", nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/import", handler.handleArtistImport(""))
+
+		router.ServeHTTP(rr, req)
+
+		assertEqual(t, http.StatusBadRequest, rr.Code)
+	})
+
+	t.Run("should fail if artist mbid not in database", func(t *testing.T) {
+		req, err := http.NewRequest(http.MethodGet, "/import?mbid=mbidNotFound", nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/import", handler.handleArtistImport(""))
+
+		router.ServeHTTP(rr, req)
+
+		assertEqual(t, http.StatusBadRequest, rr.Code)
+	})
+
+	t.Run("should fail if artist mbid not in external API", func(t *testing.T) {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write([]byte(`{
+						"code": 404,
+						"status": "Not Found",
+						"message": "not found",
+						"timestamp": "2025-03-29T00:29:24.574+0000"
+					}`))
+		}))
+		defer server.Close()
+		req, err := http.NewRequest(http.MethodGet, "/import?mbid=Artist1", nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/import", handler.handleArtistImport(""))
+
+		router.ServeHTTP(rr, req)
+
+		assertEqual(t, http.StatusBadRequest, rr.Code)
+	})
+
+	t.Run("should pass if artist mbid in database", func(t *testing.T) {
+		data, err := os.ReadFile("./routes/testdata/mock_ArtistMBIDSetlist.json")
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusOK)
+			w.Write(data)
+		}))
+		defer server.Close()
+
+		req, err := http.NewRequest(http.MethodGet, "/import?mbid=mbid1", nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/import", handler.handleArtistImport(server.URL))
+
+		router.ServeHTTP(rr, req)
+
+		assertEqual(t, http.StatusCreated, rr.Code)
+	})
+
+	t.Run("should pass if artist mbid in database for full import", func(t *testing.T) {
+		data, err := os.ReadFile("./routes/testdata/mock_ArtistMBIDSetlist.json")
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusOK)
+			w.Write(data)
+		}))
+		defer server.Close()
+
+		req, err := http.NewRequest(http.MethodGet, "/import?mbid=mbid1&full=true", nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/import", handler.handleArtistImport(server.URL))
+
+		router.ServeHTTP(rr, req)
+
+		assertEqual(t, http.StatusCreated, rr.Code)
+	})
+}
+
 func initTestDatabase(dbName string) *gorm.DB {
 	mockDatabase, err := db.NewSqliteStorage(dbName)
 	if err != nil {
@@ -472,6 +607,8 @@ func initTestDatabase(dbName string) *gorm.DB {
 		&types.Tour{},
 		&types.Venue{},
 		&types.Concert{},
+		&types.Song{},
+		&types.ConcertSong{},
 	)
 
 	return mockDatabase
@@ -509,6 +646,8 @@ func destroyDatabase(database *gorm.DB) {
 		&types.Tour{},
 		&types.Venue{},
 		&types.Concert{},
+		&types.Song{},
+		&types.ConcertSong{},
 	)
 }
 
