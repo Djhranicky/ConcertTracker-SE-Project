@@ -2,7 +2,7 @@
   <ng-template #title class="template">
     <div class="head">
       <p-avatar icon="pi pi-user" class="mr-2" size="large" shape="circle" />
-      <a href="/user/">{{ post.username }}</a> reviewed:
+      <a href="/user/">{{ getDisplayUsername() }}</a> reviewed:
     </div>
     <div class="date">{{ post.postDate | timeAgo }}</div>
   </ng-template>
@@ -23,10 +23,6 @@
               *ngFor="let star of getStars(post.rating || 0)"
               class="pi pi-star-fill"
             ></span>
-            <!-- <span
-          *ngFor="let star of getStars(5 - post.rating)"
-          class="pi pi-star"
-        ></span> -->
           </div>
         </div>
       </div>
@@ -37,7 +33,6 @@
     <div class="footer">
       <span class="pi pi-comments" style="font-size: 1.5rem"></span>
       <p *ngIf="post.comments > 0">x{{ post.comments }}</p>
-      <!-- <span class="pi pi-heart"></span> -->
       <span
         [ngClass]="{ 'pi pi-heart-fill': isLiked, 'pi pi-heart': !isLiked }"
         (click)="toggleLike()"
@@ -54,7 +49,7 @@
   <ng-template #title>
     <div class="head">
       <p-avatar icon="pi pi-user" class="mr-2" size="large" shape="circle" />
-      <a href="/user/">{{ post.username }}</a> wants to attend:
+      <a href="/user/">{{ getDisplayUsername() }}</a> wants to attend:
     </div>
     <div class="date">{{ post.postDate | timeAgo }}</div>
   </ng-template>
