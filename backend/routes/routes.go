@@ -173,7 +173,7 @@ func (h *Handler) handleRegister(w http.ResponseWriter, r *http.Request) {
 // @Tags Auth
 // @Produce json
 // @Success 200 {string} string "user session validated"
-// @Failure 400 {string} string "missing or invalid authorization token"
+// @Failure 401 {string} string "missing or invalid authorization token"
 // @Router /validate [get]
 func (h *Handler) handleValidate(w http.ResponseWriter, r *http.Request) {
 	utils.SetCORSHeaders(w)

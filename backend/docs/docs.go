@@ -42,7 +42,7 @@ const docTemplate = `{
             }
         },
         "/artist": {
-            "post": {
+            "get": {
                 "description": "Gets information for requested artist. If information does not exist in database, it is retrieved from setlist.fm API and entered into database",
                 "produces": [
                     "application/json"
@@ -211,7 +211,7 @@ const docTemplate = `{
                             "type": "string"
                         }
                     },
-                    "400": {
+                    "401": {
                         "description": "missing or invalid authorization token",
                         "schema": {
                             "type": "string"
@@ -230,6 +230,10 @@ const docTemplate = `{
                 },
                 "id": {
                     "type": "integer"
+                },
+                "imageUrl": {
+                    "description": "Added ImageURL field",
+                    "type": "string"
                 },
                 "mbid": {
                     "type": "string"
