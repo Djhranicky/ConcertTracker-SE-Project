@@ -1,17 +1,14 @@
 package setlist
 
 type SetlistArtist struct {
-	Type         string `json:"type"`
-	ItemsPerPage int    `json:"itemsPerPage"`
-	Page         int    `json:"page"`
-	Total        int    `json:"total"`
-	Artist       []struct {
-		Mbid           string `json:"mbid"`
-		Name           string `json:"name"`
-		SortName       string `json:"sortName"`
-		Disambiguation string `json:"disambiguation"`
-		URL            string `json:"url"`
+	Artist []struct {
+		Mbid  string `json:"mbid"`
+		Name  string `json:"name"`
+		Image string `json:"image,omitempty"` // Add this field if the API provides it
 	} `json:"artist"`
+	ItemsPerPage int `json:"itemsPerPage"`
+	Page         int `json:"page"`
+	Total        int `json:"total"`
 }
 
 type Artist_MBID_Setlists struct {
