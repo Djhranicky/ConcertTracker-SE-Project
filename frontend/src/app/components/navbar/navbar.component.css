@@ -30,12 +30,20 @@
   box-shadow: 0rem 0rem 0.125rem rgba(0, 0, 0, 0.07);
 }
 
-.buttons {
-  display: flex;
-  gap: 2rem;
-}
-
 .avatar {
   height: 2.8rem;
   width: auto;
+}
+
+:host ::ng-deep .p-menu {
+  background-color: var(--p-menubar-background);
+}
+
+:host ::ng-deep .p-menu-item:focus {
+  background-color: #f3f0e6;
+}
+
+:host ::ng-deep .p-menubar-item:enabled:focus {
+  background: none;
+  background-color: var(--p-menubar-background);
 }

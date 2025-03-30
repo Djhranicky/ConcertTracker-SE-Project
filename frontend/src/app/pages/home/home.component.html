@@ -1,0 +1,6 @@
+<ng-template [ngIf]="isLoggedIn">
+  <app-dashboard></app-dashboard>
+</ng-template>
+<ng-template [ngIf]="!isLoggedIn">
+  <app-landing></app-landing>
+</ng-template>

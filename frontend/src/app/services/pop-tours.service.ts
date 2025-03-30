@@ -2,12 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { of } from 'rxjs';
-
-export interface Tour {
-  artist: string;
-  tour: string;
-  img: string;
-}
+import { Tour } from './concert.service';
 
 @Injectable({
   providedIn: 'root',

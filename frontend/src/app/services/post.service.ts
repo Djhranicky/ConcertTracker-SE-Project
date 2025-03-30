@@ -2,16 +2,11 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { of } from 'rxjs';
-import { Tour } from './pop-tours.service';
+import { Concert, Tour } from './concert.service';
 
 export interface User {
   username: string;
   avatar: string;
-}
-
-export interface Concert extends Tour {
-  date: string | null;
-  venue: string | null;
 }
 
 export interface Post extends User, Concert, Tour {
@@ -36,6 +31,7 @@ export class PostService {
     date: 'Feb 19, 2025',
     venue: 'Brisbane Entertainment Centre, Brisbane, Australia',
     artist: 'Billie Eilish',
+    setlist: null,
     tour: 'HIT ME HARD AND SOFT',
     img: 'https://res.cloudinary.com/hits-photos-archive/image/upload/v1736890770/legacy-migration/legacy-hitsdd_photo_gal__photo_1891402125.png',
     reviewText: null,
@@ -55,6 +51,7 @@ export class PostService {
     img: 'https://i.scdn.co/image/ab6761610000e5eb81f47f44084e0a09b5f0fa13',
     date: null,
     venue: null,
+    setlist: null,
     reviewText: null,
     attachedImg: null,
     rating: 4,
@@ -75,6 +72,7 @@ export class PostService {
     reviewText:
       'Lorem ipsum odor amet, consectetuer adipiscing elit. Potenti mus fermentum sed dapibus egestas; aptent faucibus quisque? Fames fringilla consectetur tortor leo potenti at porttitor aenean. Vehicula sociosqu nam in litora malesuada. Lacinia quisque gravida imperdiet magnis magna lacinia senectus. Vestibulum morbi netus nullam; parturient nostra tellus posuere non.',
     attachedImg: null,
+    setlist: null,
     rating: 5,
     likes: 2,
     comments: 0,

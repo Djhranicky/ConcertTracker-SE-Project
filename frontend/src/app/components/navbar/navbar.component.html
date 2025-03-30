@@ -5,7 +5,7 @@
         <a href="/" class="icon"> concerto </a>
       </ng-template>
       <ng-template #end>
-        <div class="buttons">
+        <div class="flex items-center gap-2">
           <p-button
             *ngIf="!isLoggedIn"
             routerLink="/login"
@@ -19,20 +19,20 @@
             label="Sign up"
             class="p-button p-button-rounded p-0 register"
           />
-
-          <p-button
+          <input
             *ngIf="isLoggedIn"
-            routerLink="/"
-            label="Log Out"
-            class="p-button p-button-rounded p-0"
-            (onClick)="logout()"
+            type="text"
+            pInputText
+            placeholder="Search"
+            class="w-36"
           />
-
+          <p-menu #menu [model]="userItems" [popup]="true" />
           <p-avatar
             *ngIf="isLoggedIn"
             image="https://primefaces.org/cdn/primevue/images/avatar/amyelsner.png"
             shape="circle"
             class="avatar"
+            (click)="menu.toggle($event)"
           />
         </div>
       </ng-template>
