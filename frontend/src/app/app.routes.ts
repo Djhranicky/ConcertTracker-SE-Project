@@ -9,11 +9,14 @@ import { AuthGuard } from './utils/authentication.guard';
 import { GuestGuard } from './utils/guest.guard';
 import { HomeComponent } from './pages/home/home.component';
 import { ConcertComponent } from './pages/concert/concert.component';
+import { ArtistComponent } from './pages/artist/artist.component';
+
 export const appRoutes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'login', component: LoginComponent, canActivate: [GuestGuard] },
   { path: 'register', component: SignupComponent, canActivate: [GuestGuard] },
   { path: 'concerts', component: ConcertComponent },
+  { path: 'artists', component: ArtistComponent },
   {
     path: 'user-profile',
     component: UserProfileComponent,
