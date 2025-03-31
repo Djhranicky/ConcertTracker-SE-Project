@@ -73,6 +73,42 @@
                 }
             }
         },
+        "/concert": {
+            "get": {
+                "description": "Returns details about a concert including the list of songs performed",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Concert"
+                ],
+                "summary": "Get concert setlist information",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Setlist ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Concert setlist information",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Error describing failure",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/import": {
             "get": {
                 "description": "Gets setlist information from setlist.fm API for given artist, and imports it into database",
