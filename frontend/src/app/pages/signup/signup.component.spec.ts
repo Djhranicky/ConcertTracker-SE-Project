@@ -134,24 +134,23 @@ describe('SignupComponent', () => {
     );
   });
 
-  it('should handle registration error'),
-    fakeAsync(() => {
-      const error = { message: 'Registration failed' };
+  it('should handle registration error', fakeAsync(() => {
+    const error = { message: 'Registration failed' };
 
-      spyOn(service, 'register').and.returnValue(throwError(() => error));
+    spyOn(service, 'register').and.returnValue(throwError(() => error));
 
-      spyOn(window, 'alert');
-      component.ngOnInit();
-      component.signupForm.setValue({
-        email: 'test@test.com',
-        username: 'username',
-        password: 'password123',
-        confirmPassword: 'password123',
-      });
-      component.register();
-      tick();
-      expect(window.alert).toHaveBeenCalledWith(
-        'Registration failed: ' + error.message
-      );
+    spyOn(window, 'alert');
+    component.ngOnInit();
+    component.signupForm.setValue({
+      email: 'test@test.com',
+      username: 'username',
+      password: 'password123',
+      confirmPassword: 'password123',
     });
+    component.register();
+    tick();
+    expect(window.alert).toHaveBeenCalledWith(
+      'Registration failed: ' + error.message
+    );
+  }));
 });
