@@ -3,9 +3,9 @@ package routes
 import (
 	"errors"
 	"fmt"
-	"math"
 	"net/http"
 	"os"
+	"sort"
 	"time"
 
 	_ "github.com/djhranicky/ConcertTracker-SE-Project/docs"
@@ -35,7 +35,6 @@ func (h *Handler) RegisterRoutes(router *mux.Router) {
 	router.HandleFunc("/register", h.handleRegister).Methods("POST", "OPTIONS")
 	router.HandleFunc("/validate", h.handleValidate).Methods("GET", "OPTIONS")
 	router.HandleFunc("/artist", h.handleArtist(baseURL)).Methods("GET", "OPTIONS")
-	router.HandleFunc("/import", h.handleArtistImport(baseURL)).Methods("GET", "OPTIONS")
 
 	// Serve Swagger UI
 	router.PathPrefix("/swagger/").Handler(httpSwagger.WrapHandler)
@@ -220,88 +219,114 @@ func (h *Handler) handleArtist(inputURL string) http.HandlerFunc {
 		// Check if artist exists in db
 		artist, err := h.Store.GetArtistByName(searchString)
 
-		// If so, return info from there
-		if err == nil {
-			utils.WriteJSON(w, http.StatusOK, *artist)
-			return
-		}
+		fmt.Println("artist exists in db:", artist)
 
-		// If not, check if artist exists on setlist.fm
-		url := fmt.Sprintf("%s/%s", inputURL, "search/artists")
-		artist, err = setlist.ArtistSearch(url, searchString)
-
+		// If artist doesn't exist in db, search on setlist.fm
 		if err != nil {
-			utils.WriteError(w, http.StatusBadRequest, err)
-			return
+			url := fmt.Sprintf("%s/%s", inputURL, "search/artists")
+			artist, err = setlist.ArtistSearch(url, searchString)
+
+			if err != nil {
+				utils.WriteError(w, http.StatusBadRequest, err)
+				return
+			}
+
+			// Create artist in database
+			err = h.Store.CreateArtist(*artist)
+			if err != nil {
+				utils.WriteError(w, http.StatusInternalServerError, err)
+				return
+			}
 		}
 
-		// If so, create info in database and return info
-		err = h.Store.CreateArtist(*artist)
+		// Import setlist data (similar to handleArtistImport)
+		mbid := artist.MBID
+
+		// Retrieve or import artist setlists
+		jsonData, err := utils.GetArtistSetlistsFromAPI(w, inputURL, mbid, 1)
 		if err != nil {
 			utils.WriteError(w, http.StatusInternalServerError, err)
 			return
 		}
-		utils.WriteJSON(w, http.StatusOK, *artist)
-	}
-}
 
-// @Summary Import information for a given artist into database
-// @Description Gets setlist information from setlist.fm API for given artist, and imports it into database
-// @Tags Artist
-// @Param mbid path string true "Artist MBID"
-// @Produce json
-// @Success 201 {string} string "Message indicating success"
-// @Failure 400 {string} error "Error describing failure"
-// @Router /import [get]
-func (h *Handler) handleArtistImport(inputURL string) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		utils.SetCORSHeaders(w)
-		if r.Method == "OPTIONS" {
-			w.WriteHeader(http.StatusOK)
-			return
-		}
-
-		// Get artist search from request
-		mbid := r.URL.Query().Get("mbid")
-		if mbid == "" {
-			utils.WriteError(w, http.StatusBadRequest, errors.New("artist mbid not provided"))
-			return
-		}
-
-		fullImport := r.URL.Query().Get("full")
-		if !(fullImport == "true" || fullImport == "") {
-			utils.WriteError(w, http.StatusBadRequest, errors.New("invalid option for full parameter"))
-			return
-		}
-
-		artist, err := h.Store.GetArtistByMBID(mbid)
-		if err != nil {
-			utils.WriteError(w, http.StatusBadRequest, errors.New("artist mbid not in database"))
-			return
-		}
-
-		jsonData, err := utils.GetArtistSetlistsFromAPI(w, inputURL, mbid, 1)
-		if err != nil {
-			return
-		}
-
+		// Process artist info
 		setlist.ProcessArtistInfo(h.Store, *jsonData, artist)
 
-		numPages := 1
-		if fullImport != "" {
-			numPages = int(math.Ceil(float64(jsonData.Total) / float64(jsonData.ItemsPerPage)))
+		// Get additional data needed for response
+		imageURL := "" // You may need to add this field to your API response
+		if len(jsonData.Setlist) > 0 && jsonData.Setlist[0].Artist.URL != "" {
+			imageURL = jsonData.Setlist[0].Artist.URL
 		}
 
-		i := 2
-		for range time.Tick(1 * time.Second) {
-			if i > numPages {
-				break
+		// Extract tours and setlists
+		tourNames := make(map[string]bool)
+		setlistDates := make([]string, 0)
+		recentSetlists := make([]map[string]string, 0)
+		upcomingShows := make([]map[string]string, 0)
+
+		// Process all setlists to gather information
+		for i := range jsonData.Setlist {
+			// Add tour to unique tours list
+			if jsonData.Setlist[i].Tour.Name != "" {
+				tourNames[jsonData.Setlist[i].Tour.Name] = true
 			}
-			jsonData, _ = utils.GetArtistSetlistsFromAPI(w, inputURL, mbid, i)
-			setlist.ProcessArtistInfo(h.Store, *jsonData, artist)
-			i++
+
+			// Add to setlist dates
+			setlistDates = append(setlistDates, jsonData.Setlist[i].EventDate)
+
+			// Add to recent setlists (we'll sort later)
+			if len(recentSetlists) < 5 {
+				setlistInfo := map[string]string{
+					"date":  jsonData.Setlist[i].EventDate,
+					"venue": jsonData.Setlist[i].Venue.Name,
+					"city":  jsonData.Setlist[i].Venue.City.Name,
+					"url":   jsonData.Setlist[i].URL,
+				}
+				recentSetlists = append(recentSetlists, setlistInfo)
+			}
+
+			// Check for upcoming shows (dates after current date)
+			eventDate, err := time.Parse("02-01-2006", jsonData.Setlist[i].EventDate)
+			if err == nil && eventDate.After(time.Now()) {
+				upcomingShow := map[string]string{
+					"date":  jsonData.Setlist[i].EventDate,
+					"venue": jsonData.Setlist[i].Venue.Name,
+					"city":  jsonData.Setlist[i].Venue.City.Name,
+					"url":   jsonData.Setlist[i].URL,
+				}
+				upcomingShows = append(upcomingShows, upcomingShow)
+			}
 		}
 
-		utils.WriteJSON(w, http.StatusCreated, map[string]string{"message": "artist information successfully imported"})
+		// Sort recent setlists by date (newest first)
+		sort.Slice(recentSetlists, func(i, j int) bool {
+			dateI, _ := time.Parse("02-01-2006", recentSetlists[i]["date"])
+			dateJ, _ := time.Parse("02-01-2006", recentSetlists[j]["date"])
+			return dateI.After(dateJ)
+		})
+
+		// Limit to 5 most recent
+		if len(recentSetlists) > 5 {
+			recentSetlists = recentSetlists[:5]
+		}
+
+		// Convert tourNames to slice
+		tours := make([]string, 0, len(tourNames))
+		for tourName := range tourNames {
+			tours = append(tours, tourName)
+		}
+
+		// Create enhanced artist response
+		enhancedResponse := map[string]interface{}{
+			"artist":          artist,
+			"image_url":       imageURL,
+			"number_of_tours": len(tourNames),
+			"tour_names":      tours,
+			"total_setlists":  len(setlistDates),
+			"recent_setlists": recentSetlists,
+			"upcoming_shows":  upcomingShows,
+		}
+
+		utils.WriteJSON(w, http.StatusOK, enhancedResponse)
 	}
 }
