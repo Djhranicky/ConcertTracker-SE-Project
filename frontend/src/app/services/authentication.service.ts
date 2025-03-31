@@ -56,7 +56,6 @@ export class AuthenticationService {
           if (typeof response === 'boolean') {
             return false;
           }
-          console.log(response);
           return response.message === 'user session validated';
         })
       );
