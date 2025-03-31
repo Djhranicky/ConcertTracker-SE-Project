@@ -35,6 +35,7 @@ func (h *Handler) RegisterRoutes(router *mux.Router) {
 	router.HandleFunc("/register", h.handleRegister).Methods("POST", "OPTIONS")
 	router.HandleFunc("/validate", h.handleValidate).Methods("GET", "OPTIONS")
 	router.HandleFunc("/artist", h.handleArtist(baseURL)).Methods("GET", "OPTIONS")
+	router.HandleFunc("/concert", h.handleConcert(baseURL)).Methods("GET", "OPTIONS")
 
 	// Serve Swagger UI
 	router.PathPrefix("/swagger/").Handler(httpSwagger.WrapHandler)
@@ -277,6 +278,7 @@ func (h *Handler) handleArtist(inputURL string) http.HandlerFunc {
 			// Add to recent setlists (we'll sort later)
 			if len(recentSetlists) < 5 {
 				setlistInfo := map[string]string{
+					"id":    jsonData.Setlist[i].ID,
 					"date":  jsonData.Setlist[i].EventDate,
 					"venue": jsonData.Setlist[i].Venue.Name,
 					"city":  jsonData.Setlist[i].Venue.City.Name,
@@ -289,6 +291,7 @@ func (h *Handler) handleArtist(inputURL string) http.HandlerFunc {
 			eventDate, err := time.Parse("02-01-2006", jsonData.Setlist[i].EventDate)
 			if err == nil && eventDate.After(time.Now()) {
 				upcomingShow := map[string]string{
+					"id":    jsonData.Setlist[i].ID,
 					"date":  jsonData.Setlist[i].EventDate,
 					"venue": jsonData.Setlist[i].Venue.Name,
 					"city":  jsonData.Setlist[i].Venue.City.Name,
@@ -328,5 +331,198 @@ func (h *Handler) handleArtist(inputURL string) http.HandlerFunc {
 		}
 
 		utils.WriteJSON(w, http.StatusOK, enhancedResponse)
+	}
+}
+
+// @Summary Get concert setlist information
+// @Description Returns details about a concert including the list of songs performed
+// @Tags Concert
+// @Param id path string true "Setlist ID"
+// @Produce json
+// @Success 200 {object} map[string]interface{} "Concert setlist information"
+// @Failure 400 {string} error "Error describing failure"
+// @Router /concert [get]
+func (h *Handler) handleConcert(inputURL string) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		utils.SetCORSHeaders(w)
+		if r.Method == "OPTIONS" {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+
+		// Get setlist ID from request
+		setlistID := r.URL.Query().Get("id")
+		if setlistID == "" {
+			utils.WriteError(w, http.StatusBadRequest, errors.New("setlist ID not provided"))
+			return
+		}
+
+		// Get setlist from setlist.fm API
+		url := fmt.Sprintf("%s/setlist/%s", inputURL, setlistID)
+		setlistData, err := setlist.GetSetlist(url)
+		if err != nil {
+			utils.WriteError(w, http.StatusBadRequest, err)
+			return
+		}
+
+		// Get or create artist record
+		artist := h.Store.CreateArtistIfMissing(types.Artist{
+			MBID: setlistData.Artist.Mbid,
+			Name: setlistData.Artist.Name,
+		})
+
+		// Get or create venue record
+		venue := h.Store.CreateVenueIfMissing(types.Venue{
+			Name:       setlistData.Venue.Name,
+			City:       setlistData.Venue.City.Name,
+			Country:    setlistData.Venue.City.Country.Name,
+			ExternalID: setlistData.Venue.ID,
+			URL:        setlistData.Venue.URL,
+		})
+
+		// Parse event date
+		eventDate, err := time.Parse("02-01-2006", setlistData.EventDate)
+		if err != nil {
+			utils.WriteError(w, http.StatusInternalServerError, fmt.Errorf("error parsing event date: %v", err))
+			return
+		}
+
+		// Get or create tour if exists
+		var tour *types.Tour
+		if setlistData.Tour.Name != "" {
+			tourRecord := types.Tour{
+				ArtistID: artist.ID,
+				Name:     setlistData.Tour.Name,
+			}
+			tour = h.Store.CreateTourIfMissing(tourRecord)
+		}
+
+		// Create concert record
+		var tourID *uint
+		if tour != nil {
+			tourID = &tour.ID
+		}
+
+		concert := h.Store.CreateConcertIfMissing(types.Concert{
+			ArtistID:          artist.ID,
+			TourID:            tourID,
+			VenueID:           venue.ID,
+			Date:              eventDate,
+			ExternalID:        setlistData.ID,
+			ExternalVersionID: setlistData.VersionID,
+		})
+
+		// Process songs
+		songsList := make([]map[string]interface{}, 0)
+		songOrder := uint(1)
+
+		for _, set := range setlistData.Sets.Set {
+			for _, songData := range set.Song {
+				// Process the main song
+				song := types.Song{
+					ArtistID: artist.ID,
+					Name:     songData.Name,
+					Info:     songData.Info,
+					Tape:     songData.Tape,
+				}
+
+				// Process "with" artist if present
+				if songData.With.Mbid != "" {
+					withArtist := h.Store.CreateArtistIfMissing(types.Artist{
+						MBID: songData.With.Mbid,
+						Name: songData.With.Name,
+					})
+					withID := withArtist.ID
+					song.WithID = &withID
+				}
+
+				// Process "cover" artist if present
+				if songData.Cover.Mbid != "" {
+					coverArtist := h.Store.CreateArtistIfMissing(types.Artist{
+						MBID: songData.Cover.Mbid,
+						Name: songData.Cover.Name,
+					})
+					coverID := coverArtist.ID
+					song.CoverID = &coverID
+				}
+
+				// Save song to database
+				songRecord := h.Store.CreateSongIfMissing(song)
+
+				// Connect song to concert
+				concertSong := types.ConcertSong{
+					ConcertID: concert.ID,
+					SongID:    songRecord.ID,
+					SongOrder: songOrder,
+				}
+				h.Store.CreateConcertSongIfMissing(concertSong)
+
+				// Prepare song data for response
+				songInfo := map[string]interface{}{
+					"name":  songData.Name,
+					"info":  songData.Info,
+					"tape":  songData.Tape,
+					"order": songOrder,
+				}
+
+				// Add "with" information if present
+				if songData.With.Mbid != "" {
+					songInfo["with"] = map[string]string{
+						"mbid": songData.With.Mbid,
+						"name": songData.With.Name,
+					}
+				}
+
+				// Add "cover" information if present
+				if songData.Cover.Mbid != "" {
+					songInfo["cover"] = map[string]string{
+						"mbid": songData.Cover.Mbid,
+						"name": songData.Cover.Name,
+					}
+				}
+
+				songsList = append(songsList, songInfo)
+				songOrder++
+			}
+		}
+
+		// Create response
+		response := map[string]interface{}{
+			"id":           setlistData.ID,
+			"version_id":   setlistData.VersionID,
+			"event_date":   setlistData.EventDate,
+			"last_updated": setlistData.LastUpdated,
+			"artist": map[string]string{
+				"mbid": setlistData.Artist.Mbid,
+				"name": setlistData.Artist.Name,
+				"url":  setlistData.Artist.URL,
+			},
+			"venue": map[string]interface{}{
+				"id":   setlistData.Venue.ID,
+				"name": setlistData.Venue.Name,
+				"city": map[string]string{
+					"name":    setlistData.Venue.City.Name,
+					"state":   setlistData.Venue.City.State,
+					"country": setlistData.Venue.City.Country.Name,
+				},
+				"url": setlistData.Venue.URL,
+			},
+			"songs": songsList,
+			"url":   setlistData.URL,
+		}
+
+		// Add tour information if available
+		if setlistData.Tour.Name != "" {
+			response["tour"] = map[string]string{
+				"name": setlistData.Tour.Name,
+			}
+		}
+
+		// Add info if available
+		if setlistData.Info != "" {
+			response["info"] = setlistData.Info
+		}
+
+		utils.WriteJSON(w, http.StatusOK, response)
 	}
 }
