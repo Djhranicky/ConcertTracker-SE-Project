@@ -2,7 +2,6 @@ package db
 
 import (
 	"errors"
-	"time"
 
 	"github.com/djhranicky/ConcertTracker-SE-Project/types"
 	"gorm.io/gorm"
@@ -192,71 +191,4 @@ func (s *Store) CreateConcertSongIfMissing(concertSong types.ConcertSong) *types
 
 	s.db.First(&returnConcertSong, "concert_id = ? AND song_id = ?", concertSong.Concert.ID, concertSong.Song.ID)
 	return &returnConcertSong
-}
-
-// GetArtistTours returns all tours for a specific artist
-func (s *Store) GetArtistTours(artistID uint) ([]types.Tour, error) {
-	var tours []types.Tour
-	err := s.db.Where("artist_id = ?", artistID).Find(&tours).Error
-	return tours, err
-}
-
-// GetArtistConcertCount returns the total number of concerts for an artist
-func (s *Store) GetArtistConcertCount(artistID uint) (int, error) {
-	var count int64
-	err := s.db.Model(&types.Concert{}).Where("artist_id = ?", artistID).Count(&count).Error
-	return int(count), err
-}
-
-// GetRecentConcerts returns the most recent concerts for an artist
-func (s *Store) GetRecentConcerts(artistID uint, limit int) ([]types.ConcertInfo, error) {
-	var concerts []types.Concert
-	err := s.db.Where("artist_id = ? AND date <= ?", artistID, time.Now()).
-		Order("date DESC").
-		Limit(limit).
-		Preload("Venue").
-		Preload("Tour").
-		Find(&concerts).Error
-
-	if err != nil {
-		return nil, err
-	}
-
-	return s.concertsToConcertInfo(concerts), nil
-}
-
-// GetUpcomingConcerts returns upcoming concerts for an artist
-func (s *Store) GetUpcomingConcerts(artistID uint, limit int) ([]types.ConcertInfo, error) {
-	var concerts []types.Concert
-	err := s.db.Where("artist_id = ? AND date > ?", artistID, time.Now()).
-		Order("date ASC").
-		Limit(limit).
-		Preload("Venue").
-		Preload("Tour").
-		Find(&concerts).Error
-
-	if err != nil {
-		return nil, err
-	}
-
-	return s.concertsToConcertInfo(concerts), nil
-}
-
-// Helper function to convert Concert slice to ConcertInfo slice
-func (s *Store) concertsToConcertInfo(concerts []types.Concert) []types.ConcertInfo {
-	result := make([]types.ConcertInfo, len(concerts))
-	for i, concert := range concerts {
-		info := types.ConcertInfo{
-			ID:        concert.ID,
-			Date:      concert.Date,
-			VenueName: concert.Venue.Name,
-			City:      concert.Venue.City,
-			Country:   concert.Venue.Country,
-		}
-		if concert.Tour != nil {
-			info.TourName = concert.Tour.Name
-		}
-		result[i] = info
-	}
-	return result
 }

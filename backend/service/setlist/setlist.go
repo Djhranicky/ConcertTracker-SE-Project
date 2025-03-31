@@ -56,15 +56,9 @@ func ArtistSearch(url string, artist string) (*types.Artist, error) {
 		return nil, err
 	}
 
-	imageURL := ""
-	if len(jsonData.Artist) > 0 && jsonData.Artist[0].Image != "" {
-		imageURL = jsonData.Artist[0].Image
-	}
-
 	returnArtist := types.Artist{
-		MBID:     jsonData.Artist[0].Mbid,
-		Name:     jsonData.Artist[0].Name,
-		ImageURL: imageURL,
+		MBID: jsonData.Artist[0].Mbid,
+		Name: jsonData.Artist[0].Name,
 	}
 	return &returnArtist, nil
 }

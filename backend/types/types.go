@@ -41,19 +41,12 @@ type Store interface {
 	CreateConcertIfMissing(Concert) *Concert
 	CreateSongIfMissing(Song) *Song
 	CreateConcertSongIfMissing(ConcertSong) *ConcertSong
-
-	// New methods for the enhanced artist response
-	GetArtistTours(artistID uint) ([]Tour, error)
-	GetArtistConcertCount(artistID uint) (int, error)
-	GetRecentConcerts(artistID uint, limit int) ([]ConcertInfo, error)
-	GetUpcomingConcerts(artistID uint, limit int) ([]ConcertInfo, error)
 }
 
 type Artist struct {
 	ID        uint   `gorm:"primaryKey"`
 	MBID      string `gorm:"unique"`
 	Name      string `json:"name"`
-	ImageURL  string `json:"imageUrl"` // Added ImageURL field
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
@@ -121,26 +114,4 @@ type ConcertSong struct {
 
 	Concert Concert `gorm:"foreignKey:ConcertID"`
 	Song    Song    `gorm:"foreignKey:SongID"`
-}
-
-// ArtistResponse represents the enhanced artist data to be returned to the frontend
-type ArtistResponse struct {
-	Artist           Artist        `json:"artist"`
-	ImageURL         string        `json:"imageUrl"`
-	TourCount        int           `json:"tourCount"`
-	Tours            []string      `json:"tours"`
-	ConcertCount     int           `json:"concertCount"`
-	RecentConcerts   []ConcertInfo `json:"recentConcerts"`
-	HasUpcoming      bool          `json:"hasUpcoming"`
-	UpcomingConcerts []ConcertInfo `json:"upcomingConcerts"`
-}
-
-// ConcertInfo represents the simplified concert data for response
-type ConcertInfo struct {
-	ID        uint      `json:"id"`
-	Date      time.Time `json:"date"`
-	VenueName string    `json:"venueName"`
-	City      string    `json:"city"`
-	Country   string    `json:"country"`
-	TourName  string    `json:"tourName,omitempty"`
 }

@@ -201,7 +201,7 @@ func (h *Handler) handleValidate(w http.ResponseWriter, r *http.Request) {
 // @Produce json
 // @Success 200 {object} types.Artist "Object that holds artist information"
 // @Failure 400 {string} error "Error describing failure"
-// @Router /artist [get]
+// @Router /artist [post]
 func (h *Handler) handleArtist(inputURL string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		utils.SetCORSHeaders(w)
@@ -220,39 +220,28 @@ func (h *Handler) handleArtist(inputURL string) http.HandlerFunc {
 		// Check if artist exists in db
 		artist, err := h.Store.GetArtistByName(searchString)
 
-		// If not, check if artist exists on setlist.fm
-		if err != nil {
-			url := fmt.Sprintf("%s/%s", inputURL, "search/artists")
-			artist, err = setlist.ArtistSearch(url, searchString)
-
-			if err != nil {
-				utils.WriteError(w, http.StatusBadRequest, err)
-				return
-			}
-
-			// Create artist in database
-			err = h.Store.CreateArtist(*artist)
-			if err != nil {
-				utils.WriteError(w, http.StatusInternalServerError, err)
-				return
-			}
-
-			// Get fresh artist from DB with ID
-			artist, err = h.Store.GetArtistByMBID(artist.MBID)
-			if err != nil {
-				utils.WriteError(w, http.StatusInternalServerError, err)
-				return
-			}
+		// If so, return info from there
+		if err == nil {
+			utils.WriteJSON(w, http.StatusOK, *artist)
+			return
 		}
 
-		// Now build the enhanced response
-		response, err := buildArtistResponse(h.Store, artist)
+		// If not, check if artist exists on setlist.fm
+		url := fmt.Sprintf("%s/%s", inputURL, "search/artists")
+		artist, err = setlist.ArtistSearch(url, searchString)
+
+		if err != nil {
+			utils.WriteError(w, http.StatusBadRequest, err)
+			return
+		}
+
+		// If so, create info in database and return info
+		err = h.Store.CreateArtist(*artist)
 		if err != nil {
 			utils.WriteError(w, http.StatusInternalServerError, err)
 			return
 		}
-
-		utils.WriteJSON(w, http.StatusOK, response)
+		utils.WriteJSON(w, http.StatusOK, *artist)
 	}
 }
 
@@ -315,55 +304,4 @@ func (h *Handler) handleArtistImport(inputURL string) http.HandlerFunc {
 
 		utils.WriteJSON(w, http.StatusCreated, map[string]string{"message": "artist information successfully imported"})
 	}
-}
-
-// Helper function to build the enhanced artist response
-func buildArtistResponse(store types.Store, artist *types.Artist) (*types.ArtistResponse, error) {
-	// Get tours
-	tours, err := store.GetArtistTours(artist.ID)
-	if err != nil {
-		return nil, fmt.Errorf("error fetching tours: %w", err)
-	}
-
-	// Get tour names
-	tourNames := make([]string, len(tours))
-	for i, tour := range tours {
-		tourNames[i] = tour.Name
-	}
-
-	// Get concert count
-	concertCount, err := store.GetArtistConcertCount(artist.ID)
-	if err != nil {
-		return nil, fmt.Errorf("error fetching concert count: %w", err)
-	}
-
-	// Get recent concerts (5)
-	recentConcerts, err := store.GetRecentConcerts(artist.ID, 5)
-	if err != nil {
-		return nil, fmt.Errorf("error fetching recent concerts: %w", err)
-	}
-
-	// Get upcoming concerts (3)
-	upcomingConcerts, err := store.GetUpcomingConcerts(artist.ID, 3)
-	if err != nil {
-		return nil, fmt.Errorf("error fetching upcoming concerts: %w", err)
-	}
-
-	// Use existing ImageURL if available, otherwise generate a placeholder
-	imageURL := artist.ImageURL
-	if imageURL == "" && artist.MBID != "" {
-		// This is a placeholder; you might want to integrate with a real image service
-		imageURL = fmt.Sprintf("https://commons.wikimedia.org/wiki/Special:FilePath/MusicBrainz_artist_%s_image.jpg", artist.MBID)
-	}
-
-	return &types.ArtistResponse{
-		Artist:           *artist,
-		ImageURL:         imageURL,
-		TourCount:        len(tours),
-		Tours:            tourNames,
-		ConcertCount:     concertCount,
-		RecentConcerts:   recentConcerts,
-		HasUpcoming:      len(upcomingConcerts) > 0,
-		UpcomingConcerts: upcomingConcerts,
-	}, nil
 }
