@@ -3,6 +3,7 @@ package setlist
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"net/http"
 	"os"
@@ -11,6 +12,99 @@ import (
 	"github.com/djhranicky/ConcertTracker-SE-Project/types"
 	"github.com/joho/godotenv"
 )
+
+// Setlist represents a single setlist response
+type Setlist struct {
+	ID          string `json:"id"`
+	VersionID   string `json:"versionId"`
+	EventDate   string `json:"eventDate"`
+	LastUpdated string `json:"lastUpdated"`
+	Artist      struct {
+		Mbid           string `json:"mbid"`
+		Name           string `json:"name"`
+		SortName       string `json:"sortName"`
+		Disambiguation string `json:"disambiguation"`
+		URL            string `json:"url"`
+	} `json:"artist"`
+	Venue struct {
+		ID   string `json:"id"`
+		Name string `json:"name"`
+		City struct {
+			ID        string `json:"id"`
+			Name      string `json:"name"`
+			State     string `json:"state"`
+			StateCode string `json:"stateCode"`
+			Coords    struct {
+				Lat  float64 `json:"lat"`
+				Long float64 `json:"long"`
+			} `json:"coords"`
+			Country struct {
+				Code string `json:"code"`
+				Name string `json:"name"`
+			} `json:"country"`
+		} `json:"city"`
+		URL string `json:"url"`
+	} `json:"venue"`
+	Sets struct {
+		Set []struct {
+			Song []struct {
+				Name string `json:"name"`
+				With struct {
+					Mbid           string `json:"mbid"`
+					Name           string `json:"name"`
+					SortName       string `json:"sortName"`
+					Disambiguation string `json:"disambiguation"`
+					URL            string `json:"url"`
+				} `json:"with"`
+				Cover struct {
+					Mbid           string `json:"mbid"`
+					Name           string `json:"name"`
+					SortName       string `json:"sortName"`
+					Disambiguation string `json:"disambiguation"`
+					URL            string `json:"url"`
+				} `json:"cover"`
+				Info string `json:"info"`
+				Tape bool   `json:"tape"`
+			} `json:"song"`
+		} `json:"set"`
+	} `json:"sets"`
+	URL  string `json:"url"`
+	Tour struct {
+		Name string `json:"name"`
+	} `json:"tour,omitempty"`
+	Info string `json:"info,omitempty"`
+}
+
+// GetSetlist retrieves a specific setlist by its ID
+func GetSetlist(url string) (*Setlist, error) {
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	// Add required headers for setlist.fm API
+	req.Header.Add("Accept", "application/json")
+	req.Header.Add("x-api-key", os.Getenv("SETLIST_API_KEY"))
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != 200 {
+		bodyBytes, _ := io.ReadAll(resp.Body)
+		return nil, fmt.Errorf("API request failed with status %d: %s", resp.StatusCode, string(bodyBytes))
+	}
+
+	var setlist Setlist
+	if err := json.NewDecoder(resp.Body).Decode(&setlist); err != nil {
+		return nil, err
+	}
+
+	return &setlist, nil
+}
 
 func ArtistSearch(url string, artist string) (*types.Artist, error) {
 	err := godotenv.Load("./.env")
