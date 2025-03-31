@@ -234,12 +234,8 @@ func (h *Handler) handleArtist(inputURL string) http.HandlerFunc {
 				return
 			}
 
-			// Create artist in database
-			err = h.Store.CreateArtist(*artist)
-			if err != nil {
-				utils.WriteError(w, http.StatusInternalServerError, err)
-				return
-			}
+			// Use CreateArtistIfMissing to avoid duplicates
+			artist = h.Store.CreateArtistIfMissing(*artist)
 		}
 
 		// Import setlist data (similar to handleArtistImport)
@@ -277,8 +273,8 @@ func (h *Handler) handleArtist(inputURL string) http.HandlerFunc {
 			// Add to setlist dates
 			setlistDates = append(setlistDates, jsonData.Setlist[i].EventDate)
 
-			// Add to recent setlists (we'll sort later)
-			if len(recentSetlists) < 5 {
+			// Add to recent setlists
+			if len(recentSetlists) < 20 {
 				setlistInfo := map[string]string{
 					"id":    jsonData.Setlist[i].ID,
 					"date":  jsonData.Setlist[i].EventDate,
