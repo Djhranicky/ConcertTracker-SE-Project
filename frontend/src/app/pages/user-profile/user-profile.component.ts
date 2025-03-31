@@ -5,7 +5,7 @@ import { NavbarComponent } from '../../components/navbar/navbar.component';
 import { PostComponent } from '../../components/post/post.component';
 import { UserService, UserProfile, ConcertCard, Activity, List } from '../../services/user.service';
 import { Post } from '../../services/post.service';
-import { Button } from 'primeng/button';
+// import { Button } from 'primeng/button';
 import { Card } from 'primeng/card';
 import { AvatarModule } from 'primeng/avatar';
 import { Router } from '@angular/router'; 
@@ -18,7 +18,6 @@ import { Router } from '@angular/router';
     FormsModule, 
     NavbarComponent, 
     PostComponent,
-    Button,
     Card,
     AvatarModule
   ],
