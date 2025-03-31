@@ -67,7 +67,7 @@ export class ArtistComponent implements OnInit {
       ['bellyache', '(268)'],
     ];
 
-    console.log(this.upcomingTuples);
+    // console.log(this.upcomingTuples);
 
     this.responsiveOptions = [
       {
