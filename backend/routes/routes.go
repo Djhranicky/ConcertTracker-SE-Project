@@ -201,7 +201,7 @@ func (h *Handler) handleValidate(w http.ResponseWriter, r *http.Request) {
 // @Produce json
 // @Success 200 {object} types.Artist "Object that holds artist information"
 // @Failure 400 {string} error "Error describing failure"
-// @Router /artist [post]
+// @Router /artist [get]
 func (h *Handler) handleArtist(inputURL string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		utils.SetCORSHeaders(w)

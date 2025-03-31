@@ -231,10 +231,6 @@ const docTemplate = `{
                 "id": {
                     "type": "integer"
                 },
-                "imageUrl": {
-                    "description": "Added ImageURL field",
-                    "type": "string"
-                },
                 "mbid": {
                     "type": "string"
                 },
