@@ -32,7 +32,7 @@ export class NavbarComponent {
     private authenticationService: AuthenticationService,
     private router: RouterModule
   ) {}
-  isLoggedIn = false;
+  isLoggedIn: boolean = false;
   items: MenuItem[] | undefined;
   userItems: MenuItem[] | undefined;
   logIn = {
@@ -52,47 +52,49 @@ export class NavbarComponent {
   }
 
   ngOnInit() {
-    this.isLoggedIn = this.authenticationService.isAuthenticated();
-    if (this.isLoggedIn) {
-      this.items = [
-        {
-          label: 'Home',
-          routerLink: '/',
-        },
-        {
-          label: 'Concerts',
-          routerLink: '/concerts',
-        },
-        {
-          label: 'Artists',
-          routerLink: '/artists',
-        },
-        {
-          label: 'Lists',
-          routerLink: '/lists',
-        },
-      ];
-
-      this.userItems = [
-        {
-          label: 'Profile',
-          routerLink: '/user-profile',
-        },
-        {
-          label: 'Notifications',
-          routerLink: '/notifications',
-        },
-        {
-          label: 'Settings',
-          routerLink: '/settings',
-        },
-        {
-          label: 'Sign out',
-          command: (event) => {
-            this.logout();
+    this.authenticationService.isAuthenticated().subscribe((isAuth) => {
+      this.isLoggedIn = isAuth;
+      if (this.isLoggedIn) {
+        this.items = [
+          {
+            label: 'Home',
+            routerLink: '/',
           },
-        },
-      ];
-    }
+          {
+            label: 'Concerts',
+            routerLink: '/concerts',
+          },
+          {
+            label: 'Artists',
+            routerLink: '/artists',
+          },
+          {
+            label: 'Lists',
+            routerLink: '/lists',
+          },
+        ];
+
+        this.userItems = [
+          {
+            label: 'Profile',
+            routerLink: '/user-profile',
+          },
+          {
+            label: 'Notifications',
+            routerLink: '/notifications',
+          },
+          {
+            label: 'Settings',
+            routerLink: '/settings',
+          },
+          {
+            label: 'Sign out',
+            command: (event) => {
+              this.logout();
+            },
+          },
+        ];
+      }
+    });
   }
 }

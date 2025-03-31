@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { Router } from '@angular/router';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { CookieService } from 'ngx-cookie-service';
+import { map, catchError } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -38,13 +39,26 @@ export class AuthenticationService {
 
   logout() {
     // this.isLoggedIn = false;
-    localStorage.removeItem('isAuth');
+    document.cookie = 'id=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/api;';
     this.router.navigate(['/login']);
   }
 
-  isAuthenticated(): boolean {
-    let isAuth = localStorage.getItem('isAuth');
-    return !!isAuth;
+  isAuthenticated(): Observable<boolean> {
+    return this.http
+      .get<{ message: string }>(`${this.url}/validate`, {
+        withCredentials: true,
+      })
+      .pipe(
+        catchError(() => {
+          return of(false);
+        }),
+        map((response) => {
+          if (typeof response === 'boolean') {
+            return false;
+          }
+          return response.message === 'user session validated';
+        })
+      );
   }
   constructor(
     private router: Router,

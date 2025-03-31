@@ -109,4 +109,36 @@ describe('LoginComponent', () => {
     component.login();
     expect(authMock.login).not.toHaveBeenCalled();
   });
+
+  it('should call AuthenticationService.login if form is valid', () => {
+    spyOn(service, 'login').and.returnValue(of({}));
+    component.loginForm.setValue({
+      email: 'test@test.com',
+      password: 'password123',
+    });
+
+    component.login();
+    expect(service.login).toHaveBeenCalledWith('test@test.com', 'password123');
+  });
+
+  it('should show alert if login fails'),
+    fakeAsync(() => {
+      let mockError = {};
+
+      authMock.login.and.returnValue(throwError(() => mockError));
+      component.loginForm.setValue({
+        email: 'test@test.com',
+        password: 'password123',
+      });
+
+      component.login();
+
+      expect(authMock.login).toHaveBeenCalledWith(
+        'test@test.com',
+        'password123'
+      );
+      expect(spyOn(window, 'alert')).toHaveBeenCalledWith(
+        'Login failed: Unknown error'
+      );
+    });
 });

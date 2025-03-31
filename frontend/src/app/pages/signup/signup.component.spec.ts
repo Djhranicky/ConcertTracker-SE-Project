@@ -1,4 +1,9 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {
+  ComponentFixture,
+  fakeAsync,
+  TestBed,
+  tick,
+} from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
@@ -28,8 +33,10 @@ describe('SignupComponent', () => {
       teardown: { destroyAfterEach: false },
     }).compileComponents();
 
-    service = TestBed.inject(AuthenticationService);
-    authMock = jasmine.createSpyObj('AuthenticationService', ['login']);
+    service = TestBed.inject(
+      AuthenticationService
+    ) as jasmine.SpyObj<AuthenticationService>;
+    authMock = jasmine.createSpyObj('AuthenticationService', ['register']);
     routerMock = jasmine.createSpyObj('Router', ['navigate']);
     fixture = TestBed.createComponent(SignupComponent);
     component = fixture.componentInstance;
@@ -106,6 +113,45 @@ describe('SignupComponent', () => {
     });
 
     component.register();
-    expect(authMock.login).not.toHaveBeenCalled();
+    expect(authMock.register).not.toHaveBeenCalled();
   });
+
+  it('should call AuthenticationService.register if form is valid', () => {
+    spyOn(service, 'register').and.returnValue(of({}));
+
+    component.ngOnInit();
+    component.signupForm.setValue({
+      email: 'test@test.com',
+      username: 'username',
+      password: 'password123',
+      confirmPassword: 'password123',
+    });
+    component.register();
+    expect(service.register).toHaveBeenCalledWith(
+      'test@test.com',
+      'username',
+      'password123'
+    );
+  });
+
+  it('should handle registration error'),
+    fakeAsync(() => {
+      const error = { message: 'Registration failed' };
+
+      spyOn(service, 'register').and.returnValue(throwError(() => error));
+
+      spyOn(window, 'alert');
+      component.ngOnInit();
+      component.signupForm.setValue({
+        email: 'test@test.com',
+        username: 'username',
+        password: 'password123',
+        confirmPassword: 'password123',
+      });
+      component.register();
+      tick();
+      expect(window.alert).toHaveBeenCalledWith(
+        'Registration failed: ' + error.message
+      );
+    });
 });
