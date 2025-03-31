@@ -11,9 +11,11 @@ import { AuthenticationService } from '../../services/authentication.service';
 })
 export class HomeComponent {
   constructor(private authenticationService: AuthenticationService) {}
-  isLoggedIn = false;
+  isLoggedIn: boolean = false;
 
   ngOnInit() {
-    this.isLoggedIn = this.authenticationService.isAuthenticated();
+    this.authenticationService.isAuthenticated().subscribe((isAuth) => {
+      this.isLoggedIn = isAuth;
+    });
   }
 }
