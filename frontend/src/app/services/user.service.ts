@@ -247,7 +247,7 @@ export class UserService {
     return of(this.recentLists);
   }
 
-  // Get user posts in post component format
+  // Get user posts 
   getUserPosts(): Observable<Post[]> {
     return of(this.userPosts);
   }

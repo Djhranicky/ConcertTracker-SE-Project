@@ -8,6 +8,7 @@ import { Post } from '../../services/post.service';
 import { Button } from 'primeng/button';
 import { Card } from 'primeng/card';
 import { AvatarModule } from 'primeng/avatar';
+import { Router } from '@angular/router'; 
 
 @Component({
   selector: 'app-user-profile',
@@ -42,7 +43,7 @@ export class UserProfileComponent implements OnInit {
   favoritePosts: Post[] = [];
   bucketListPosts: Post[] = [];
 
-  constructor(private userService: UserService) { }
+  constructor(private userService: UserService, private router: Router) { }
 
   ngOnInit(): void {
     // Get user profile data
@@ -71,7 +72,7 @@ export class UserProfileComponent implements OnInit {
       this.recentLists = lists;
     });
 
-    // Get posts for modular concert display
+    // Get posts for concert display
     this.userService.getUserPosts().subscribe(posts => {
       this.userPosts = posts;
       
@@ -83,6 +84,11 @@ export class UserProfileComponent implements OnInit {
 
   // Method to change active tab
   setActiveTab(tab: string): void {
-    this.activeTab = tab;
+    if (tab === 'following' || tab === 'followers') {
+      // Navigate to Not Found page instead of displaying the tab
+      this.router.navigate(['/not-found']);
+    } else {
+      this.activeTab = tab;
+    }
   }
 }
