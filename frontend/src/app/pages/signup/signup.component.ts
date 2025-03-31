@@ -64,8 +64,7 @@ export class SignupComponent implements OnInit {
           this.signupForm.value.password
         )
         .subscribe({
-          next: (response) => {
-            alert('Registration successful! Please login.');
+          next: () => {
             this.router.navigate(['/login']);
           },
           error: (error) => {
