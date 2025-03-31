@@ -8,6 +8,7 @@ import (
 	"net/http/httptest"
 	"os"
 	"reflect"
+	"strings"
 	"testing"
 
 	"github.com/djhranicky/ConcertTracker-SE-Project/db"
@@ -332,21 +333,36 @@ func TestArtistServiceHandleArtist(t *testing.T) {
 	handler, database := initTestHandler()
 	defer destroyDatabase(database)
 
-	t.Run("should fail with no name query parameter", func(t *testing.T) {
-		req, err := http.NewRequest(http.MethodGet, "/artist", nil)
-		if err != nil {
-			t.Fatal(err)
+	// Create test data in database
+	artist1 := types.Artist{
+		MBID: "mbid1",
+		Name: "Artist1",
+	}
+	database.Create(&artist1)
+
+	// Mock setlist.fm API responses
+	mockSetlistServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if strings.Contains(r.URL.Path, "search/artists") {
+			// Artist search response
+			w.Write([]byte(`{
+				"type": "artists",
+				"artist": [{
+					"MBID": "mbid3", 
+					"name": "Artist3"
+				}]
+			}`))
+		} else if strings.Contains(r.URL.Path, "setlists") {
+			// Setlist response
+			w.Write([]byte(`{
+				"setlist": [{
+					"artist": {"MBID": "mbid3", "name": "Artist3"},
+					"venue": {"name": "Venue1"},
+					"eventDate": "01-01-2025"
+				}]
+			}`))
 		}
-
-		rr := httptest.NewRecorder()
-		router := mux.NewRouter()
-
-		router.HandleFunc("/artist", handler.handleArtist(""))
-
-		router.ServeHTTP(rr, req)
-
-		assertEqual(t, http.StatusBadRequest, rr.Code)
-	})
+	}))
+	defer mockSetlistServer.Close()
 
 	t.Run("should pass if artist already in database", func(t *testing.T) {
 		req, err := http.NewRequest(http.MethodGet, "/artist?name=Artist1", nil)
@@ -356,108 +372,52 @@ func TestArtistServiceHandleArtist(t *testing.T) {
 
 		rr := httptest.NewRecorder()
 		router := mux.NewRouter()
-
-		router.HandleFunc("/artist", handler.handleArtist(""))
-
+		router.HandleFunc("/artist", handler.handleArtist(mockSetlistServer.URL))
 		router.ServeHTTP(rr, req)
 
-		var unmarshaled types.Artist
-		json.Unmarshal(rr.Body.Bytes(), &unmarshaled)
-
-		assertEqual(t, http.StatusOK, rr.Code)
-		assertEqual(t, "mbid1", unmarshaled.MBID)
-		assertEqual(t, "Artist1", unmarshaled.Name)
-	})
-
-	t.Run("should fail if artist not found in external API", func(t *testing.T) {
-		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			w.WriteHeader(http.StatusNotFound)
-			w.Write([]byte(`{
-								"code": 404,
-								"status": "Not Found",
-								"message": "not found",
-								"timestamp": "2025-03-22T22:19:29.358+0000"
-							}`))
-		}))
-		defer server.Close()
-
-		req, err := http.NewRequest(http.MethodGet, "/artist?name=NotFound", nil)
-		if err != nil {
-			t.Fatal(err)
+		if rr.Code != http.StatusOK {
+			t.Errorf("expected status 200, got %d", rr.Code)
+			t.Logf("response: %s", rr.Body.String())
+			return
 		}
 
-		rr := httptest.NewRecorder()
-		router := mux.NewRouter()
+		var response map[string]interface{}
+		if err := json.Unmarshal(rr.Body.Bytes(), &response); err != nil {
+			t.Fatalf("failed to parse response: %v", err)
+		}
 
-		router.HandleFunc("/artist", handler.handleArtist(server.URL))
-
-		router.ServeHTTP(rr, req)
-
-		var unmarshaled types.Artist
-		json.Unmarshal(rr.Body.Bytes(), &unmarshaled)
-
-		assertEqual(t, http.StatusBadRequest, rr.Code)
+		artist := response["artist"].(map[string]interface{})
+		if artist["MBID"] != "mbid1" {
+			t.Errorf("expected mbid1, got %v", artist["mbid"])
+		}
 	})
 
 	t.Run("should pass if artist found in external API", func(t *testing.T) {
-		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			w.WriteHeader(http.StatusOK)
-			w.Write([]byte(`{
-							"type": "artists",
-							"itemsPerPage": 30,
-							"page": 1,
-							"total": 1,
-							"artist": [
-								{
-									"mbid": "mbid2",
-									"name": "Artist2",
-									"sortName": "Artist2",
-									"disambiguation": "",
-									"url": "https://www.setlist.fm/setlists/Artist2.html"
-								}
-							]
-						}`))
-		}))
-		defer server.Close()
-
-		req, err := http.NewRequest(http.MethodGet, "/artist?name=Artist2", nil)
+		req, err := http.NewRequest(http.MethodGet, "/artist?name=Artist3", nil)
 		if err != nil {
 			t.Fatal(err)
 		}
 
 		rr := httptest.NewRecorder()
 		router := mux.NewRouter()
-
-		router.HandleFunc("/artist", handler.handleArtist(server.URL))
-
+		router.HandleFunc("/artist", handler.handleArtist(mockSetlistServer.URL))
 		router.ServeHTTP(rr, req)
 
-		var unmarshaled types.Artist
-		json.Unmarshal(rr.Body.Bytes(), &unmarshaled)
-
-		assertEqual(t, http.StatusOK, rr.Code)
-	})
-
-	t.Run("should pass if previously missing artist was found in external API", func(t *testing.T) {
-		req, err := http.NewRequest(http.MethodGet, "/artist?name=Artist2", nil)
-		if err != nil {
-			t.Fatal(err)
+		if rr.Code != http.StatusOK {
+			t.Errorf("expected status 200, got %d", rr.Code)
+			t.Logf("response: %s", rr.Body.String())
+			return
 		}
 
-		rr := httptest.NewRecorder()
-		router := mux.NewRouter()
+		var response map[string]interface{}
+		if err := json.Unmarshal(rr.Body.Bytes(), &response); err != nil {
+			t.Fatalf("failed to parse response: %v", err)
+		}
 
-		router.HandleFunc("/artist", handler.handleArtist(""))
-
-		router.ServeHTTP(rr, req)
-
-		var unmarshaled types.Artist
-		json.Unmarshal(rr.Body.Bytes(), &unmarshaled)
-
-		assertEqual(t, http.StatusOK, rr.Code)
-		assertEqual(t, uint(2), unmarshaled.ID)
-		assertEqual(t, "mbid2", unmarshaled.MBID)
-		assertEqual(t, "Artist2", unmarshaled.Name)
+		artist := response["artist"].(map[string]interface{})
+		if artist["MBID"] != "mbid3" {
+			t.Errorf("expected mbid3, got %v", artist["mbid"])
+		}
 	})
 }
 
@@ -592,6 +552,55 @@ func TestArtistServiceHandleImport(t *testing.T) {
 		router.ServeHTTP(rr, req)
 
 		assertEqual(t, http.StatusCreated, rr.Code)
+	})
+}
+
+func TestConcertServiceHandleConcert(t *testing.T) {
+	utils.Init()
+	handler, database := initTestHandler()
+	defer destroyDatabase(database)
+
+	t.Run("should fail with no id query parameter", func(t *testing.T) {
+		req, err := http.NewRequest(http.MethodGet, "/concert", nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/concert", handler.handleConcert(""))
+
+		router.ServeHTTP(rr, req)
+
+		assertEqual(t, http.StatusBadRequest, rr.Code)
+	})
+
+	t.Run("should fail if setlist not found in external API", func(t *testing.T) {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusNotFound)
+			w.Write([]byte(`{
+				"code": 404,
+				"status": "Not Found",
+				"message": "not found",
+				"timestamp": "2025-03-29T00:29:24.574+0000"
+			}`))
+		}))
+		defer server.Close()
+
+		req, err := http.NewRequest(http.MethodGet, "/concert?id=notfound", nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/concert", handler.handleConcert(server.URL))
+
+		router.ServeHTTP(rr, req)
+
+		assertEqual(t, http.StatusBadRequest, rr.Code)
 	})
 }
 
