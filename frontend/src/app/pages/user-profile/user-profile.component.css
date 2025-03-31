@@ -4,14 +4,13 @@
   margin-top: 0;
 }
 
-
 /* Global container */
 .user-profile-container {
   font-family: Poppins;
   color: #313131;
   background-color: #f5f2ea;
   padding-bottom: 20px;
-  
+  min-height: 100vh;
 }
 
 .edit-icon {
@@ -33,6 +32,7 @@
   color: #777777; 
   margin: 0 0 5px 0;
 }
+
 /* Profile Header Section */
 .profile-header {
   padding: 30px 48px;
@@ -45,7 +45,6 @@
   margin-bottom: 0;
   border-bottom: 1px solid #e0e0e0;
   border-top: 1px solid #f5f2ea;
-  
 }
 
 .profile-card {
@@ -55,6 +54,7 @@
   margin-bottom: 20px;
   overflow: hidden; 
 }
+
 .profile-info {
   display: flex;
   align-items: center;
@@ -101,7 +101,6 @@
   font-size: 16px;
   font-family: Poppins;
   margin-top: 5px;
-  
 }
 
 .profile-stats {
@@ -138,7 +137,6 @@
   text-align: center;
 }
 
-
 /* Profile Tab Navigation */
 .profile-tabs {
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
@@ -146,7 +144,6 @@
   border-bottom: 1px solid #e0e0e0;
   margin-top: 0;
 }
-
 
 .tab-list {
   border-bottom: 1px; 
@@ -157,7 +154,6 @@
   padding: 0;
   margin: 0;
 }
-
 
 .tab-list li {
   padding: 15px 20px;
@@ -176,7 +172,6 @@
 .tab-list li.active {
   color: #01BCD2; 
   border-bottom-color: #01BCD2;
-  
 }
 
 /* Main Content Grid */
@@ -204,7 +199,6 @@
   border-radius: 19px;
 }
 
-
 .full-width {
   grid-column: span 2;
 }
@@ -225,14 +219,11 @@
   gap: 20px;
 }
 
-
 .concert-card {
   border-radius: 6px;
   overflow: hidden;
   transition: transform 0.2s ease;
 }
-
-
 
 .concert-card:hover {
   transform: translateY(-5px);
@@ -318,14 +309,12 @@
   margin-bottom: 35px;
 }
 
-
 .list-title {
   font-size: 18px;
   margin: 0 0 15px 0;
   font-family: Poppins;
   font-weight: 500;
 }
-
 
 .list-thumbnails {
   display: flex;
@@ -343,17 +332,21 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   border: 2px solid white;
 }
+
 .thumbnail:not(:first-child) {
   margin-left: -30px; 
 }
+
 .thumbnail:nth-child(1) {
   transform: rotate(-3deg);
   z-index: 3;
 }
+
 .thumbnail:nth-child(2) {
   transform: rotate(0deg);
   z-index: 2;
 }
+
 .thumbnail:nth-child(3) {
   transform: rotate(3deg);
   z-index: 1;
@@ -365,11 +358,99 @@
   object-fit: cover;
 }
 
+/* Post Component Integration Styles */
+.column-posts {
+  width: 70vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding-top: 1rem;
+  margin: 0 auto;
+}
+
+.column {
+  width: 15vw;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+  padding-top: 1rem;
+  gap: 30px;
+  margin: 0 auto;
+}
+
+/* Following & Followers Card Styling */
+:host ::ng-deep .p-card {
+  background-color: white;
+  width: 15vw;
+  display: flex;
+}
+
+:host ::ng-deep .p-card-footer {
+  color: #f21414;
+  font-size: small;
+}
+
+.following {
+  background-color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 15px;
+}
+
+.user-details {
+  background-color: white;
+}
+
+.user-content .user-name {
+  background-color: white;
+  font-weight: 600;
+  font-size: 16px;
+  color: #333;
+  margin: 0;
+}
+
+.user-user {
+  background-color: white;
+  font-size: small;
+  margin: 0;
+}
+
+.user-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pi {
+  font-family: "primeicons" !important;
+  background-color: white;
+  color: #01bcd2;
+  font-size: 1.4rem;
+}
+
 /* Responsive Styles */
+@media (max-width: 1200px) {
+  .main-content {
+    padding: 0 40px;
+  }
+  
+  .column-posts {
+    width: 90vw;
+  }
+  
+  .column {
+    width: 20vw;
+  }
+}
+
 @media (max-width: 768px) {
   .profile-header {
     flex-direction: column;
     text-align: center;
+    padding: 20px;
   }
   
   .profile-info {
@@ -382,18 +463,18 @@
     margin-bottom: 10px;
   }
   
- .profile-stats {
-  display: flex;
-  gap: 15px;
-}
-  
-  .tab-list {
-    overflow-x: auto;
-    white-space: nowrap;
+  .profile-stats {
+    gap: 10px;
   }
   
-  .tab-list li {
-    padding: 10px 15px;
+  .stat-number {
+    width: 70px;
+    height: 60px;
+    font-size: 36px;
+  }
+  
+  .main-content {
+    padding: 0 20px;
   }
   
   .content-grid {
@@ -404,31 +485,29 @@
     grid-column: span 1;
   }
   
-  .concert-grid {
-    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-  }
-  .stat-number {
-    width: 70px;
-    height: 70px;
-    font-size: 28px
-    
+  .column-posts {
+    width: 100%;
   }
   
-  .stat-label {
-    font-size: 14px;
+  .column {
+    width: 80%;
+    margin: 0 auto;
+  }
+  
+  :host ::ng-deep .p-card {
+    width: 100%;
   }
 }
 
 @media (max-width: 480px) {
   .stat-box {
     min-width: auto;
-    padding: 8px;
   }
   
   .stat-number {
     width: 60px;
-    height: 60px;
-    font-size: 24px;
+    height: 50px;
+    font-size: 28px;
   }
   
   .stat-label {
