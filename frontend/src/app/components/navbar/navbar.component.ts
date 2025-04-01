@@ -7,10 +7,10 @@ import { AvatarModule } from 'primeng/avatar';
 import { InputTextModule } from 'primeng/inputtext';
 import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { AuthenticationService } from '../../services/authentication.service';
 import { Ripple } from 'primeng/ripple';
-
+import { FormsModule } from '@angular/forms';
 @Component({
   selector: 'app-navbar',
   imports: [
@@ -23,6 +23,7 @@ import { Ripple } from 'primeng/ripple';
     ButtonModule,
     RouterModule,
     Ripple,
+    FormsModule,
   ],
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.css',
@@ -30,11 +31,13 @@ import { Ripple } from 'primeng/ripple';
 export class NavbarComponent {
   constructor(
     private authenticationService: AuthenticationService,
-    private router: RouterModule
+    private router: Router
   ) {}
   isLoggedIn: boolean = false;
   items: MenuItem[] | undefined;
   userItems: MenuItem[] | undefined;
+  query: string = '';
+
   logIn = {
     colorScheme: {
       light: {
@@ -49,6 +52,12 @@ export class NavbarComponent {
 
   logout() {
     this.authenticationService.logout();
+  }
+
+  onSearch() {
+    if (this.query.trim()) {
+      this.router.navigate(['/search'], { queryParams: { q: this.query } });
+    }
   }
 
   ngOnInit() {

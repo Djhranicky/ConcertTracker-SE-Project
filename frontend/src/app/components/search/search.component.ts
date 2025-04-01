@@ -27,22 +27,17 @@ export class SearchComponent implements OnInit {
         this.searchArtists();
       }
     });
+    this.results = [];
   }
 
   searchArtists() {
     this.loading = true;
     const headers = new HttpHeaders().set('Content-Type', 'application/json');
     this.http
-      .post(
-        `http://localhost:8080/api/artist?name=${this.query}`,
-        {}
-        // { headers }
-      )
+      .get(`http://localhost:8080/api/artist?name=${this.query}`, {})
       .subscribe({
         next: (data: any) => {
-          console.log(data);
           this.results = [data];
-          console.log(this.results);
           this.loading = false;
         },
         error: () => {
