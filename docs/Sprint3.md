@@ -15,7 +15,7 @@ Currently serves mock posts from posts service. Auth guarded so only logged in u
 - [x] [Improved service for serving Posts](https://github.com/Djhranicky/ConcertTracker-SE-Project/issues/51)
 - [x] [Created mock data for Concert and Artist Page](https://github.com/Djhranicky/ConcertTracker-SE-Project/issues/34) Created and refactored interfaces for concert and artist services.
 - [x] [Added navigation menu to signed in Navbar](https://github.com/Djhranicky/ConcertTracker-SE-Project/issues/58) Created and refactored interfaces for concert and artist services. Moved sign out button to drop down menu bar on user avatar click.
-- [x] [Refactored User Page to use modular post components.], (https://github.com/Djhranicky/ConcertTracker-SE-Project/issues/58) Added 'Activity', 'Concerts', and 'Lists' Tabs Views for existing user Page.
+- [x] [Refactored User Page to use modular post components.](https://github.com/Djhranicky/ConcertTracker-SE-Project/issues/58) Added 'Activity', 'Concerts', and 'Lists' Tabs Views for existing user Page.
 - [x] [Created Cypress E2E tests for Artist, Concert and User pages](https://github.com/Djhranicky/ConcertTracker-SE-Project/issues/46)
 - [x] [Created Jasmine unit tests for new pages and components](https://github.com/Djhranicky/ConcertTracker-SE-Project/issues/44)
 - [x] [Initial Search functionality implemented and connected to backend](https://github.com/Djhranicky/ConcertTracker-SE-Project/issues/66) Created SearchResults page that can be accessed through the search bar, which displays results from the search /artist endpoint from the backend.
