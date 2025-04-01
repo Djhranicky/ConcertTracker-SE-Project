@@ -4,27 +4,40 @@
 
 ### Work completed
 
-- [x] [Created the frontend for the User-Profile page.](https://github.com/Djhranicky/ConcertTracker-SE-Project/issues/27) This page can only be accessed if the user is logged in. The page is currently populated with mock user data.
-- [x] [Created High Fidelity wireframes for Concert, Dashboard, and all User Page's views](https://github.com/Djhranicky/ConcertTracker-SE-Project/issues/3)
-- [x] [Connected backend to login/registration pages](https://github.com/Djhranicky/ConcertTracker-SE-Project/issues/30) Created an auth service that connects the frontend login/registration as well as session management to the backend.
-- [x] [Created a Not Found Page to be served whenever uses goes to a Route it doesn't exist.](https://github.com/Djhranicky/ConcertTracker-SE-Project/issues/26)
-- [x] [Implemented form validation for both login and register pages.](https://github.com/Djhranicky/ConcertTracker-SE-Project/issues/43). This includes checking if user submitted all required fields, if email is valid, if password match, and if password is at least 6 characters long. If any of these conditions are not met, form should not be submitted.
-- [x] Added logout functionality from the frontend. Clears localStorage of isAuth value from frontend.
-- [x] [Modified Navbar to change contents once user is logged in](https://github.com/Djhranicky/ConcertTracker-SE-Project/issues/20). Logged In user sees User avatar and log out button, unsigned user sees log in and sign up buttons.
-- [x] Implemented Route Guards to only show certain pages if user is logged in or not.
-- [x] [Started Dashboard Page UI](https://github.com/Djhranicky/ConcertTracker-SE-Project/issues/53)
-- [x] [Created Posts injectable service that currently serves mock data of posts for Dashboard page, allowing for a seamless connection to backend data.](https://github.com/Djhranicky/ConcertTracker-SE-Project/issues/51)
-- [x] [Created Post modular component to be used in Dashboard, Concert and Uses Pages](https://github.com/Djhranicky/ConcertTracker-SE-Project/issues/46)
-- [x] [Created Cypress E2E tests for login and register pages](https://github.com/Djhranicky/ConcertTracker-SE-Project/issues/46)
-- [x] [Created Jasmine unit tests for existing components including landing page subcomponents, existing services and login and register pages.](https://github.com/Djhranicky/ConcertTracker-SE-Project/issues/44)
-
+- [x] [Created the frontend for the Concert page.](https://github.com/Djhranicky/ConcertTracker-SE-Project/issues/28) The page is currently populated with mock concert data.
+- [x] [Refined Post UI modular component to be used in Dashboard, Concert and User Pages](https://github.com/Djhranicky/ConcertTracker-SE-Project/issues/53). Currently serves mock post data and the toggle like functionality is static.
+- [x] [Created Dashboard Page UI](https://github.com/Djhranicky/ConcertTracker-SE-Project/issues/54)
+Currently serves mock posts from posts service. Auth guarded so only logged in users should reach it when navigating to '/'
+- [x] [Created injectable service for User Page](https://github.com/Djhranicky/ConcertTracker-SE-Project/issues/36) To be modified to connect with backend once endpoints are set.
+- [x] [Created mock data for User Page ](https://github.com/Djhranicky/ConcertTracker-SE-Project/issues/32) Created interfaces for user service.
+ - [x] [Connected frontend to the /validate endpoint in backend](https://github.com/Djhranicky/ConcertTracker-SE-Project/issues/55) Modified isAuth() function in authenticationService to check if the jwt given when logged in is still valid. 
+ - [x] [Created injectable service for Concert and Artist Page](https://github.com/Djhranicky/ConcertTracker-SE-Project/issues/33) To be modified to connect with backend once endpoints are set. Current functions getConcert(), getArtist(), getRecentConcerts() and getUpcomingConcerts()
+- [x] [Improved service for serving Posts](https://github.com/Djhranicky/ConcertTracker-SE-Project/issues/51)
+- [x] [Created mock data for Concert and Artist Page](https://github.com/Djhranicky/ConcertTracker-SE-Project/issues/34) Created and refactored interfaces for concert and artist services.
+- [x] [Added navigation menu to signed in Navbar](https://github.com/Djhranicky/ConcertTracker-SE-Project/issues/58) Created and refactored interfaces for concert and artist services. Moved sign out button to drop down menu bar on user avatar click.
+- [x] [Refactored User Page to use modular post components.], (https://github.com/Djhranicky/ConcertTracker-SE-Project/issues/58) Added 'Activity', 'Concerts', and 'Lists' Tabs Views for existing user Page.
+- [x] [Created Cypress E2E tests for Artist, Concert and User pages](https://github.com/Djhranicky/ConcertTracker-SE-Project/issues/46)
+- [x] [Created Jasmine unit tests for new pages and components](https://github.com/Djhranicky/ConcertTracker-SE-Project/issues/44)
+- [x] [Initial Search functionality implemented and connected to backend](https://github.com/Djhranicky/ConcertTracker-SE-Project/issues/66) Created SearchResults page that can be accessed through the search bar, which displays results from the search /artist endpoint from the backend.
+- [x] Created Home Component to render landing page if user not logged in and the dashboard if logged in when navigating to '/' 
 
 ### Frontend Unit Tests
 #### Jasmine Unit Tests
 - App Component
-  - should be created 
+  - should be created
+- HomeComponent
+  - should create
+  - should set isLoggedIn false when auth invalid
+  - should set isLoggedIn true when auth valid
 - NavBar
-  - should be created   
+  - should show menubar items if logged in
+  - should log out if logged in
+  - should have a button with routerLink set to /login when logged out
+  - should not show menubar items if not logged in
+  - should have a button with routerLink set to /register when logged out
+  - should navigate to register page when clicking log in button when logged out
+  - should navigate to register page when clicking sign up button when logged out
+  - should be created 
 - Landing Page
   - should be created
   - *Landing Page Components*
@@ -56,6 +69,8 @@
   - should require password field
   - should call login() if form valid
   - should not call AuthenticationService.login if form is invalid
+  - should call AuthenticationService.login if form is valid
+  - should not call AuthenticationService.login if form is invalid
 - Registration Page
   - should be created
   - should render username and password input fields and login button
@@ -64,6 +79,8 @@
   - should validate email field to be email format
   - should require password field
   - should not call AuthenticationService.register if form is invalid
+  - should call AuthenticationService.register if form is valid
+  - should handle registration error
 - Not Found Page
   - should be created
 - User Profile Page
@@ -76,18 +93,43 @@
   - should display the correct number of recent activities
   - should display the bucket list section
 - Authentication Service
-  - should be created
-  - should send a POST to /register endpoint in backend
+  - should return true if /validate return 200 message
+  - should return false if /validate returns 401
   - should handle existing user register error
   - should send a POST to /login endpoint in backend
   - should handle existing user login error
-  - should delete session from localStorage
-  - should return true if session exists in localStorage
-  - should return false if session does not exist in localStorage
+  - should delete cookie
+  - should be created
+  - should send a POST to /register endpoint in backend
 - Pop Concerts Service
   - should be created
   - should return an observable of tours
   - should return an observable of the correct type
+- ConcertComponent
+  - should create
+- SearchComponent
+  - should create
+- ArtistComponent
+  - should create
+- PostService
+  - should return an observable of posts
+  - should return an observable of the correct type
+  - should be created
+- PostComponent
+  - should create
+  - should toggle isLiked affect post like count
+- ConcertService
+  - should be created
+- DashboardComponent
+  - should create
+- UserService
+  - should convert concert card to post format
+  - should return user posts
+  - should return user profile
+  - should return favorite concerts
+  - should be created
+- TimeAgoPipe
+create an instance
 
 #### Cypress E2E Tests
 - Login Page
@@ -104,6 +146,30 @@
   - should show validation error for invalid email format
   - should submit form and navigate to login page on successful registration
   - should redirect to /login when clicking log in here on description
+- Artist Page
+  - Visits artists Page
+  - should display artist details
+  - should display recent shows
+  - should display upcoming shows
+  - should display artist stats
+- Concert Page
+  - Visits Concerts Page 
+  - should display concert header
+  - should mark concert as attended
+  - should display the setlist
+  - should display recent activity
+  - should display Spotify playlist
+  - should display attended users
+  - should display other shows and festivals
+- User Page
+  - Visits user-profile page
+  - should display user profile information correctly
+  - should navigate between tabs correctly
+  - should display favorite concerts on profile tab
+  - should display posts on the activity tab
+  - should display posts on the concerts tab
+  - should display edit profile icon and handle image upload
+  - should handle responsive layout
 - Spec Test
   - Visits inital project Page 
 ## Backend
