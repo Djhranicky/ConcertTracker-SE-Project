@@ -33,13 +33,13 @@ body {
   justify-content: space-between;
   gap: 0px;
 }
-:host ::ng-deep .p-button {
+:host ::ng-deep .mark-attended .p-button {
   border-radius: 1rem;
   background-color: #01bcd2;
   padding: 1rem;
   border: none;
 }
-:host ::ng-deep .p-button:hover {
+:host ::ng-deep .mark-attended .p-button:hover {
   background-color: #128b98;
   border: none;
 }

@@ -23,8 +23,10 @@
             *ngIf="isLoggedIn"
             type="text"
             pInputText
-            placeholder="Search"
+            [(ngModel)]="query"
+            placeholder="Search artists..."
             class="w-36"
+            (keydown.enter)="onSearch()"
           />
           <p-menu #menu [model]="userItems" [popup]="true" />
           <p-avatar

@@ -23,6 +23,8 @@ describe('AuthenticationService', () => {
     });
     service = TestBed.inject(AuthenticationService);
     httpMock = TestBed.inject(HttpTestingController);
+
+    document.cookie = 'id=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/api;';
   });
 
   afterEach(() => {
@@ -120,20 +122,33 @@ describe('AuthenticationService', () => {
   });
 
   //logout test
-  it('should delete session from localStorage', () => {
-    localStorage.setItem('isAuth', '1');
+  it('should delete cookie', () => {
+    document.cookie = 'id=jwt123; path=/api';
     service.logout();
-    expect(localStorage.getItem('isAuth')).toBeNull();
+    expect(document.cookie).not.toContain('id=');
   });
 
   //isAuth test
-  it('should return true if session exists in localStorage', () => {
-    localStorage.setItem('isAuth', '1');
-    expect(service.isAuthenticated()).toBe(true);
+  it('should return true if /validate return 200 message', () => {
+    const testResponse = { message: 'user session validated' };
+    service.isAuthenticated().subscribe((result) => {
+      expect(result).toBeTrue();
+    });
+
+    const req = httpMock.expectOne(`${service['url']}/validate`);
+    expect(req.request.method).toBe('GET');
+    expect(req.request.withCredentials).toBeTrue();
+    req.flush(testResponse);
   });
 
-  it('should return false if session does not exist in localStorage', () => {
-    service.logout();
-    expect(service.isAuthenticated()).toBe(false);
+  it('should return false if /validate returns 401', () => {
+    const mockResponse = {};
+    service.isAuthenticated().subscribe((result) => {
+      expect(result).toBeFalse();
+    });
+
+    const req = httpMock.expectOne(`${service['url']}/validate`);
+    expect(req.request.method).toBe('GET');
+    req.flush(mockResponse, { status: 401, statusText: '' });
   });
 });

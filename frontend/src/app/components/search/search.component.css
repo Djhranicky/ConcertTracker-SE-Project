@@ -1,0 +1,33 @@
+* {
+  font-family: "Poppins";
+  height: 100%;
+}
+
+a {
+  text-decoration: none;
+  color: #334155;
+}
+.p-card {
+  max-width: 600px;
+  margin: auto;
+  padding: 20px;
+  background-color: white;
+  box-shadow: none;
+}
+
+.p-inputgroup {
+  display: flex;
+  gap: 10px;
+}
+
+.error-message {
+  color: red;
+  margin-top: 10px;
+}
+
+.artist-img {
+  width: 100%;
+  max-height: 300px;
+  object-fit: cover;
+  border-radius: 10px;
+}

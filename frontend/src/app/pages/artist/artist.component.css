@@ -1,0 +1,144 @@
+* {
+  font-family: "Poppins";
+}
+
+body {
+  width: 100vw;
+  background-color: #f3f0e6;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+:host ::ng-deep .p-card {
+  background-color: #ffffff;
+  color: #313131;
+  height: 100%;
+  margin-bottom: 1rem;
+}
+
+:host ::ng-deep .p-tag {
+  background-color: #01bcd2;
+  color: #fff;
+  /* height: 100%;
+  margin-bottom: 1rem; */
+}
+
+:host ::ng-deep .p-table {
+  background-color: #fff;
+  width: 32.5vw;
+}
+
+:host ::ng-deep .p-card-body {
+  gap: 0px;
+}
+
+:host ::ng-deep .header .p-card {
+  width: 75vw;
+  overflow: hidden;
+  padding: 1.2rem 3vw;
+  font-size: 16px;
+  margin-bottom: 1rem;
+}
+
+:host ::ng-deep .recent .p-card {
+  width: 75vw;
+}
+
+.content {
+  align-self: stretch;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0px;
+}
+
+.details {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 20px;
+}
+
+.header-img {
+  border-radius: 200px;
+  width: 150px;
+}
+
+.header-artist {
+  align-self: stretch;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  position: relative;
+  font-weight: 600;
+  font-size: 36px;
+  color: #f21414;
+  line-height: 36px;
+}
+
+.header-tour {
+  align-self: stretch;
+  position: relative;
+  font-size: 20px;
+  color: #313131;
+  margin: 0;
+}
+
+.header-venue {
+  margin: 0;
+  font-size: 16px;
+  color: #313131;
+  font-family: Poppins;
+  font-weight: 300;
+}
+.stats-frame {
+  display: flex;
+  gap: 1.5rem;
+  flex-direction: row;
+}
+.stat-frame {
+  display: flex;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  position: relative;
+}
+
+.number-box {
+  width: 86px;
+  border-radius: 12px;
+  background-color: #f3f0e6;
+  height: 75px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 16px;
+  box-sizing: border-box;
+  font-size: 48px;
+  font-family: "Gord Qucik";
+  font-weight: 900;
+}
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr;
+  gap: 1rem 1rem;
+  grid-auto-flow: row;
+  grid-template-areas: "upcoming stats";
+  width: 75vw;
+}
+
+.upcoming {
+  grid-area: upcoming;
+}
+
+.stats {
+  grid-area: stats;
+}

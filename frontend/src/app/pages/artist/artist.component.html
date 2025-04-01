@@ -1,0 +1,113 @@
+<app-navbar></app-navbar>
+<body>
+  <p-card class="header">
+    <div class="content">
+      <div class="details">
+        <img class="header-img" src="{{ artist.img }}" />
+
+        <div>
+          <div class="header-artist">{{ artist.artist }}</div>
+          <div class="header-tour"></div>
+          <div class="header-venue">Artist bio</div>
+        </div>
+      </div>
+      <div class="stats-frame">
+        <div class="stat-frame">
+          <div class="number-box">254</div>
+          shows
+        </div>
+        <div class="stat-frame">
+          <div class="number-box">04</div>
+          tours
+        </div>
+      </div>
+    </div>
+  </p-card>
+  <p-card class="recent">
+    <ng-template #title> Recent Shows </ng-template>
+    <p-carousel
+      [value]="concerts"
+      [numVisible]="5"
+      [numScroll]="1"
+      [circular]="false"
+      [responsiveOptions]="responsiveOptions"
+    >
+      <ng-template let-concert #item>
+        <div class="border border-surface rounded-border m-2 p-2">
+          <div class="mb-2">
+            <div class="relative mx-auto">
+              <img
+                src="{{ concert.img }}"
+                [alt]="concert.artist"
+                class="w-full rounded-border"
+              />
+              <p-tag
+                [value]="concert.date"
+                class="absolute"
+                severity="info"
+                [ngStyle]="{ 'left.px': 5, 'bottom.px': 10 }"
+              />
+            </div>
+          </div>
+          <div class="flex justify-between items-center">
+            <div class="mt-0 font-semibold font-small">
+              {{ concert.tour }}
+            </div>
+          </div>
+          <div class="font-small text-xs">{{ concert.venue }}</div>
+        </div>
+      </ng-template>
+    </p-carousel>
+  </p-card>
+  <div class="grid">
+    <div class="upcoming">
+      <p-card>
+        <ng-template #title> Upcoming Shows </ng-template>
+        <p-carousel
+          [value]="upcomingTuples"
+          [numVisible]="3"
+          [numScroll]="1"
+          [circular]="false"
+          [responsiveOptions]="responsiveOptions"
+        >
+          <ng-template let-concert #item>
+            <div class="border border-surface rounded-border m-2 p-2">
+              <div class="mb-2">
+                <div class="relative mx-auto">
+                  <div class="stat-frame">
+                    {{ concert[1][0] }}
+                    <div class="number-box">{{ concert[1][1] }}</div>
+                    {{ concert[1][2] }}
+                  </div>
+                </div>
+              </div>
+              <div class="flex justify-between items-center"></div>
+              <div class="font-small text-xs">{{ concert[0].venue }}</div>
+            </div>
+          </ng-template>
+        </p-carousel></p-card
+      >
+    </div>
+    <div class="stats">
+      <p-card>
+        <ng-template #title> Stats </ng-template>
+        Billie Eilish is the 95th most popular artist on Spotify. <br />Their
+        average show length is 1 hour and 39 minutes <br />
+        <span class="text-xl font-bold">Most Played Songs</span>
+
+        <p-table
+          [value]="mostPlayed"
+          [tableStyle]="{ 'background-color': '#fff' }"
+        >
+          <!-- <ng-template #header> Most Played Songs </ng-template> -->
+          <ng-template #body let-song>
+            <tr>
+              <td>{{ song[0] }}</td>
+              <td>{{ song[1] }}</td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </p-card>
+    </div>
+  </div>
+</body>

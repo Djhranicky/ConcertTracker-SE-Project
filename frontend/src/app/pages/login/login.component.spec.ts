@@ -1,4 +1,9 @@
-import { ComponentFixture, fakeAsync, TestBed } from '@angular/core/testing';
+import {
+  ComponentFixture,
+  fakeAsync,
+  TestBed,
+  tick,
+} from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
@@ -27,7 +32,9 @@ describe('LoginComponent', () => {
       ],
     }).compileComponents();
 
-    service = TestBed.inject(AuthenticationService);
+    service = TestBed.inject(
+      AuthenticationService
+    ) as jasmine.SpyObj<AuthenticationService>;
     authMock = jasmine.createSpyObj('AuthenticationService', ['login']);
     routerMock = jasmine.createSpyObj('Router', ['navigate']);
     fixture = TestBed.createComponent(LoginComponent);
@@ -109,4 +116,31 @@ describe('LoginComponent', () => {
     component.login();
     expect(authMock.login).not.toHaveBeenCalled();
   });
+
+  it('should call AuthenticationService.login if form is valid', () => {
+    spyOn(service, 'login').and.returnValue(of({}));
+    component.loginForm.setValue({
+      email: 'test@test.com',
+      password: 'password123',
+    });
+
+    component.login();
+    expect(service.login).toHaveBeenCalledWith('test@test.com', 'password123');
+  });
+
+  it('should show alert if login fails', fakeAsync(() => {
+    const error = { message: 'Error message' };
+    spyOn(service, 'login').and.returnValue(throwError(() => error));
+    spyOn(window, 'alert');
+
+    component.ngOnInit();
+    component.loginForm.setValue({
+      email: 'test@test.com',
+      password: 'password123',
+    });
+
+    component.login();
+    tick();
+    expect(window.alert).toHaveBeenCalledWith('Login failed: ' + error.message);
+  }));
 });

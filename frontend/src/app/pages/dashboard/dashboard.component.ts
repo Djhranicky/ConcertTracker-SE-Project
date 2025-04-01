@@ -29,7 +29,7 @@ export class DashboardComponent implements OnInit {
   ngOnInit(): void {
     this.postsService.getPosts().subscribe((data) => {
       this.posts = data;
-      console.log(this.posts);
+      // console.log(this.posts);
     });
   }
 }

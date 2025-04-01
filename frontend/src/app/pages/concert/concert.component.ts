@@ -41,7 +41,7 @@ export class ConcertComponent {
   parseSetlist() {
     if (this.concert.setlist) {
       this.setlist = JSON.parse(this.concert.setlist);
-      console.log(this.setlist);
+      // console.log(this.setlist);
     }
   }
 
@@ -58,7 +58,7 @@ export class ConcertComponent {
     this.parseSetlist();
     this.postService.getPosts().subscribe((data) => {
       this.posts = data;
-      console.log(this.posts);
+      // console.log(this.posts);
     });
 
     // console.log(this.concert);
