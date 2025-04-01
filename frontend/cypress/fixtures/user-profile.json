@@ -1,0 +1,12 @@
+{
+  "name": "Jane Smith",
+  "username": "janesmith",
+  "bio": "24. music lover. love pop music.",
+  "profileImage": "imgs/user-profile.jpeg",
+  "stats": {
+    "concerts": 23,
+    "lists": 3,
+    "following": 21,
+    "followers": 19
+  }
+}

@@ -41,3 +41,23 @@
 //
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
+Cypress.Commands.add('login', (email = 'test@example.com', password = 'password123') => {
+  cy.intercept('POST', '/api/login', {
+    statusCode: 200,
+    body: { user: { id: '123', email, username: 'testuser' } }
+  }).as('loginRequest');
+  
+  cy.visit('/login');
+  cy.get('#email').type(email);
+  cy.get('#password').type(password);
+  cy.get('button[type="submit"]').click();
+  cy.wait('@loginRequest');
+});
+
+declare global {
+  namespace Cypress {
+    interface Chainable {
+      login(email?: string, password?: string): Chainable<Element>
+    }
+  }
+}
