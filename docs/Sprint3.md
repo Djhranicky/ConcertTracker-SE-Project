@@ -207,4 +207,6 @@ The `"/swagger"` endpoint is used to document and test the functionality of the 
 
 #### Import Route
 
+The `"/import"` endpoint is used to fetch and consume information from the external setlist.fm API. No payload is consumed by this endpoint. This endpoint parses concert information returned from the API call and creates data in the database, including records for additional artists, venues, tours, concerts, songs, and the concert-song relation. A query parameter of the artist MBID is required, and an optional full parameter can be specified. With no full parameter, this will only import up to 20 concerts for an artist. With the full parameter set to true, this will import all concerts for a given artist. This returns a 201 code on success, and a 400 or 504 code on failure.
+
 #### Concert Route
