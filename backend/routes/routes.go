@@ -6,6 +6,7 @@ import (
 	"math"
 	"net/http"
 	"os"
+	"sort"
 	"time"
 
 	_ "github.com/djhranicky/ConcertTracker-SE-Project/docs"
@@ -36,6 +37,7 @@ func (h *Handler) RegisterRoutes(router *mux.Router) {
 	router.HandleFunc("/validate", h.handleValidate).Methods("GET", "OPTIONS")
 	router.HandleFunc("/artist", h.handleArtist(baseURL)).Methods("GET", "OPTIONS")
 	router.HandleFunc("/import", h.handleArtistImport(baseURL)).Methods("GET", "OPTIONS")
+	router.HandleFunc("/concert", h.handleConcert(baseURL)).Methods("GET", "OPTIONS")
 
 	// Serve Swagger UI
 	router.PathPrefix("/swagger/").Handler(httpSwagger.WrapHandler)
@@ -173,7 +175,7 @@ func (h *Handler) handleRegister(w http.ResponseWriter, r *http.Request) {
 // @Tags Auth
 // @Produce json
 // @Success 200 {string} string "user session validated"
-// @Failure 400 {string} string "missing or invalid authorization token"
+// @Failure 401 {string} string "missing or invalid authorization token"
 // @Router /validate [get]
 func (h *Handler) handleValidate(w http.ResponseWriter, r *http.Request) {
 	utils.SetCORSHeaders(w)
@@ -201,7 +203,7 @@ func (h *Handler) handleValidate(w http.ResponseWriter, r *http.Request) {
 // @Produce json
 // @Success 200 {object} types.Artist "Object that holds artist information"
 // @Failure 400 {string} error "Error describing failure"
-// @Router /artist [post]
+// @Router /artist [get]
 func (h *Handler) handleArtist(inputURL string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		utils.SetCORSHeaders(w)
@@ -220,28 +222,113 @@ func (h *Handler) handleArtist(inputURL string) http.HandlerFunc {
 		// Check if artist exists in db
 		artist, err := h.Store.GetArtistByName(searchString)
 
-		// If so, return info from there
-		if err == nil {
-			utils.WriteJSON(w, http.StatusOK, *artist)
-			return
-		}
+		fmt.Println("artist exists in db:", artist)
 
-		// If not, check if artist exists on setlist.fm
-		url := fmt.Sprintf("%s/%s", inputURL, "search/artists")
-		artist, err = setlist.ArtistSearch(url, searchString)
-
+		// If artist doesn't exist in db, search on setlist.fm
 		if err != nil {
-			utils.WriteError(w, http.StatusBadRequest, err)
-			return
+			url := fmt.Sprintf("%s/%s", inputURL, "search/artists")
+			artist, err = setlist.ArtistSearch(url, searchString)
+
+			if err != nil {
+				utils.WriteError(w, http.StatusBadRequest, err)
+				return
+			}
+
+			// Use CreateArtistIfMissing to avoid duplicates
+			artist = h.Store.CreateArtistIfMissing(*artist)
 		}
 
-		// If so, create info in database and return info
-		err = h.Store.CreateArtist(*artist)
+		// Import setlist data (similar to handleArtistImport)
+		mbid := artist.MBID
+
+		// Retrieve or import artist setlists
+		jsonData, err := utils.GetArtistSetlistsFromAPI(w, inputURL, mbid, 1)
 		if err != nil {
 			utils.WriteError(w, http.StatusInternalServerError, err)
 			return
 		}
-		utils.WriteJSON(w, http.StatusOK, *artist)
+
+		// Process artist info
+		setlist.ProcessArtistInfo(h.Store, *jsonData, artist)
+
+		// Get additional data needed for response
+		imageURL := "" // You may need to add this field to your API response
+		if len(jsonData.Setlist) > 0 && jsonData.Setlist[0].Artist.URL != "" {
+			imageURL = jsonData.Setlist[0].Artist.URL
+		}
+
+		// Extract tours and setlists
+		tourNames := make(map[string]bool)
+		setlistDates := make([]string, 0)
+		recentSetlists := make([]map[string]string, 0)
+		upcomingShows := make([]map[string]string, 0)
+
+		// Process all setlists to gather information
+		for i := range jsonData.Setlist {
+			// Add tour to unique tours list
+			if jsonData.Setlist[i].Tour.Name != "" {
+				tourNames[jsonData.Setlist[i].Tour.Name] = true
+			}
+
+			// Add to setlist dates
+			setlistDates = append(setlistDates, jsonData.Setlist[i].EventDate)
+
+			// Add to recent setlists
+			if len(recentSetlists) < 20 {
+				setlistInfo := map[string]string{
+					"id":    jsonData.Setlist[i].ID,
+					"date":  jsonData.Setlist[i].EventDate,
+					"venue": jsonData.Setlist[i].Venue.Name,
+					"city":  jsonData.Setlist[i].Venue.City.Name,
+					"url":   jsonData.Setlist[i].URL,
+				}
+				recentSetlists = append(recentSetlists, setlistInfo)
+			}
+
+			// Check for upcoming shows (dates after current date)
+			eventDate, err := time.Parse("02-01-2006", jsonData.Setlist[i].EventDate)
+			if err == nil && eventDate.After(time.Now()) {
+				upcomingShow := map[string]string{
+					"id":    jsonData.Setlist[i].ID,
+					"date":  jsonData.Setlist[i].EventDate,
+					"venue": jsonData.Setlist[i].Venue.Name,
+					"city":  jsonData.Setlist[i].Venue.City.Name,
+					"url":   jsonData.Setlist[i].URL,
+				}
+				upcomingShows = append(upcomingShows, upcomingShow)
+			}
+		}
+
+		// Sort recent setlists by date (newest first)
+		sort.Slice(recentSetlists, func(i, j int) bool {
+			dateI, _ := time.Parse("02-01-2006", recentSetlists[i]["date"])
+			dateJ, _ := time.Parse("02-01-2006", recentSetlists[j]["date"])
+			return dateI.After(dateJ)
+		})
+
+		// Limit to 20 most recent
+		if len(recentSetlists) > 20 {
+			recentSetlists = recentSetlists[:20]
+		}
+
+		// Convert tourNames to slice
+		tours := make([]string, 0, len(tourNames))
+		for tourName := range tourNames {
+			tours = append(tours, tourName)
+		}
+
+		// Create enhanced artist response
+		enhancedResponse := map[string]interface{}{
+			"artist":          artist,
+			"image_url":       imageURL,
+			"number_of_tours": len(tourNames),
+			"tour_names":      tours,
+			"total_setlists":  len(setlistDates),
+			"recent_setlists": recentSetlists,
+			"upcoming_shows":  upcomingShows,
+		}
+
+		utils.WriteJSON(w, http.StatusOK, enhancedResponse)
 	}
 }
 
@@ -260,14 +347,12 @@ func (h *Handler) handleArtistImport(inputURL string) http.HandlerFunc {
 			w.WriteHeader(http.StatusOK)
 			return
 		}
-
 		// Get artist search from request
 		mbid := r.URL.Query().Get("mbid")
 		if mbid == "" {
 			utils.WriteError(w, http.StatusBadRequest, errors.New("artist mbid not provided"))
 			return
 		}
-
 		fullImport := r.URL.Query().Get("full")
 		if !(fullImport == "true" || fullImport == "") {
 			utils.WriteError(w, http.StatusBadRequest, errors.New("invalid option for full parameter"))
@@ -279,14 +364,11 @@ func (h *Handler) handleArtistImport(inputURL string) http.HandlerFunc {
 			utils.WriteError(w, http.StatusBadRequest, errors.New("artist mbid not in database"))
 			return
 		}
-
 		jsonData, err := utils.GetArtistSetlistsFromAPI(w, inputURL, mbid, 1)
 		if err != nil {
 			return
 		}
-
 		setlist.ProcessArtistInfo(h.Store, *jsonData, artist)
-
 		numPages := 1
 		if fullImport != "" {
 			numPages = int(math.Ceil(float64(jsonData.Total) / float64(jsonData.ItemsPerPage)))
@@ -303,5 +385,198 @@ func (h *Handler) handleArtistImport(inputURL string) http.HandlerFunc {
 		}
 
 		utils.WriteJSON(w, http.StatusCreated, map[string]string{"message": "artist information successfully imported"})
+	}
+}
+
+// @Summary Get concert setlist information
+// @Description Returns details about a concert including the list of songs performed
+// @Tags Concert
+// @Param id path string true "Setlist ID"
+// @Produce json
+// @Success 200 {object} map[string]interface{} "Concert setlist information"
+// @Failure 400 {string} error "Error describing failure"
+// @Router /concert [get]
+func (h *Handler) handleConcert(inputURL string) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		utils.SetCORSHeaders(w)
+		if r.Method == "OPTIONS" {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+
+		// Get setlist ID from request
+		setlistID := r.URL.Query().Get("id")
+		if setlistID == "" {
+			utils.WriteError(w, http.StatusBadRequest, errors.New("setlist ID not provided"))
+			return
+		}
+
+		// Get setlist from setlist.fm API
+		url := fmt.Sprintf("%s/setlist/%s", inputURL, setlistID)
+		setlistData, err := setlist.GetSetlist(url)
+		if err != nil {
+			utils.WriteError(w, http.StatusBadRequest, err)
+			return
+		}
+
+		// Get or create artist record
+		artist := h.Store.CreateArtistIfMissing(types.Artist{
+			MBID: setlistData.Artist.Mbid,
+			Name: setlistData.Artist.Name,
+		})
+
+		// Get or create venue record
+		venue := h.Store.CreateVenueIfMissing(types.Venue{
+			Name:       setlistData.Venue.Name,
+			City:       setlistData.Venue.City.Name,
+			Country:    setlistData.Venue.City.Country.Name,
+			ExternalID: setlistData.Venue.ID,
+			URL:        setlistData.Venue.URL,
+		})
+
+		// Parse event date
+		eventDate, err := time.Parse("02-01-2006", setlistData.EventDate)
+		if err != nil {
+			utils.WriteError(w, http.StatusInternalServerError, fmt.Errorf("error parsing event date: %v", err))
+			return
+		}
+
+		// Get or create tour if exists
+		var tour *types.Tour
+		if setlistData.Tour.Name != "" {
+			tourRecord := types.Tour{
+				ArtistID: artist.ID,
+				Name:     setlistData.Tour.Name,
+			}
+			tour = h.Store.CreateTourIfMissing(tourRecord)
+		}
+
+		// Create concert record
+		var tourID *uint
+		if tour != nil {
+			tourID = &tour.ID
+		}
+
+		concert := h.Store.CreateConcertIfMissing(types.Concert{
+			ArtistID:          artist.ID,
+			TourID:            tourID,
+			VenueID:           venue.ID,
+			Date:              eventDate,
+			ExternalID:        setlistData.ID,
+			ExternalVersionID: setlistData.VersionID,
+		})
+
+		// Process songs
+		songsList := make([]map[string]interface{}, 0)
+		songOrder := uint(1)
+
+		for _, set := range setlistData.Sets.Set {
+			for _, songData := range set.Song {
+				// Process the main song
+				song := types.Song{
+					ArtistID: artist.ID,
+					Name:     songData.Name,
+					Info:     songData.Info,
+					Tape:     songData.Tape,
+				}
+
+				// Process "with" artist if present
+				if songData.With.Mbid != "" {
+					withArtist := h.Store.CreateArtistIfMissing(types.Artist{
+						MBID: songData.With.Mbid,
+						Name: songData.With.Name,
+					})
+					withID := withArtist.ID
+					song.WithID = &withID
+				}
+
+				// Process "cover" artist if present
+				if songData.Cover.Mbid != "" {
+					coverArtist := h.Store.CreateArtistIfMissing(types.Artist{
+						MBID: songData.Cover.Mbid,
+						Name: songData.Cover.Name,
+					})
+					coverID := coverArtist.ID
+					song.CoverID = &coverID
+				}
+
+				// Save song to database
+				songRecord := h.Store.CreateSongIfMissing(song)
+
+				// Connect song to concert
+				concertSong := types.ConcertSong{
+					ConcertID: concert.ID,
+					SongID:    songRecord.ID,
+					SongOrder: songOrder,
+				}
+				h.Store.CreateConcertSongIfMissing(concertSong)
+
+				// Prepare song data for response
+				songInfo := map[string]interface{}{
+					"name":  songData.Name,
+					"info":  songData.Info,
+					"tape":  songData.Tape,
+					"order": songOrder,
+				}
+
+				// Add "with" information if present
+				if songData.With.Mbid != "" {
+					songInfo["with"] = map[string]string{
+						"mbid": songData.With.Mbid,
+						"name": songData.With.Name,
+					}
+				}
+
+				// Add "cover" information if present
+				if songData.Cover.Mbid != "" {
+					songInfo["cover"] = map[string]string{
+						"mbid": songData.Cover.Mbid,
+						"name": songData.Cover.Name,
+					}
+				}
+
+				songsList = append(songsList, songInfo)
+				songOrder++
+			}
+		}
+
+		// Create response
+		response := map[string]interface{}{
+			"id":           setlistData.ID,
+			"version_id":   setlistData.VersionID,
+			"event_date":   setlistData.EventDate,
+			"last_updated": setlistData.LastUpdated,
+			"artist": map[string]string{
+				"mbid": setlistData.Artist.Mbid,
+				"name": setlistData.Artist.Name,
+				"url":  setlistData.Artist.URL,
+			},
+			"venue": map[string]interface{}{
+				"id":   setlistData.Venue.ID,
+				"name": setlistData.Venue.Name,
+				"city": map[string]string{
+					"name":    setlistData.Venue.City.Name,
+					"state":   setlistData.Venue.City.State,
+					"country": setlistData.Venue.City.Country.Name,
+				},
+				"url": setlistData.Venue.URL,
+			},
+			"songs": songsList,
+			"url":   setlistData.URL,
+		}
+
+		// Add tour information if available
+		if setlistData.Tour.Name != "" {
+			response["tour"] = map[string]string{
+				"name": setlistData.Tour.Name,
+			}
+		}
+
+		// Add info if available
+		if setlistData.Info != "" {
+			response["info"] = setlistData.Info
+		}
+
+		utils.WriteJSON(w, http.StatusOK, response)
 	}
 }

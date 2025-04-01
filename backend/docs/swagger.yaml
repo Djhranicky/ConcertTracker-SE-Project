@@ -63,7 +63,7 @@ paths:
       tags:
       - Home
   /artist:
-    post:
+    get:
       description: Gets information for requested artist. If information does not
         exist in database, it is retrieved from setlist.fm API and entered into database
       parameters:
@@ -86,6 +86,30 @@ paths:
       summary: Serve information for a given artist
       tags:
       - Artist
+  /concert:
+    get:
+      description: Returns details about a concert including the list of songs performed
+      parameters:
+      - description: Setlist ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Concert setlist information
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Error describing failure
+          schema:
+            type: string
+      summary: Get concert setlist information
+      tags:
+      - Concert
   /import:
     get:
       description: Gets setlist information from setlist.fm API for given artist,
@@ -174,7 +198,7 @@ paths:
           description: user session validated
           schema:
             type: string
-        "400":
+        "401":
           description: missing or invalid authorization token
           schema:
             type: string
