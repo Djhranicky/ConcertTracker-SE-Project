@@ -11,7 +11,7 @@
     <div *ngFor="let artist of results">
       <p-card>
         <ng-template #title>
-          <a href="/artists">{{ artist.name }}</a>
+          <a href="/artists">{{ artist.artist.name }}</a>
         </ng-template>
       </p-card>
     </div>
