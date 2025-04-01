@@ -20,7 +20,7 @@ export const appRoutes: Routes = [
   {
     path: 'user-profile',
     component: UserProfileComponent,
-    canActivate: [AuthGuard],
+    // canActivate: [AuthGuard],
   },
   { path: 'search', component: SearchComponent },
   { path: '**', component: NotFoundComponent },
