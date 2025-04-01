@@ -221,7 +221,7 @@ export class UserService {
     };
   }
 
-  constructor(private http: HttpClient) {}
+  constructor() {}
 
   getUserProfile(): Observable<UserProfile> {
     return of(this.userProfile);
