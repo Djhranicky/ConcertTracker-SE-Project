@@ -24,6 +24,17 @@ type User struct {
 	UpdatedAt time.Time
 }
 
+type Follow struct {
+	ID             uint `gorm:"primaryKey"`
+	UserID         uint
+	FollowedUserID uint
+	CreatedAt      time.Time
+	UpdatedAt      time.Time
+
+	User         User `gorm:"foreignKey:UserID"`
+	FollowedUser User `gorm:"foreignKey:FollowedUserID"`
+}
+
 type Attendance struct {
 	ID        uint `gorm:"primaryKey"`
 	UserID    uint `gorm:"uniqueIndex:compositeIndex"`
