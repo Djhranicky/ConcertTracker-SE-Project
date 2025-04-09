@@ -23,3 +23,46 @@ type User struct {
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
+
+type Attendance struct {
+	ID        uint `gorm:"primaryKey"`
+	UserID    uint `gorm:"uniqueIndex:compositeIndex"`
+	ConcertID uint `gorm:"uniqueIndex:compositeIndex"`
+	CreatedAt time.Time
+	UpdatedAt time.Time
+
+	User    User    `gorm:"foreignKey:UserID"`
+	Concert Concert `gorm:"foreignKey:ConcertID"`
+}
+
+type Favorites struct {
+	ID        uint `gorm:"primaryKey"`
+	UserID    uint `gorm:"uniqueIndex:compositeIndex"`
+	ConcertID uint `gorm:"uniqueIndex:compositeIndex"`
+	CreatedAt time.Time
+	UpdatedAt time.Time
+
+	User    User    `gorm:"foreignKey:UserID"`
+	Concert Concert `gorm:"foreignKey:ConcertID"`
+}
+
+type List struct {
+	ID        uint `gorm:"primaryKey"`
+	UserID    uint
+	Name      string
+	CreatedAt time.Time
+	UpdatedAt time.Time
+
+	User User `gorm:"foreignKey:UserID"`
+}
+
+type ListConcert struct {
+	ID        uint `gorm:"primaryKey"`
+	ListID    uint `gorm:"uniqueIndex:compositeIndex"`
+	ConcertID uint `gorm:"uniqueIndex:compositeIndex"`
+	CreatedAt time.Time
+	UpdatedAt time.Time
+
+	List    List    `gorm:"foreignKey:ListID"`
+	Concert Concert `gorm:"foreignKey:ConcertID"`
+}
