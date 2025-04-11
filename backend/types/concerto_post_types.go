@@ -3,11 +3,11 @@ package types
 import "time"
 
 type PostCreatePayload struct {
-	AuthorID uint   `json:"authorID" validate:"required"`
-	Text     string `json:"text"`
-	Type     string `json:"type" validate:"required"`
-	Rating   uint   `json:"rating"`
-	PostID   uint   `json:"postID"`
+	AuthorID uint    `json:"authorID" validate:"required"`
+	Text     *string `json:"text,omitempty"`
+	Type     string  `json:"type" validate:"required"`
+	Rating   *uint   `json:"rating,omitempty"`
+	PostID   *uint   `json:"postID,omitempty"`
 }
 
 type Post struct {
