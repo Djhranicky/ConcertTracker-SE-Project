@@ -26,8 +26,8 @@ type User struct {
 
 type Follow struct {
 	ID             uint `gorm:"primaryKey"`
-	UserID         uint
-	FollowedUserID uint
+	UserID         uint `json:"userID"`
+	FollowedUserID uint `json:"followedUserID"`
 	CreatedAt      time.Time
 	UpdatedAt      time.Time
 
@@ -35,32 +35,11 @@ type Follow struct {
 	FollowedUser User `gorm:"foreignKey:FollowedUserID"`
 }
 
-type Attendance struct {
-	ID        uint `gorm:"primaryKey"`
-	UserID    uint `gorm:"uniqueIndex:compositeIndex"`
-	ConcertID uint `gorm:"uniqueIndex:compositeIndex"`
-	CreatedAt time.Time
-	UpdatedAt time.Time
-
-	User    User    `gorm:"foreignKey:UserID"`
-	Concert Concert `gorm:"foreignKey:ConcertID"`
-}
-
-type Favorites struct {
-	ID        uint `gorm:"primaryKey"`
-	UserID    uint `gorm:"uniqueIndex:compositeIndex"`
-	ConcertID uint `gorm:"uniqueIndex:compositeIndex"`
-	CreatedAt time.Time
-	UpdatedAt time.Time
-
-	User    User    `gorm:"foreignKey:UserID"`
-	Concert Concert `gorm:"foreignKey:ConcertID"`
-}
-
 type List struct {
-	ID        uint `gorm:"primaryKey"`
-	UserID    uint
-	Name      string
+	ID        uint   `gorm:"primaryKey"`
+	UserID    uint   `json:"userID"`
+	Name      string `json:"name"`
+	Type      string `json:"type"` // Limited to "ATTENDANCE", "FAVORITES", "WISHLIST", and "USERCREATED"
 	CreatedAt time.Time
 	UpdatedAt time.Time
 
@@ -69,8 +48,8 @@ type List struct {
 
 type ListConcert struct {
 	ID        uint `gorm:"primaryKey"`
-	ListID    uint `gorm:"uniqueIndex:compositeIndex"`
-	ConcertID uint `gorm:"uniqueIndex:compositeIndex"`
+	ListID    uint `gorm:"uniqueIndex:compositeIndex" json:"listID"`
+	ConcertID uint `gorm:"uniqueIndex:compositeIndex" json:"concertID"`
 	CreatedAt time.Time
 	UpdatedAt time.Time
 
