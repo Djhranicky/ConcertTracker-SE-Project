@@ -17,4 +17,5 @@ type Store interface {
 	CreateConcertIfMissing(Concert) *Concert
 	CreateSongIfMissing(Song) *Song
 	CreateConcertSongIfMissing(ConcertSong) *ConcertSong
+	CreatePost(PostCreatePayload) (*Post, error)
 }

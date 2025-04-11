@@ -5,6 +5,7 @@ import (
 
 	"github.com/djhranicky/ConcertTracker-SE-Project/types"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type Store struct {
@@ -191,4 +192,21 @@ func (s *Store) CreateConcertSongIfMissing(concertSong types.ConcertSong) *types
 
 	s.db.First(&returnConcertSong, "concert_id = ? AND song_id = ?", concertSong.Concert.ID, concertSong.Song.ID)
 	return &returnConcertSong
+}
+
+func (s *Store) CreatePost(newPost types.PostCreatePayload) (*types.Post, error) {
+	post := types.Post{
+		AuthorID: newPost.AuthorID,
+		Text:     newPost.Text,
+		Type:     newPost.Type,
+		Rating:   newPost.Rating,
+		PostID:   newPost.PostID,
+	}
+	result := s.db.Clauses(clause.Returning{}).Select("AuthorID", "Text", "Type", "Rating", "PostID").Create(&post)
+
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return &post, nil
 }
