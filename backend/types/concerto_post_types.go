@@ -2,6 +2,14 @@ package types
 
 import "time"
 
+type PostCreatePayload struct {
+	AuthorID uint   `json:"authorID" validate:"required"`
+	Text     string `json:"text"`
+	Type     string `json:"type" validate:"required"`
+	Rating   uint   `json:"rating"`
+	PostID   uint   `json:"postID"`
+}
+
 type Post struct {
 	ID        uint    `gorm:"primaryKey"`
 	AuthorID  uint    `gorm:"index"`
