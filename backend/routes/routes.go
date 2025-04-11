@@ -6,6 +6,7 @@ import (
 	"math"
 	"net/http"
 	"os"
+	"slices"
 	"sort"
 	"time"
 
@@ -38,6 +39,7 @@ func (h *Handler) RegisterRoutes(router *mux.Router) {
 	router.HandleFunc("/artist", h.handleArtist(baseURL)).Methods("GET", "OPTIONS")
 	router.HandleFunc("/import", h.handleArtistImport(baseURL)).Methods("GET", "OPTIONS")
 	router.HandleFunc("/concert", h.handleConcert(baseURL)).Methods("GET", "OPTIONS")
+	router.HandleFunc("/post", h.handlePost()).Methods("POST", "OPTIONS")
 
 	// Serve Swagger UI
 	router.PathPrefix("/swagger/").Handler(httpSwagger.WrapHandler)
@@ -578,5 +580,43 @@ func (h *Handler) handleConcert(inputURL string) http.HandlerFunc {
 		}
 
 		utils.WriteJSON(w, http.StatusOK, response)
+	}
+}
+
+func (h *Handler) handlePost() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		utils.SetCORSHeaders(w)
+		if r.Method == "OPTIONS" {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+
+		var payload types.PostCreatePayload
+		if err := utils.ParseJSON(r, &payload); err != nil {
+			utils.WriteError(w, http.StatusBadRequest, err)
+			return
+		}
+
+		if err := utils.Validate.Struct(payload); err != nil {
+			errors := err.(validator.ValidationErrors)
+			utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("invalid payload %v", errors))
+			return
+		}
+
+		postTypes := []string{"ATTENDED", "WISHLIST", "REVIEW", "LISTCREATED"}
+		if !slices.Contains(postTypes, payload.Type) {
+			utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("invalid post type"))
+			return
+		}
+
+		_, err := h.Store.CreatePost(payload)
+		if err != nil {
+			utils.WriteError(w, http.StatusInternalServerError, err)
+			return
+		}
+
+		utils.WriteJSON(w, http.StatusCreated, nil)
+		// add info to db
+		// is that it?
 	}
 }
