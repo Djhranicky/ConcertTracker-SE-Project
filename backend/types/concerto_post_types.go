@@ -8,6 +8,7 @@ type PostCreatePayload struct {
 	Type     string  `json:"type" validate:"required"`
 	Rating   *uint   `json:"rating,omitempty"`
 	PostID   *uint   `json:"postID,omitempty"`
+	IsPublic bool    `json:"isPublic" validate:"required"`
 }
 
 type Post struct {
@@ -17,6 +18,7 @@ type Post struct {
 	Type      string  `json:"type"`
 	Rating    *uint   `json:"rating"`
 	PostID    *uint   `json:"postID"`
+	IsPublic  bool    `json:"isPublic"`
 	CreatedAt time.Time
 	UpdatedAt time.Time
 

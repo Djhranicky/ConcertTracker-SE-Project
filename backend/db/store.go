@@ -201,8 +201,9 @@ func (s *Store) CreatePost(newPost types.PostCreatePayload) (*types.Post, error)
 		Type:     newPost.Type,
 		Rating:   newPost.Rating,
 		PostID:   newPost.PostID,
+		IsPublic: newPost.IsPublic,
 	}
-	result := s.db.Clauses(clause.Returning{}).Select("AuthorID", "Text", "Type", "Rating", "PostID").Create(&post)
+	result := s.db.Clauses(clause.Returning{}).Select("AuthorID", "Text", "Type", "Rating", "PostID", "IsPublic").Create(&post)
 
 	if result.Error != nil {
 		return nil, result.Error
