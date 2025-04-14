@@ -196,14 +196,15 @@ func (s *Store) CreateConcertSongIfMissing(concertSong types.ConcertSong) *types
 
 func (s *Store) CreatePost(newPost types.PostCreatePayload) (*types.Post, error) {
 	post := types.Post{
-		AuthorID: newPost.AuthorID,
-		Text:     newPost.Text,
-		Type:     newPost.Type,
-		Rating:   newPost.Rating,
-		PostID:   newPost.PostID,
-		IsPublic: newPost.IsPublic,
+		AuthorID:  newPost.AuthorID,
+		Text:      newPost.Text,
+		Type:      newPost.Type,
+		Rating:    newPost.Rating,
+		PostID:    newPost.PostID,
+		IsPublic:  newPost.IsPublic,
+		ConcertID: newPost.ConcertID,
 	}
-	result := s.db.Clauses(clause.Returning{}).Select("AuthorID", "Text", "Type", "Rating", "PostID", "IsPublic").Create(&post)
+	result := s.db.Clauses(clause.Returning{}).Select("AuthorID", "Text", "Type", "Rating", "PostID", "IsPublic", "ConcertID").Create(&post)
 
 	if result.Error != nil {
 		return nil, result.Error
