@@ -194,7 +194,7 @@ func (s *Store) CreateConcertSongIfMissing(concertSong types.ConcertSong) *types
 	return &returnConcertSong
 }
 
-func (s *Store) CreatePost(newPost types.UserPostCreatePayload) (*types.UserPost, error) {
+func (s *Store) CreateUserPost(newPost types.UserPostCreatePayload) (*types.UserPost, error) {
 	post := types.UserPost{
 		AuthorID:   newPost.AuthorID,
 		Text:       newPost.Text,

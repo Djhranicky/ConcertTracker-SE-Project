@@ -39,7 +39,7 @@ func (h *Handler) RegisterRoutes(router *mux.Router) {
 	router.HandleFunc("/artist", h.handleArtist(baseURL)).Methods("GET", "OPTIONS")
 	router.HandleFunc("/import", h.handleArtistImport(baseURL)).Methods("GET", "OPTIONS")
 	router.HandleFunc("/concert", h.handleConcert(baseURL)).Methods("GET", "OPTIONS")
-	router.HandleFunc("/userpost", h.handlePost()).Methods("POST", "OPTIONS")
+	router.HandleFunc("/userpost", h.handleUserPost()).Methods("POST", "OPTIONS")
 
 	// Serve Swagger UI
 	router.PathPrefix("/swagger/").Handler(httpSwagger.WrapHandler)
@@ -583,7 +583,7 @@ func (h *Handler) handleConcert(inputURL string) http.HandlerFunc {
 	}
 }
 
-func (h *Handler) handlePost() http.HandlerFunc {
+func (h *Handler) handleUserPost() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		utils.SetCORSHeaders(w)
 		if r.Method == "OPTIONS" {
@@ -605,11 +605,11 @@ func (h *Handler) handlePost() http.HandlerFunc {
 
 		userPostTypes := []string{"ATTENDED", "WISHLIST", "REVIEW", "LISTCREATED"}
 		if !slices.Contains(userPostTypes, payload.Type) {
-			utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("invalid post type"))
+			utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("invalid UserPost type"))
 			return
 		}
 
-		_, err := h.Store.CreatePost(payload)
+		_, err := h.Store.CreateUserPost(payload)
 		if err != nil {
 			utils.WriteError(w, http.StatusInternalServerError, err)
 			return
