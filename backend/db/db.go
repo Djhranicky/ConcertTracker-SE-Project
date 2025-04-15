@@ -27,7 +27,7 @@ func InitDatabase(db *gorm.DB) {
 		&types.Concert{},
 		&types.Song{},
 		&types.ConcertSong{},
-		&types.Post{},
+		&types.UserPost{},
 	)
 	if err != nil {
 		log.Fatal("Failed to migrate database:", err)
