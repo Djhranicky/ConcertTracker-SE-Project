@@ -604,6 +604,61 @@ func TestConcertServiceHandleConcert(t *testing.T) {
 	})
 }
 
+func TestUserServiceHandlePost(t *testing.T) {
+	utils.Init()
+	handler, database := initTestHandler()
+	defer destroyDatabase(database)
+
+	t.Run("should fail with no 'authorID' field included in incoming json", func(t *testing.T) {
+		text := "Test"
+		rating := uint(1)
+		userPostID := uint(1)
+		payload := &types.UserPostCreatePayload{
+			Text:       &text,
+			Type:       "ATTENDED",
+			Rating:     &rating,
+			UserPostID: &userPostID,
+			IsPublic:   true,
+			ConcertID:  1,
+		}
+		marshalled, _ := json.Marshal(payload)
+
+		req, err := http.NewRequest(http.MethodPost, "/userpost", bytes.NewBuffer(marshalled))
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/userpost", handler.handleUserPost())
+
+		router.ServeHTTP(rr, req)
+
+		assertEqual(t, http.StatusBadRequest, rr.Code)
+	})
+
+	t.Run("should fail with no 'type' field included in incoming json", func(t *testing.T) {
+
+	})
+
+	t.Run("should fail with no 'isPublic' field included in incoming json", func(t *testing.T) {
+
+	})
+
+	t.Run("should fail with no 'concertID' field included in incoming json", func(t *testing.T) {
+
+	})
+
+	t.Run("should fail if invalid 'type' supplied", func(t *testing.T) {
+
+	})
+
+	t.Run("should pass and create post in database", func(t *testing.T) {
+
+	})
+}
+
 func initTestDatabase(dbName string) *gorm.DB {
 	mockDatabase, err := db.NewSqliteStorage(dbName)
 	if err != nil {
@@ -618,6 +673,7 @@ func initTestDatabase(dbName string) *gorm.DB {
 		&types.Concert{},
 		&types.Song{},
 		&types.ConcertSong{},
+		&types.UserPost{},
 	)
 
 	return mockDatabase
