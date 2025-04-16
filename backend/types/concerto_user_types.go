@@ -23,3 +23,15 @@ type User struct {
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
+
+type Follow struct {
+	ID             uint `gorm:"primaryKey"`
+	UserID         uint `json:"userID"`
+	FollowedUserID uint `json:"followedUserID"`
+	IsFollowed     bool `json:"isFollowed"`
+	CreatedAt      time.Time
+	UpdatedAt      time.Time
+
+	User         User `gorm:"foreignKey:UserID"`
+	FollowedUser User `gorm:"foreignKey:FollowedUserID"`
+}

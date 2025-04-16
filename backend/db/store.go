@@ -216,10 +216,22 @@ func (s *Store) CreateUserPost(newPost types.UserPostCreatePayload) (*types.User
 func (s *Store) ToggleUserLike(newLike types.LikeCreatePayload) error {
 	var result *gorm.DB
 	var like types.Likes
-	result = s.db.FirstOrCreate(&like, types.Likes{UserPostID: newLike.UserPostID, UserID: newLike.UserID}).Attrs(types.Likes{IsLiked: true})
+	result = s.db.Where(types.Likes{UserPostID: newLike.UserPostID, UserID: newLike.UserID}).Attrs(types.Likes{IsLiked: true}).FirstOrCreate(&like)
 
 	if result.RowsAffected == 0 {
 		s.db.Model(&types.Likes{}).Select("*").Where("user_post_id = ? AND user_id = ?", like.UserPostID, like.UserID).Update("is_liked", !like.IsLiked)
+	}
+
+	return result.Error
+}
+
+func (s *Store) ToggleUserFollow(newFollow types.UserFollowPayload) error {
+	var result *gorm.DB
+	var follow types.Follow
+	result = s.db.Where(types.Follow{UserID: newFollow.UserID, FollowedUserID: newFollow.FollowedUserID}).Attrs(types.Follow{IsFollowed: true}).FirstOrCreate(&follow)
+
+	if result.RowsAffected == 0 {
+		s.db.Model(&types.Follow{}).Select("*").Where("user_id = ? AND followed_user_id = ?", follow.UserID, follow.FollowedUserID).Update("is_followed", !follow.IsFollowed)
 	}
 
 	return result.Error
