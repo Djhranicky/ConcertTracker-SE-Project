@@ -786,6 +786,120 @@ func TestUserServiceHandlePost(t *testing.T) {
 	})
 }
 
+func TestUserServiceHandleLike(t *testing.T) {
+	utils.Init()
+	handler, database := initTestHandler()
+	defer destroyDatabase(database)
+
+	t.Run("should fail if UserPostID not included", func(t *testing.T) {
+		payload := &types.LikeCreatePayload{
+			UserID: 1,
+		}
+		marshalled, _ := json.Marshal(payload)
+
+		req, err := http.NewRequest(http.MethodPost, "/like", bytes.NewBuffer(marshalled))
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/like", handler.handleUserLike())
+
+		router.ServeHTTP(rr, req)
+
+		assertEqual(t, http.StatusBadRequest, rr.Code)
+	})
+
+	t.Run("should fail if UserID not included", func(t *testing.T) {
+		payload := &types.LikeCreatePayload{
+			UserPostID: 1,
+		}
+		marshalled, _ := json.Marshal(payload)
+
+		req, err := http.NewRequest(http.MethodPost, "/like", bytes.NewBuffer(marshalled))
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/like", handler.handleUserLike())
+
+		router.ServeHTTP(rr, req)
+
+		assertEqual(t, http.StatusBadRequest, rr.Code)
+	})
+
+	t.Run("should succeed when user first likes a post", func(t *testing.T) {
+		payload := &types.LikeCreatePayload{
+			UserID:     1,
+			UserPostID: 1,
+		}
+		marshalled, _ := json.Marshal(payload)
+
+		req, err := http.NewRequest(http.MethodPost, "/like", bytes.NewBuffer(marshalled))
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/like", handler.handleUserLike())
+
+		router.ServeHTTP(rr, req)
+
+		assertEqual(t, http.StatusOK, rr.Code)
+	})
+
+	t.Run("should succeed when user removes like from post", func(t *testing.T) {
+		payload := &types.LikeCreatePayload{
+			UserID:     1,
+			UserPostID: 1,
+		}
+		marshalled, _ := json.Marshal(payload)
+
+		req, err := http.NewRequest(http.MethodPost, "/like", bytes.NewBuffer(marshalled))
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/like", handler.handleUserLike())
+
+		router.ServeHTTP(rr, req)
+
+		assertEqual(t, http.StatusOK, rr.Code)
+	})
+
+	t.Run("should succeed when user likes a post again", func(t *testing.T) {
+		payload := &types.LikeCreatePayload{
+			UserID:     1,
+			UserPostID: 1,
+		}
+		marshalled, _ := json.Marshal(payload)
+
+		req, err := http.NewRequest(http.MethodPost, "/like", bytes.NewBuffer(marshalled))
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/like", handler.handleUserLike())
+
+		router.ServeHTTP(rr, req)
+
+		assertEqual(t, http.StatusOK, rr.Code)
+	})
+}
+
 func initTestDatabase(dbName string) *gorm.DB {
 	mockDatabase, err := db.NewSqliteStorage(dbName)
 	if err != nil {
@@ -801,6 +915,7 @@ func initTestDatabase(dbName string) *gorm.DB {
 		&types.Song{},
 		&types.ConcertSong{},
 		&types.UserPost{},
+		&types.Likes{},
 	)
 
 	return mockDatabase
