@@ -12,6 +12,11 @@ type UserPostCreatePayload struct {
 	ConcertID  uint    `json:"concertID" validate:"required"`
 }
 
+type LikeCreatePayload struct {
+	UserID     uint `json:"userID" validate:"required"`
+	UserPostID uint `json:"userPostID" validate:"required"`
+}
+
 type UserPost struct {
 	ID         uint    `gorm:"primaryKey"`
 	AuthorID   uint    `gorm:"index"`
@@ -33,6 +38,7 @@ type Likes struct {
 	ID         uint `gorm:"primaryKey"`
 	UserPostID uint `gorm:"index"`
 	UserID     uint `gorm:"index"`
+	IsLiked    bool
 	CreatedAt  time.Time
 	UpdatedAt  time.Time
 
