@@ -15,6 +15,11 @@ type UserLoginPayload struct {
 	Password string `json:"password" validate:"required"`
 }
 
+type UserFollowPayload struct {
+	UserID         uint `json:"userID" validate:"required"`
+	FollowedUserID uint `json:"followedUserID" validate:"required"`
+}
+
 type User struct {
 	ID        uint   `gorm:"primaryKey"`
 	Name      string `json:"name"`
