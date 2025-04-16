@@ -212,3 +212,15 @@ func (s *Store) CreateUserPost(newPost types.UserPostCreatePayload) (*types.User
 
 	return &post, nil
 }
+
+func (s *Store) ToggleUserLike(newLike types.LikeCreatePayload) error {
+	var result *gorm.DB
+	var like types.Likes
+	result = s.db.FirstOrCreate(&like, types.Likes{UserPostID: newLike.UserPostID, UserID: newLike.UserID}).Attrs(types.Likes{IsLiked: true})
+
+	if result.RowsAffected == 0 {
+		s.db.Model(&types.Likes{}).Select("*").Where("user_post_id = ? AND user_id = ?", like.UserPostID, like.UserID).Update("is_liked", !like.IsLiked)
+	}
+
+	return result.Error
+}

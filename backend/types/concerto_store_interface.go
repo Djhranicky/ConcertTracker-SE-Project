@@ -1,11 +1,11 @@
 package types
 
 type Store interface {
-	GetUserByEmail(email string) (*User, error)
-	GetUserByID(id uint) (*User, error)
+	GetUserByEmail(string) (*User, error)
+	GetUserByID(uint) (*User, error)
 	CreateUser(User) error
-	GetArtistByMBID(artist string) (*Artist, error)
-	GetArtistByName(name string) (*Artist, error)
+	GetArtistByMBID(string) (*Artist, error)
+	GetArtistByName(string) (*Artist, error)
 	CreateArtist(Artist) error
 	CreateArtistIfMissing(Artist) *Artist
 	CreateVenue(Venue) error
@@ -18,4 +18,5 @@ type Store interface {
 	CreateSongIfMissing(Song) *Song
 	CreateConcertSongIfMissing(ConcertSong) *ConcertSong
 	CreateUserPost(UserPostCreatePayload) (*UserPost, error)
+	ToggleUserLike(LikeCreatePayload) error
 }
