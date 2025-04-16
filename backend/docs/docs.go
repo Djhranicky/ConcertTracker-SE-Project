@@ -147,6 +147,26 @@ const docTemplate = `{
                 }
             }
         },
+        "/like": {
+            "post": {
+                "description": "Toggles whether a user likes a given post",
+                "tags": [
+                    "User"
+                ],
+                "summary": "Handle liking a post",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Error describing failure",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/login": {
             "post": {
                 "description": "Authenticates a user and returns a JWT token",
@@ -223,6 +243,25 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Invalid payload or user already exists",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/userpost": {
+            "post": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Create user post",
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    },
+                    "400": {
+                        "description": "Error describing failure",
                         "schema": {
                             "type": "string"
                         }
