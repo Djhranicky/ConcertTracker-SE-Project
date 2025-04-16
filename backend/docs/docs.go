@@ -112,6 +112,26 @@ const docTemplate = `{
                 }
             }
         },
+        "/follow": {
+            "post": {
+                "description": "Toggles whether a user is following a second user",
+                "tags": [
+                    "User"
+                ],
+                "summary": "Handle following a user",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Error describing failure",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/import": {
             "get": {
                 "description": "Gets setlist information from setlist.fm API for given artist, and imports it into database",

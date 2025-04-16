@@ -663,6 +663,12 @@ func (h *Handler) handleUserLike() http.HandlerFunc {
 	}
 }
 
+// @Summary Handle following a user
+// @Description Toggles whether a user is following a second user
+// @Tags User
+// @Success 200
+// @Failure 400 {string} error "Error describing failure"
+// @Router /follow [post]
 func (h *Handler) handleUserFollow() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		utils.SetCORSHeaders(w)

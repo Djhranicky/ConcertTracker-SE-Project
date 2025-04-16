@@ -110,6 +110,19 @@ paths:
       summary: Get concert setlist information
       tags:
       - Concert
+  /follow:
+    post:
+      description: Toggles whether a user is following a second user
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Error describing failure
+          schema:
+            type: string
+      summary: Handle following a user
+      tags:
+      - User
   /import:
     get:
       description: Gets setlist information from setlist.fm API for given artist,
