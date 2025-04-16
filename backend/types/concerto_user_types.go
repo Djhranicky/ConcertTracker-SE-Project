@@ -23,36 +23,3 @@ type User struct {
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
-
-type Follow struct {
-	ID             uint `gorm:"primaryKey"`
-	UserID         uint `json:"userID"`
-	FollowedUserID uint `json:"followedUserID"`
-	CreatedAt      time.Time
-	UpdatedAt      time.Time
-
-	User         User `gorm:"foreignKey:UserID"`
-	FollowedUser User `gorm:"foreignKey:FollowedUserID"`
-}
-
-type List struct {
-	ID        uint   `gorm:"primaryKey"`
-	UserID    uint   `json:"userID"`
-	Name      string `json:"name"`
-	Type      string `json:"type"` // Limited to "ATTENDANCE", "FAVORITES", "WISHLIST", and "USERCREATED"
-	CreatedAt time.Time
-	UpdatedAt time.Time
-
-	User User `gorm:"foreignKey:UserID"`
-}
-
-type ListConcert struct {
-	ID        uint `gorm:"primaryKey"`
-	ListID    uint `gorm:"uniqueIndex:compositeIndex" json:"listID"`
-	ConcertID uint `gorm:"uniqueIndex:compositeIndex" json:"concertID"`
-	CreatedAt time.Time
-	UpdatedAt time.Time
-
-	List    List    `gorm:"foreignKey:ListID"`
-	Concert Concert `gorm:"foreignKey:ConcertID"`
-}
