@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"slices"
 	"strconv"
 
 	"github.com/djhranicky/ConcertTracker-SE-Project/types"
@@ -32,12 +31,6 @@ func (h *Handler) UserPostOnPost(w http.ResponseWriter, r *http.Request) {
 	if err := utils.Validate.Struct(payload); err != nil {
 		errors := err.(validator.ValidationErrors)
 		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("invalid payload %v", errors))
-		return
-	}
-
-	userPostTypes := []string{"ATTENDED", "WISHLIST", "REVIEW", "LISTCREATED"}
-	if !slices.Contains(userPostTypes, payload.Type) {
-		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("invalid UserPost type"))
 		return
 	}
 

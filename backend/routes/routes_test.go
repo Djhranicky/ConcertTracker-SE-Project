@@ -613,12 +613,13 @@ func TestUserServiceHandlePost(t *testing.T) {
 		text := "Test"
 		rating := uint(1)
 		userPostID := uint(1)
+		isPublic := true
 		payload := &types.UserPostCreatePayload{
 			Text:       &text,
 			Type:       "WISHLIST",
 			Rating:     &rating,
 			UserPostID: &userPostID,
-			IsPublic:   true,
+			IsPublic:   &isPublic,
 			ConcertID:  1,
 		}
 		marshalled, _ := json.Marshal(payload)
@@ -642,12 +643,13 @@ func TestUserServiceHandlePost(t *testing.T) {
 		text := "Test"
 		rating := uint(1)
 		userPostID := uint(1)
+		isPublic := true
 		payload := &types.UserPostCreatePayload{
 			AuthorID:   1,
 			Text:       &text,
 			Rating:     &rating,
 			UserPostID: &userPostID,
-			IsPublic:   true,
+			IsPublic:   &isPublic,
 			ConcertID:  1,
 		}
 		marshalled, _ := json.Marshal(payload)
@@ -700,13 +702,14 @@ func TestUserServiceHandlePost(t *testing.T) {
 		text := "Test"
 		rating := uint(1)
 		userPostID := uint(1)
+		isPublic := true
 		payload := &types.UserPostCreatePayload{
 			AuthorID:   1,
 			Text:       &text,
 			Type:       "WISHLIST",
 			Rating:     &rating,
 			UserPostID: &userPostID,
-			IsPublic:   true,
+			IsPublic:   &isPublic,
 		}
 		marshalled, _ := json.Marshal(payload)
 
@@ -729,13 +732,14 @@ func TestUserServiceHandlePost(t *testing.T) {
 		text := "Test"
 		rating := uint(1)
 		userPostID := uint(1)
+		isPublic := true
 		payload := &types.UserPostCreatePayload{
 			AuthorID:   1,
 			Text:       &text,
 			Type:       "WRONG_TYPE",
 			Rating:     &rating,
 			UserPostID: &userPostID,
-			IsPublic:   true,
+			IsPublic:   &isPublic,
 			ConcertID:  1,
 		}
 		marshalled, _ := json.Marshal(payload)
@@ -759,13 +763,14 @@ func TestUserServiceHandlePost(t *testing.T) {
 		text := "Test"
 		rating := uint(1)
 		userPostID := uint(1)
+		isPublic := true
 		payload := &types.UserPostCreatePayload{
 			AuthorID:   1,
 			Text:       &text,
 			Type:       "WISHLIST",
 			Rating:     &rating,
 			UserPostID: &userPostID,
-			IsPublic:   true,
+			IsPublic:   &isPublic,
 			ConcertID:  1,
 		}
 		marshalled, _ := json.Marshal(payload)
