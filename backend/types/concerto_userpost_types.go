@@ -17,6 +17,10 @@ type UserLikePostPayload struct {
 	UserPostID uint `json:"userPostID" validate:"required"`
 }
 
+type UserLikeGetPayload struct {
+	UserPostID uint `json:"userPostID" validate:"required"`
+}
+
 type UserPost struct {
 	ID         uint    `gorm:"primaryKey"`
 	AuthorID   uint    `gorm:"index"`

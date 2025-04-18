@@ -213,7 +213,7 @@ func (s *Store) CreateUserPost(newPost types.UserPostCreatePayload) (*types.User
 	return &post, nil
 }
 
-func (s *Store) ToggleUserLike(newLike types.LikeCreatePayload) error {
+func (s *Store) ToggleUserLike(newLike types.UserLikePostPayload) error {
 	var like types.Likes
 
 	// Try to find an existing like

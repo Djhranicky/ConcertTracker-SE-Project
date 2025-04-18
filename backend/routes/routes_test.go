@@ -792,7 +792,7 @@ func TestUserServiceHandleLike(t *testing.T) {
 	defer destroyDatabase(database)
 
 	t.Run("should fail if UserPostID not included", func(t *testing.T) {
-		payload := &types.LikeCreatePayload{
+		payload := &types.UserLikePostPayload{
 			UserID: 1,
 		}
 		marshalled, _ := json.Marshal(payload)
@@ -813,7 +813,7 @@ func TestUserServiceHandleLike(t *testing.T) {
 	})
 
 	t.Run("should fail if UserID not included", func(t *testing.T) {
-		payload := &types.LikeCreatePayload{
+		payload := &types.UserLikePostPayload{
 			UserPostID: 1,
 		}
 		marshalled, _ := json.Marshal(payload)
@@ -834,7 +834,7 @@ func TestUserServiceHandleLike(t *testing.T) {
 	})
 
 	t.Run("should succeed when user first likes a post", func(t *testing.T) {
-		payload := &types.LikeCreatePayload{
+		payload := &types.UserLikePostPayload{
 			UserID:     1,
 			UserPostID: 1,
 		}
@@ -856,7 +856,7 @@ func TestUserServiceHandleLike(t *testing.T) {
 	})
 
 	t.Run("should succeed when user removes like from post", func(t *testing.T) {
-		payload := &types.LikeCreatePayload{
+		payload := &types.UserLikePostPayload{
 			UserID:     1,
 			UserPostID: 1,
 		}
@@ -878,7 +878,7 @@ func TestUserServiceHandleLike(t *testing.T) {
 	})
 
 	t.Run("should succeed when user likes a post again", func(t *testing.T) {
-		payload := &types.LikeCreatePayload{
+		payload := &types.UserLikePostPayload{
 			UserID:     1,
 			UserPostID: 1,
 		}
