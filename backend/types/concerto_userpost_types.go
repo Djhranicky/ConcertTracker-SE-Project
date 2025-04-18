@@ -12,7 +12,7 @@ type UserPostCreatePayload struct {
 	ConcertID  uint    `json:"concertID" validate:"required"`
 }
 
-type LikeCreatePayload struct {
+type UserLikePostPayload struct {
 	UserID     uint `json:"userID" validate:"required"`
 	UserPostID uint `json:"userPostID" validate:"required"`
 }
