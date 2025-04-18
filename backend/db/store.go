@@ -201,7 +201,7 @@ func (s *Store) CreateUserPost(newPost types.UserPostCreatePayload) (*types.User
 		Type:       newPost.Type,
 		Rating:     newPost.Rating,
 		UserPostID: newPost.UserPostID,
-		IsPublic:   newPost.IsPublic,
+		IsPublic:   *newPost.IsPublic,
 		ConcertID:  newPost.ConcertID,
 	}
 	result := s.db.Clauses(clause.Returning{}).Select("AuthorID", "Text", "Type", "Rating", "PostID", "IsPublic", "ConcertID").Create(&post)
