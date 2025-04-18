@@ -84,7 +84,7 @@ func (h *Handler) UserPostOnGet(w http.ResponseWriter, r *http.Request) {
 // @Tags User
 // @Accept json
 // @Produce json
-// @Param request body types.UserLikePostPayload true "Like Toggle Payload"
+// @Param like body types.UserLikePostPayload true "Like Toggle Payload"
 // @Success 200 {string} string "Like status toggled successfully"
 // @Failure 400 {string} string "Error describing failure"
 // @Failure 500 {string} string "Internal server error"
@@ -116,7 +116,7 @@ func (h *Handler) UserLikeOnPost(w http.ResponseWriter, r *http.Request) {
 // @Tags User
 // @Accept json
 // @Produce json
-// @Param request body types.UserLikePostPayload true "Like Toggle Payload"
+// @Param userPostID query string true "Get number of likes"
 // @Success 200 {object} types.UserLikeGetResponse
 // @Failure 400 {string} string "Error describing failure"
 // @Failure 500 {string} string "Internal server error"

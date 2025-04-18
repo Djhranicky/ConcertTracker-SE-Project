@@ -195,12 +195,11 @@ paths:
       - application/json
       description: Returns the number of likes for a specific post
       parameters:
-      - description: Like Toggle Payload
-        in: body
-        name: request
+      - description: Get number of likes
+        in: query
+        name: userPostID
         required: true
-        schema:
-          $ref: '#/definitions/types.UserLikePostPayload'
+        type: string
       produces:
       - application/json
       responses:
@@ -226,7 +225,7 @@ paths:
       parameters:
       - description: Like Toggle Payload
         in: body
-        name: request
+        name: like
         required: true
         schema:
           $ref: '#/definitions/types.UserLikePostPayload'
@@ -245,7 +244,7 @@ paths:
           description: Internal server error
           schema:
             type: string
-      summary: Handle liking a post
+      summary: Like or unlike a post
       tags:
       - User
   /login:

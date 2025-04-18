@@ -182,13 +182,11 @@ const docTemplate = `{
                 "summary": "Get number of likes",
                 "parameters": [
                     {
-                        "description": "Like Toggle Payload",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/types.UserLikePostPayload"
-                        }
+                        "type": "string",
+                        "description": "Get number of likes",
+                        "name": "userPostID",
+                        "in": "query",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -223,11 +221,11 @@ const docTemplate = `{
                 "tags": [
                     "User"
                 ],
-                "summary": "Handle liking a post",
+                "summary": "Like or unlike a post",
                 "parameters": [
                     {
                         "description": "Like Toggle Payload",
-                        "name": "request",
+                        "name": "like",
                         "in": "body",
                         "required": true,
                         "schema": {
