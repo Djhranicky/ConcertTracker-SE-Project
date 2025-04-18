@@ -5,7 +5,7 @@ import "time"
 type UserPostCreatePayload struct {
 	AuthorID   uint    `json:"authorID" validate:"required"`
 	Text       *string `json:"text,omitempty"`
-	Type       string  `json:"type" validate:"required"`
+	Type       string  `json:"type" validate:"required,oneof=ATTENDED WISHLIST REVIEW LISTCREATED"`
 	Rating     *uint   `json:"rating,omitempty"`
 	UserPostID *uint   `json:"userPostID,omitempty"`
 	IsPublic   bool    `json:"isPublic" validate:"required"`
@@ -38,7 +38,6 @@ type Likes struct {
 	ID         uint `gorm:"primaryKey"`
 	UserPostID uint `gorm:"index"`
 	UserID     uint `gorm:"index"`
-	IsLiked    bool
 	CreatedAt  time.Time
 	UpdatedAt  time.Time
 

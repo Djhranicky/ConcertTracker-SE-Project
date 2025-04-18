@@ -214,15 +214,40 @@ func (s *Store) CreateUserPost(newPost types.UserPostCreatePayload) (*types.User
 }
 
 func (s *Store) ToggleUserLike(newLike types.LikeCreatePayload) error {
-	var result *gorm.DB
 	var like types.Likes
-	result = s.db.Where(types.Likes{UserPostID: newLike.UserPostID, UserID: newLike.UserID}).Attrs(types.Likes{IsLiked: true}).FirstOrCreate(&like)
 
-	if result.RowsAffected == 0 {
-		s.db.Model(&types.Likes{}).Select("*").Where("user_post_id = ? AND user_id = ?", like.UserPostID, like.UserID).Update("is_liked", !like.IsLiked)
+	// Try to find an existing like
+	result := s.db.Where("user_post_id = ? AND user_id = ?", newLike.UserPostID, newLike.UserID).First(&like)
+
+	// If we found a record (no ErrRecordNotFound), delete it
+	if result.Error == nil {
+		return s.db.Delete(&like).Error
 	}
 
+	// If no record was found, create a new one (only if the error was "record not found")
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		newLikeRecord := types.Likes{
+			UserPostID: newLike.UserPostID,
+			UserID:     newLike.UserID,
+		}
+		return s.db.Create(&newLikeRecord).Error
+	}
+
+	// Return any other errors that occurred during the query
 	return result.Error
+}
+
+func (s *Store) UserPostExists(authorID, concertID uint, postType string) (bool, error) {
+	var count int64
+	result := s.db.Model(&types.UserPost{}).
+		Where("author_id = ? AND concert_id = ? AND type = ?", authorID, concertID, postType).
+		Count(&count)
+
+	if result.Error != nil {
+		return false, result.Error
+	}
+
+	return count > 0, nil
 }
 
 func (s *Store) ToggleUserFollow(newFollow types.UserFollowPayload) error {

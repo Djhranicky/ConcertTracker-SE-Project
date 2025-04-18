@@ -615,7 +615,7 @@ func TestUserServiceHandlePost(t *testing.T) {
 		userPostID := uint(1)
 		payload := &types.UserPostCreatePayload{
 			Text:       &text,
-			Type:       "ATTENDED",
+			Type:       "WISHLIST",
 			Rating:     &rating,
 			UserPostID: &userPostID,
 			IsPublic:   true,
@@ -674,7 +674,7 @@ func TestUserServiceHandlePost(t *testing.T) {
 		payload := &types.UserPostCreatePayload{
 			AuthorID:   1,
 			Text:       &text,
-			Type:       "ATTENDED",
+			Type:       "WISHLIST",
 			Rating:     &rating,
 			UserPostID: &userPostID,
 			ConcertID:  1,
@@ -703,7 +703,7 @@ func TestUserServiceHandlePost(t *testing.T) {
 		payload := &types.UserPostCreatePayload{
 			AuthorID:   1,
 			Text:       &text,
-			Type:       "ATTENDED",
+			Type:       "WISHLIST",
 			Rating:     &rating,
 			UserPostID: &userPostID,
 			IsPublic:   true,
@@ -762,7 +762,7 @@ func TestUserServiceHandlePost(t *testing.T) {
 		payload := &types.UserPostCreatePayload{
 			AuthorID:   1,
 			Text:       &text,
-			Type:       "ATTENDED",
+			Type:       "WISHLIST",
 			Rating:     &rating,
 			UserPostID: &userPostID,
 			IsPublic:   true,
