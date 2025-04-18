@@ -13,7 +13,12 @@ definitions:
       updatedAt:
         type: string
     type: object
-  types.LikeCreatePayload:
+  types.UserLikeGetResponse:
+    properties:
+      count:
+        type: integer
+    type: object
+  types.UserLikePostPayload:
     properties:
       userID:
         type: integer
@@ -46,6 +51,11 @@ definitions:
       text:
         type: string
       type:
+        enum:
+        - ATTENDED
+        - WISHLIST
+        - REVIEW
+        - LISTCREATED
         type: string
       userPostID:
         type: integer
@@ -180,6 +190,35 @@ paths:
       tags:
       - Artist
   /like:
+    get:
+      consumes:
+      - application/json
+      description: Returns the number of likes for a specific post
+      parameters:
+      - description: Like Toggle Payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/types.UserLikePostPayload'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.UserLikeGetResponse'
+        "400":
+          description: Error describing failure
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      summary: Get number of likes
+      tags:
+      - User
     post:
       consumes:
       - application/json
@@ -190,7 +229,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/types.LikeCreatePayload'
+          $ref: '#/definitions/types.UserLikePostPayload'
       produces:
       - application/json
       responses:

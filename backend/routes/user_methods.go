@@ -53,6 +53,16 @@ func (h *Handler) UserPostOnPost(w http.ResponseWriter, r *http.Request) {
 	utils.WriteJSON(w, http.StatusCreated, nil)
 }
 
+// @Summary Like or unlike a post
+// @Description Toggles whether a user likes a given post
+// @Tags User
+// @Accept json
+// @Produce json
+// @Param request body types.UserLikePostPayload true "Like Toggle Payload"
+// @Success 200 {string} string "Like status toggled successfully"
+// @Failure 400 {string} string "Error describing failure"
+// @Failure 500 {string} string "Internal server error"
+// @Router /like [post]
 func (h *Handler) UserLikeOnPost(w http.ResponseWriter, r *http.Request) {
 	var payload types.UserLikePostPayload
 	if err := utils.ParseJSON(r, &payload); err != nil {
@@ -75,6 +85,16 @@ func (h *Handler) UserLikeOnPost(w http.ResponseWriter, r *http.Request) {
 	utils.WriteJSON(w, http.StatusOK, nil)
 }
 
+// @Summary Get number of likes
+// @Description Returns the number of likes for a specific post
+// @Tags User
+// @Accept json
+// @Produce json
+// @Param request body types.UserLikePostPayload true "Like Toggle Payload"
+// @Success 200 {object} types.UserLikeGetResponse
+// @Failure 400 {string} string "Error describing failure"
+// @Failure 500 {string} string "Internal server error"
+// @Router /like [get]
 func (h *Handler) UserLikeOnGet(w http.ResponseWriter, r *http.Request) {
 	userPostIDString := r.URL.Query().Get("userPostID")
 	if userPostIDString == "" {

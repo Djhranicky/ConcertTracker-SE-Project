@@ -168,6 +168,50 @@ const docTemplate = `{
             }
         },
         "/like": {
+            "get": {
+                "description": "Returns the number of likes for a specific post",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Get number of likes",
+                "parameters": [
+                    {
+                        "description": "Like Toggle Payload",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.UserLikePostPayload"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/types.UserLikeGetResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Error describing failure",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
             "post": {
                 "description": "Toggles whether a user likes a given post",
                 "consumes": [
@@ -187,7 +231,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/types.LikeCreatePayload"
+                            "$ref": "#/definitions/types.UserLikePostPayload"
                         }
                     }
                 ],
@@ -390,7 +434,15 @@ const docTemplate = `{
                 }
             }
         },
-        "types.LikeCreatePayload": {
+        "types.UserLikeGetResponse": {
+            "type": "object",
+            "properties": {
+                "count": {
+                    "type": "integer"
+                }
+            }
+        },
+        "types.UserLikePostPayload": {
             "type": "object",
             "required": [
                 "userID",
@@ -445,7 +497,13 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "type": {
-                    "type": "string"
+                    "type": "string",
+                    "enum": [
+                        "ATTENDED",
+                        "WISHLIST",
+                        "REVIEW",
+                        "LISTCREATED"
+                    ]
                 },
                 "userPostID": {
                     "type": "integer"

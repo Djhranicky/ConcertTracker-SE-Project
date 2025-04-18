@@ -608,16 +608,6 @@ func (h *Handler) handleUserPost() http.HandlerFunc {
 	}
 }
 
-// @Summary Handle liking a post
-// @Description Toggles whether a user likes a given post
-// @Tags User
-// @Accept json
-// @Produce json
-// @Param request body types.LikeCreatePayload true "Like Toggle Payload"
-// @Success 200 {string} string "Like status toggled successfully"
-// @Failure 400 {string} string "Error describing failure"
-// @Failure 500 {string} string "Internal server error"
-// @Router /like [post]
 func (h *Handler) handleUserLike() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		utils.SetCORSHeaders(w)
