@@ -898,6 +898,54 @@ func TestUserServiceHandleLike(t *testing.T) {
 
 		assertEqual(t, http.StatusOK, rr.Code)
 	})
+
+	t.Run("GET should fail when query param not provided", func(t *testing.T) {
+		req, err := http.NewRequest(http.MethodGet, "/like", nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/like", handler.handleUserLike())
+
+		router.ServeHTTP(rr, req)
+
+		assertEqual(t, http.StatusBadRequest, rr.Code)
+	})
+
+	t.Run("GET should fail when bad query param provided", func(t *testing.T) {
+		req, err := http.NewRequest(http.MethodGet, "/like?userPostID=test", nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/like", handler.handleUserLike())
+
+		router.ServeHTTP(rr, req)
+
+		assertEqual(t, http.StatusBadRequest, rr.Code)
+	})
+
+	t.Run("GET should return like count for valid input", func(t *testing.T) {
+		req, err := http.NewRequest(http.MethodGet, "/like?userPostID=1", nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/like", handler.handleUserLike())
+
+		router.ServeHTTP(rr, req)
+
+		assertEqual(t, http.StatusOK, rr.Code)
+	})
 }
 
 func TestUserServiceHandleFollow(t *testing.T) {
