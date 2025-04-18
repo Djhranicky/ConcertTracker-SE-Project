@@ -150,16 +150,42 @@ const docTemplate = `{
         "/like": {
             "post": {
                 "description": "Toggles whether a user likes a given post",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
                 "tags": [
                     "User"
                 ],
                 "summary": "Handle liking a post",
+                "parameters": [
+                    {
+                        "description": "Like Toggle Payload",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.LikeCreatePayload"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
-                        "description": "OK"
+                        "description": "Like status toggled successfully",
+                        "schema": {
+                            "type": "string"
+                        }
                     },
                     "400": {
                         "description": "Error describing failure",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
                         "schema": {
                             "type": "string"
                         }
@@ -252,16 +278,43 @@ const docTemplate = `{
         },
         "/userpost": {
             "post": {
+                "description": "Creates a post for a user. Can be set to public or private with IsPublic",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
                 "tags": [
                     "User"
                 ],
                 "summary": "Create user post",
+                "parameters": [
+                    {
+                        "description": "User Post Creation Payload",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.UserPostCreatePayload"
+                        }
+                    }
+                ],
                 "responses": {
                     "201": {
-                        "description": "Created"
+                        "description": "Post created successfully",
+                        "schema": {
+                            "type": "string"
+                        }
                     },
                     "400": {
-                        "description": "Error describing failure",
+                        "description": "Error describing failure - including duplicate attendance posts",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
                         "schema": {
                             "type": "string"
                         }
@@ -317,6 +370,21 @@ const docTemplate = `{
                 }
             }
         },
+        "types.LikeCreatePayload": {
+            "type": "object",
+            "required": [
+                "userID",
+                "userPostID"
+            ],
+            "properties": {
+                "userID": {
+                    "type": "integer"
+                },
+                "userPostID": {
+                    "type": "integer"
+                }
+            }
+        },
         "types.UserLoginPayload": {
             "type": "object",
             "required": [
@@ -329,6 +397,38 @@ const docTemplate = `{
                 },
                 "password": {
                     "type": "string"
+                }
+            }
+        },
+        "types.UserPostCreatePayload": {
+            "type": "object",
+            "required": [
+                "authorID",
+                "concertID",
+                "isPublic",
+                "type"
+            ],
+            "properties": {
+                "authorID": {
+                    "type": "integer"
+                },
+                "concertID": {
+                    "type": "integer"
+                },
+                "isPublic": {
+                    "type": "boolean"
+                },
+                "rating": {
+                    "type": "integer"
+                },
+                "text": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "userPostID": {
+                    "type": "integer"
                 }
             }
         },

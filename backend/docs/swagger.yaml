@@ -13,6 +13,16 @@ definitions:
       updatedAt:
         type: string
     type: object
+  types.LikeCreatePayload:
+    properties:
+      userID:
+        type: integer
+      userPostID:
+        type: integer
+    required:
+    - userID
+    - userPostID
+    type: object
   types.UserLoginPayload:
     properties:
       email:
@@ -22,6 +32,28 @@ definitions:
     required:
     - email
     - password
+    type: object
+  types.UserPostCreatePayload:
+    properties:
+      authorID:
+        type: integer
+      concertID:
+        type: integer
+      isPublic:
+        type: boolean
+      rating:
+        type: integer
+      text:
+        type: string
+      type:
+        type: string
+      userPostID:
+        type: integer
+    required:
+    - authorID
+    - concertID
+    - isPublic
+    - type
     type: object
   types.UserRegisterPayload:
     properties:
@@ -136,12 +168,29 @@ paths:
       - Artist
   /like:
     post:
+      consumes:
+      - application/json
       description: Toggles whether a user likes a given post
+      parameters:
+      - description: Like Toggle Payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/types.LikeCreatePayload'
+      produces:
+      - application/json
       responses:
         "200":
-          description: OK
+          description: Like status toggled successfully
+          schema:
+            type: string
         "400":
           description: Error describing failure
+          schema:
+            type: string
+        "500":
+          description: Internal server error
           schema:
             type: string
       summary: Handle liking a post
@@ -203,11 +252,30 @@ paths:
       - Auth
   /userpost:
     post:
+      consumes:
+      - application/json
+      description: Creates a post for a user. Can be set to public or private with
+        IsPublic
+      parameters:
+      - description: User Post Creation Payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/types.UserPostCreatePayload'
+      produces:
+      - application/json
       responses:
         "201":
-          description: Created
+          description: Post created successfully
+          schema:
+            type: string
         "400":
-          description: Error describing failure
+          description: Error describing failure - including duplicate attendance posts
+          schema:
+            type: string
+        "500":
+          description: Internal server error
           schema:
             type: string
       summary: Create user post
