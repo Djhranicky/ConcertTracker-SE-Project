@@ -21,4 +21,5 @@ type Store interface {
 	ToggleUserLike(UserLikePostPayload) error
 	ToggleUserFollow(UserFollowPayload) error
 	UserPostExists(authorID, concertID uint, postType string) (bool, error)
+	GetNumberOfLikes(UserLikeGetPayload) (int64, error)
 }

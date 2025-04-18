@@ -261,3 +261,13 @@ func (s *Store) ToggleUserFollow(newFollow types.UserFollowPayload) error {
 
 	return result.Error
 }
+
+func (s *Store) GetNumberOfLikes(post types.UserLikeGetPayload) (int64, error) {
+	var count int64
+	result := s.db.Model(&types.Likes{}).Where("user_post_id = ?", post.UserPostID).Count(&count)
+	if result.Error != nil {
+		return 0, result.Error
+	}
+
+	return count, nil
+}
