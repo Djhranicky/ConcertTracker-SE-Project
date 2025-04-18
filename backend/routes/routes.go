@@ -584,16 +584,6 @@ func (h *Handler) handleConcert(inputURL string) http.HandlerFunc {
 	}
 }
 
-// @Summary Create user post
-// @Description Creates a post for a user. Can be set to public or private with IsPublic
-// @Tags User
-// @Accept json
-// @Produce json
-// @Param request body types.UserPostCreatePayload true "User Post Creation Payload"
-// @Success 201 {string} string "Post created successfully"
-// @Failure 400 {string} string "Error describing failure - including duplicate attendance posts"
-// @Failure 500 {string} string "Internal server error"
-// @Router /userpost [post]
 func (h *Handler) handleUserPost() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		utils.SetCORSHeaders(w)
@@ -604,6 +594,10 @@ func (h *Handler) handleUserPost() http.HandlerFunc {
 
 		if r.Method == http.MethodPost {
 			h.UserPostOnPost(w, r)
+		}
+
+		if r.Method == http.MethodGet {
+			h.UserPostOnGet(w, r)
 		}
 	}
 }
