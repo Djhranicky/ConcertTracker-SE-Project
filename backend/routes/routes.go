@@ -39,7 +39,7 @@ func (h *Handler) RegisterRoutes(router *mux.Router) {
 	router.HandleFunc("/import", h.handleArtistImport(baseURL)).Methods("GET", "OPTIONS")
 	router.HandleFunc("/concert", h.handleConcert(baseURL)).Methods("GET", "OPTIONS")
 	router.HandleFunc("/userpost", h.handleUserPost()).Methods("POST", "OPTIONS")
-	router.HandleFunc("/like", h.handleUserLike()).Methods("POST", "OPTIONS")
+	router.HandleFunc("/like", h.handleUserLike()).Methods("GET", "POST", "OPTIONS")
 	router.HandleFunc("/follow", h.handleUserFollow()).Methods("POST", "OPTIONS")
 
 	// Serve Swagger UI
@@ -628,10 +628,12 @@ func (h *Handler) handleUserLike() http.HandlerFunc {
 
 		if r.Method == http.MethodPost {
 			h.UserLikeOnPost(w, r)
+			return
 		}
 
 		if r.Method == http.MethodGet {
 			h.UserLikeOnGet(w, r)
+			return
 		}
 	}
 }
