@@ -585,10 +585,14 @@ func (h *Handler) handleConcert(inputURL string) http.HandlerFunc {
 }
 
 // @Summary Create user post
-// @Desctription Creates a post for a user. Can be set to public or private with IsPublic
+// @Description Creates a post for a user. Can be set to public or private with IsPublic
 // @Tags User
-// @Success 201
-// @Failure 400 {string} error "Error describing failure"
+// @Accept json
+// @Produce json
+// @Param request body types.UserPostCreatePayload true "User Post Creation Payload"
+// @Success 201 {string} string "Post created successfully"
+// @Failure 400 {string} string "Error describing failure"
+// @Failure 500 {string} string "Internal server error"
 // @Router /userpost [post]
 func (h *Handler) handleUserPost() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -629,8 +633,12 @@ func (h *Handler) handleUserPost() http.HandlerFunc {
 // @Summary Handle liking a post
 // @Description Toggles whether a user likes a given post
 // @Tags User
-// @Success 200
-// @Failure 400 {string} error "Error describing failure"
+// @Accept json
+// @Produce json
+// @Param request body types.LikeCreatePayload true "Like Toggle Payload"
+// @Success 200 {string} string "Like status toggled successfully"
+// @Failure 400 {string} string "Error describing failure"
+// @Failure 500 {string} string "Internal server error"
 // @Router /like [post]
 func (h *Handler) handleUserLike() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
