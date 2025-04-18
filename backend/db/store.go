@@ -224,3 +224,16 @@ func (s *Store) ToggleUserLike(newLike types.LikeCreatePayload) error {
 
 	return result.Error
 }
+
+func (s *Store) UserPostExists(authorID, concertID uint, postType string) (bool, error) {
+	var count int64
+	result := s.db.Model(&types.UserPost{}).
+		Where("author_id = ? AND concert_id = ? AND type = ?", authorID, concertID, postType).
+		Count(&count)
+
+	if result.Error != nil {
+		return false, result.Error
+	}
+
+	return count > 0, nil
+}

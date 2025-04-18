@@ -19,4 +19,5 @@ type Store interface {
 	CreateConcertSongIfMissing(ConcertSong) *ConcertSong
 	CreateUserPost(UserPostCreatePayload) (*UserPost, error)
 	ToggleUserLike(LikeCreatePayload) error
+	UserPostExists(authorID, concertID uint, postType string) (bool, error)
 }

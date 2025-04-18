@@ -591,7 +591,7 @@ func (h *Handler) handleConcert(inputURL string) http.HandlerFunc {
 // @Produce json
 // @Param request body types.UserPostCreatePayload true "User Post Creation Payload"
 // @Success 201 {string} string "Post created successfully"
-// @Failure 400 {string} string "Error describing failure"
+// @Failure 400 {string} string "Error describing failure - including duplicate attendance posts"
 // @Failure 500 {string} string "Internal server error"
 // @Router /userpost [post]
 func (h *Handler) handleUserPost() http.HandlerFunc {
@@ -618,6 +618,19 @@ func (h *Handler) handleUserPost() http.HandlerFunc {
 		if !slices.Contains(userPostTypes, payload.Type) {
 			utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("invalid UserPost type"))
 			return
+		}
+
+		// Check for duplicate ATTENDED and REVIEW posts
+		if payload.Type == "ATTENDED" || payload.Type == "REVIEW" {
+			exists, err := h.Store.UserPostExists(payload.AuthorID, payload.ConcertID, "ATTENDED")
+			if err != nil {
+				utils.WriteError(w, http.StatusInternalServerError, err)
+				return
+			}
+			if exists {
+				utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("you have already marked this concert as attended"))
+				return
+			}
 		}
 
 		_, err := h.Store.CreateUserPost(payload)
