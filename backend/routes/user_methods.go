@@ -1,9 +1,11 @@
 package routes
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"slices"
+	"strconv"
 
 	"github.com/djhranicky/ConcertTracker-SE-Project/types"
 	"github.com/djhranicky/ConcertTracker-SE-Project/utils"
@@ -74,18 +76,19 @@ func (h *Handler) UserLikeOnPost(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) UserLikeOnGet(w http.ResponseWriter, r *http.Request) {
-	var payload types.UserLikeGetPayload
-	if err := utils.ParseJSON(r, &payload); err != nil {
-		utils.WriteError(w, http.StatusBadRequest, err)
+	userPostIDString := r.URL.Query().Get("userPostID")
+	if userPostIDString == "" {
+		utils.WriteError(w, http.StatusBadRequest, errors.New("userPostID not provided"))
 		return
 	}
 
-	if err := utils.Validate.Struct(payload); err != nil {
-		errors := err.(validator.ValidationErrors)
-		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("invalid payload %v", errors))
+	userPostID, err := strconv.ParseInt(userPostIDString, 10, 64)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("bad UserPostID provided %v", userPostIDString))
+		return
 	}
 
-	count, err := h.Store.GetNumberOfLikes(payload)
+	count, err := h.Store.GetNumberOfLikes(userPostID)
 	if err != nil {
 		utils.WriteError(w, http.StatusInternalServerError, err)
 		return
