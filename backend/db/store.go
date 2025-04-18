@@ -251,14 +251,26 @@ func (s *Store) UserPostExists(authorID, concertID uint, postType string) (bool,
 }
 
 func (s *Store) ToggleUserFollow(newFollow types.UserFollowPayload) error {
-	var result *gorm.DB
 	var follow types.Follow
-	result = s.db.Where(types.Follow{UserID: newFollow.UserID, FollowedUserID: newFollow.FollowedUserID}).Attrs(types.Follow{IsFollowed: true}).FirstOrCreate(&follow)
 
-	if result.RowsAffected == 0 {
-		s.db.Model(&types.Follow{}).Select("*").Where("user_id = ? AND followed_user_id = ?", follow.UserID, follow.FollowedUserID).Update("is_followed", !follow.IsFollowed)
+	// Try to find an existing like
+	result := s.db.Where("followed_user_id = ? AND user_id = ?", newFollow.FollowedUserID, newFollow.UserID).First(&follow)
+
+	// If we found a record (no ErrRecordNotFound), delete it
+	if result.Error == nil {
+		return s.db.Delete(&follow).Error
 	}
 
+	// If no record was found, create a new one (only if the error was "record not found")
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		newFollowRecord := types.Follow{
+			UserID:         newFollow.UserID,
+			FollowedUserID: newFollow.FollowedUserID,
+		}
+		return s.db.Create(&newFollowRecord).Error
+	}
+
+	// Return any other errors that occurred during the query
 	return result.Error
 }
 
