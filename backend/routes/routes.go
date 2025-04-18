@@ -6,7 +6,6 @@ import (
 	"math"
 	"net/http"
 	"os"
-	"slices"
 	"sort"
 	"time"
 
@@ -603,44 +602,9 @@ func (h *Handler) handleUserPost() http.HandlerFunc {
 			return
 		}
 
-		var payload types.UserPostCreatePayload
-		if err := utils.ParseJSON(r, &payload); err != nil {
-			utils.WriteError(w, http.StatusBadRequest, err)
-			return
+		if r.Method == http.MethodPost {
+			h.UserPostOnPost(w, r)
 		}
-
-		if err := utils.Validate.Struct(payload); err != nil {
-			errors := err.(validator.ValidationErrors)
-			utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("invalid payload %v", errors))
-			return
-		}
-
-		userPostTypes := []string{"ATTENDED", "WISHLIST", "REVIEW", "LISTCREATED"}
-		if !slices.Contains(userPostTypes, payload.Type) {
-			utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("invalid UserPost type"))
-			return
-		}
-
-		// Check for duplicate ATTENDED and REVIEW posts
-		if payload.Type == "ATTENDED" || payload.Type == "REVIEW" {
-			exists, err := h.Store.UserPostExists(payload.AuthorID, payload.ConcertID, "ATTENDED")
-			if err != nil {
-				utils.WriteError(w, http.StatusInternalServerError, err)
-				return
-			}
-			if exists {
-				utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("you have already marked this concert as attended"))
-				return
-			}
-		}
-
-		_, err := h.Store.CreateUserPost(payload)
-		if err != nil {
-			utils.WriteError(w, http.StatusInternalServerError, err)
-			return
-		}
-
-		utils.WriteJSON(w, http.StatusCreated, nil)
 	}
 }
 
@@ -662,25 +626,13 @@ func (h *Handler) handleUserLike() http.HandlerFunc {
 			return
 		}
 
-		var payload types.LikeCreatePayload
-		if err := utils.ParseJSON(r, &payload); err != nil {
-			utils.WriteError(w, http.StatusBadRequest, err)
-			return
+		if r.Method == http.MethodPost {
+			h.UserLikeOnPost(w, r)
 		}
 
-		if err := utils.Validate.Struct(payload); err != nil {
-			errors := err.(validator.ValidationErrors)
-			utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("invalid payload %v", errors))
-			return
+		if r.Method == http.MethodGet {
+			h.UserLikeOnGet(w, r)
 		}
-
-		err := h.Store.ToggleUserLike(payload)
-		if err != nil {
-			utils.WriteError(w, http.StatusInternalServerError, err)
-			return
-		}
-
-		utils.WriteJSON(w, http.StatusOK, nil)
 	}
 }
 
