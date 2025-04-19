@@ -21,6 +21,19 @@ type UserLikeGetResponse struct {
 	Count int64 `json:"count"`
 }
 
+type UserPostGetResponse struct {
+	ID         uint      `json:"id"`
+	AuthorID   uint      `json:"authorID"`
+	Text       *string   `json:"text"`
+	Type       string    `json:"type"`
+	Rating     *uint     `json:"rating"`
+	UserPostID *uint     `json:"userPostID"`
+	IsPublic   bool      `json:"isPublic"`
+	ConcertID  uint      `json:"concertID"`
+	CreatedAt  time.Time `json:"createdAt"`
+	UpdatedAt  time.Time `json:"updatedAt"`
+}
+
 type UserPost struct {
 	ID         uint    `gorm:"primaryKey"`
 	AuthorID   uint    `gorm:"index"`

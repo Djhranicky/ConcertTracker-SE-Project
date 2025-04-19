@@ -283,3 +283,38 @@ func (s *Store) GetNumberOfLikes(userPostID int64) (int64, error) {
 
 	return count, nil
 }
+
+func (s *Store) GetActivityFeed(userID int64, pageNumber int64) ([]types.UserPostGetResponse, error) {
+	var userPosts []types.UserPost
+	var userPostsReturn []types.UserPostGetResponse
+	result := s.db.Raw(`SELECT 
+				P.*
+				FROM users U
+				JOIN follows F ON U.id = F.user_id
+				JOIN user_posts P ON F.followed_user_id = P.author_id
+				WHERE U.id = ?
+				AND P.is_public = 1
+				ORDER BY P.updated_at DESC
+				LIMIT 20 OFFSET ?
+			;`, userID, 20*pageNumber).Scan(&userPosts)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	for _, post := range userPosts {
+		userPostsReturn = append(userPostsReturn, types.UserPostGetResponse{
+			ID:         post.ID,
+			AuthorID:   post.AuthorID,
+			Text:       post.Text,
+			Type:       post.Type,
+			Rating:     post.Rating,
+			UserPostID: post.UserPostID,
+			IsPublic:   post.IsPublic,
+			ConcertID:  post.ConcertID,
+			CreatedAt:  post.CreatedAt,
+			UpdatedAt:  post.UpdatedAt,
+		})
+	}
+
+	return userPostsReturn, nil
+}

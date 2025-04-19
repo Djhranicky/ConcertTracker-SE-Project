@@ -22,4 +22,5 @@ type Store interface {
 	ToggleUserFollow(UserFollowPayload) error
 	UserPostExists(authorID, concertID uint, postType string) (bool, error)
 	GetNumberOfLikes(int64) (int64, error)
+	GetActivityFeed(int64, int64) ([]UserPostGetResponse, error)
 }
