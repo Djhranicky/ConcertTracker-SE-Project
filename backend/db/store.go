@@ -295,6 +295,7 @@ func (s *Store) GetActivityFeed(userID int64, pageNumber int64) ([]types.UserPos
 		P.user_post_id,
 		P.is_public,
 		P.concert_id,
+		A.name AS artist_name,
 		C.date AS concert_date,
 		T.name AS tour_name,
 		V.name AS venue_name,
@@ -309,6 +310,7 @@ func (s *Store) GetActivityFeed(userID int64, pageNumber int64) ([]types.UserPos
 		JOIN concerts C ON P.concert_id = C.id
 		JOIN tours T ON C.tour_id = T.id
 		JOIN venues V ON C.venue_id = V.id
+		JOIN artists A ON C.artist_id = A.id
 		WHERE U.id = ?
 		AND P.is_public = 1
 		ORDER BY P.updated_at DESC

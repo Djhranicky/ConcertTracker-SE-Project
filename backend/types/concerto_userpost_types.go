@@ -30,6 +30,7 @@ type UserPostGetResponse struct {
 	UserPostID   *uint     `json:"userPostID"`
 	IsPublic     bool      `json:"isPublic"`
 	ConcertID    uint      `json:"concertID"`
+	ArtistName   string    `json:"artistName"`
 	ConcertDate  time.Time `json:"concertDate"`
 	TourName     string    `json:"tourName"`
 	VenueName    string    `json:"venueName"`
