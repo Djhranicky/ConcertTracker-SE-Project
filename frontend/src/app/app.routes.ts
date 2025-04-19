@@ -10,7 +10,7 @@ import { GuestGuard } from './utils/guest.guard';
 import { HomeComponent } from './pages/home/home.component';
 import { ConcertComponent } from './pages/concert/concert.component';
 import { ArtistComponent } from './pages/artist/artist.component';
-import { SearchComponent } from './components/search/search.component';
+import { SearchPage } from './pages/search/search.component';
 export const appRoutes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'login', component: LoginComponent, canActivate: [GuestGuard] },
@@ -22,6 +22,6 @@ export const appRoutes: Routes = [
     component: UserProfileComponent,
     // canActivate: [AuthGuard],
   },
-  { path: 'search', component: SearchComponent },
+  { path: 'search', component: SearchPage },
   { path: '**', component: NotFoundComponent },
 ];
