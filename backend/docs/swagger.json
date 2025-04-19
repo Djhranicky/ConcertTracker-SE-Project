@@ -110,6 +110,61 @@
             }
         },
         "/follow": {
+            "get": {
+                "description": "Returns a list of either a given users followers, or who a given user is following",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Get lists of followers or following",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Given user to find list for",
+                        "name": "userID",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Chooses between list of followers of list of who user is following. Accepted values are 'followers' or 'following'",
+                        "name": "type",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "page number",
+                        "name": "p",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/types.UserFollowGetResponse"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Message describing error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
             "post": {
                 "description": "Toggles whether a user is following a second user",
                 "tags": [
@@ -470,6 +525,14 @@
                     "type": "string"
                 },
                 "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "types.UserFollowGetResponse": {
+            "type": "object",
+            "properties": {
+                "userName": {
                     "type": "string"
                 }
             }

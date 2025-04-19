@@ -40,6 +40,10 @@ type UserPostGetResponse struct {
 	UpdatedAt    time.Time `json:"updatedAt"`
 }
 
+type UserFollowGetResponse struct {
+	UserName string `json:"userName"`
+}
+
 type UserPost struct {
 	ID         uint    `gorm:"primaryKey"`
 	AuthorID   uint    `gorm:"index"`
