@@ -138,6 +138,17 @@ func (h *Handler) UserFollowOnPost(w http.ResponseWriter, r *http.Request) {
 	utils.WriteJSON(w, http.StatusOK, nil)
 }
 
+// @Summary Get lists of followers or following
+// @Description Returns a list of either a given users followers, or who a given user is following
+// @Tags User
+// @Produce json
+// @Param userID query string true "Given user to find list for"
+// @Param type query string true "Chooses between list of followers of list of who user is following. Accepted values are 'followers' or 'following'"
+// @Param p query int false "page number"
+// @Success 200 {object} []types.UserFollowGetResponse
+// @Failure 400 {string} string "Message describing error"
+// @Failure 500 {string} string "Internal server error"
+// @Router /follow [get]
 func (h *Handler) UserFollowOnGet(w http.ResponseWriter, r *http.Request) {
 	userIDString := r.URL.Query().Get("userID")
 	if userIDString == "" {
