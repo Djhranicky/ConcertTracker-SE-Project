@@ -109,3 +109,65 @@ func (h *Handler) UserLikeOnGet(w http.ResponseWriter, r *http.Request) {
 
 	utils.WriteJSON(w, http.StatusOK, types.UserLikeGetResponse{Count: count})
 }
+
+// @Summary Handle following a user
+// @Description Toggles whether a user is following a second user
+// @Tags User
+// @Success 200
+// @Failure 400 {string} error "Error describing failure"
+// @Router /follow [post]
+func (h *Handler) UserFollowOnPost(w http.ResponseWriter, r *http.Request) {
+	var payload types.UserFollowPayload
+	if err := utils.ParseJSON(r, &payload); err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	if err := utils.Validate.Struct(payload); err != nil {
+		errors := err.(validator.ValidationErrors)
+		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("invalid payload %v", errors))
+		return
+	}
+
+	err := h.Store.ToggleUserFollow(payload)
+	if err != nil {
+		utils.WriteError(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	utils.WriteJSON(w, http.StatusOK, nil)
+}
+
+func (h *Handler) UserFollowOnGet(w http.ResponseWriter, r *http.Request) {
+	userIDString := r.URL.Query().Get("userID")
+	if userIDString == "" {
+		utils.WriteError(w, http.StatusBadRequest, errors.New("userID not provided"))
+		return
+	}
+
+	followType := r.URL.Query().Get("type")
+	if !(followType == "followers" || followType == "following") {
+		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("bad type provided: %v", followType))
+		return
+	}
+
+	pageNumberString := r.URL.Query().Get("p")
+	pageNumber, err := strconv.ParseInt(pageNumberString, 10, 64)
+	if err != nil {
+		pageNumber = 0
+	}
+
+	userID, err := strconv.ParseInt(userIDString, 10, 64)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("bad userID provided: %v", userIDString))
+		return
+	}
+
+	users, err := h.Store.GetFollowersOrFollowing(userID, followType, pageNumber)
+	if err != nil {
+		utils.WriteError(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	utils.WriteJSON(w, http.StatusOK, users)
+}

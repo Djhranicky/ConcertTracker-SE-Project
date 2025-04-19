@@ -40,7 +40,7 @@ func (h *Handler) RegisterRoutes(router *mux.Router) {
 	router.HandleFunc("/concert", h.handleConcert(baseURL)).Methods("GET", "OPTIONS")
 	router.HandleFunc("/userpost", h.handleUserPost()).Methods("POST", "OPTIONS")
 	router.HandleFunc("/like", h.handleUserLike()).Methods("GET", "POST", "OPTIONS")
-	router.HandleFunc("/follow", h.handleUserFollow()).Methods("POST", "OPTIONS")
+	router.HandleFunc("/follow", h.handleUserFollow()).Methods("GET", "POST", "OPTIONS")
 
 	// Serve Swagger UI
 	router.PathPrefix("/swagger/").Handler(httpSwagger.WrapHandler)
@@ -628,38 +628,22 @@ func (h *Handler) handleUserLike() http.HandlerFunc {
 	}
 }
 
-// @Summary Handle following a user
-// @Description Toggles whether a user is following a second user
-// @Tags User
-// @Success 200
-// @Failure 400 {string} error "Error describing failure"
-// @Router /follow [post]
 func (h *Handler) handleUserFollow() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		utils.SetCORSHeaders(w)
-		if r.Method == "OPTIONS" {
+		if r.Method == http.MethodOptions {
 			w.WriteHeader(http.StatusOK)
 			return
 		}
 
-		var payload types.UserFollowPayload
-		if err := utils.ParseJSON(r, &payload); err != nil {
-			utils.WriteError(w, http.StatusBadRequest, err)
+		if r.Method == http.MethodPost {
+			h.UserFollowOnPost(w, r)
 			return
 		}
 
-		if err := utils.Validate.Struct(payload); err != nil {
-			errors := err.(validator.ValidationErrors)
-			utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("invalid payload %v", errors))
+		if r.Method == http.MethodGet {
+			h.UserFollowOnGet(w, r)
 			return
 		}
-
-		err := h.Store.ToggleUserFollow(payload)
-		if err != nil {
-			utils.WriteError(w, http.StatusInternalServerError, err)
-			return
-		}
-
-		utils.WriteJSON(w, http.StatusOK, nil)
 	}
 }
