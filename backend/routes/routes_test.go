@@ -1065,6 +1065,102 @@ func TestUserServiceHandleFollow(t *testing.T) {
 
 		assertEqual(t, http.StatusOK, rr.Code)
 	})
+
+	t.Run("GET should fail if userID param not included", func(t *testing.T) {
+		req, err := http.NewRequest(http.MethodGet, "/follow?type=followers", nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/follow", handler.handleUserFollow())
+
+		router.ServeHTTP(rr, req)
+
+		assertEqual(t, http.StatusBadRequest, rr.Code)
+	})
+
+	t.Run("GET should fail if type param not included", func(t *testing.T) {
+		req, err := http.NewRequest(http.MethodGet, "/follow?userID=1", nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/follow", handler.handleUserFollow())
+
+		router.ServeHTTP(rr, req)
+
+		assertEqual(t, http.StatusBadRequest, rr.Code)
+	})
+
+	t.Run("GET should fail if type param invalid", func(t *testing.T) {
+		req, err := http.NewRequest(http.MethodGet, "/follow?userID=1&type=blah", nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/follow", handler.handleUserFollow())
+
+		router.ServeHTTP(rr, req)
+
+		assertEqual(t, http.StatusBadRequest, rr.Code)
+	})
+
+	t.Run("GET should fail bad userID provided", func(t *testing.T) {
+		req, err := http.NewRequest(http.MethodGet, "/follow?userID=test&type=followers", nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/follow", handler.handleUserFollow())
+
+		router.ServeHTTP(rr, req)
+
+		assertEqual(t, http.StatusBadRequest, rr.Code)
+	})
+
+	t.Run("GET should pass with valid userID and type = followers", func(t *testing.T) {
+		req, err := http.NewRequest(http.MethodGet, "/follow?userID=1&type=followers", nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/follow", handler.handleUserFollow())
+
+		router.ServeHTTP(rr, req)
+
+		assertEqual(t, http.StatusOK, rr.Code)
+	})
+
+	t.Run("GET should pass with valid userID and type = following", func(t *testing.T) {
+		req, err := http.NewRequest(http.MethodGet, "/follow?userID=1&type=following", nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/follow", handler.handleUserFollow())
+
+		router.ServeHTTP(rr, req)
+
+		assertEqual(t, http.StatusOK, rr.Code)
+	})
 }
 
 func initTestDatabase(dbName string) *gorm.DB {
