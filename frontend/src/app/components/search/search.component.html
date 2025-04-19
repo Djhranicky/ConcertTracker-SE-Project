@@ -8,7 +8,7 @@
       <p *ngIf="error && !loading" class="error-message">{{ error }}</p>
 
       <div *ngFor="let artist of results">
-        <p-card *ngIf="!loading">
+        <p-card *ngIf="!loading && !error">
           <ng-template #title>
             <a href="/artists">{{ artist.artist.name }}</a>
           </ng-template>
