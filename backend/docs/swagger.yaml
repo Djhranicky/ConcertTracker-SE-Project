@@ -67,19 +67,23 @@ definitions:
     type: object
   types.UserPostGetResponse:
     properties:
-      authorID:
-        type: integer
+      authorName:
+        type: string
+      concertDate:
+        type: string
       concertID:
         type: integer
       createdAt:
         type: string
-      id:
-        type: integer
       isPublic:
         type: boolean
+      postID:
+        type: integer
       rating:
         type: integer
       text:
+        type: string
+      tourName:
         type: string
       type:
         type: string
@@ -87,6 +91,12 @@ definitions:
         type: string
       userPostID:
         type: integer
+      venueCity:
+        type: string
+      venueCountry:
+        type: string
+      venueName:
+        type: string
     type: object
   types.UserRegisterPayload:
     properties:

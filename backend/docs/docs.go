@@ -556,8 +556,11 @@ const docTemplate = `{
         "types.UserPostGetResponse": {
             "type": "object",
             "properties": {
-                "authorID": {
-                    "type": "integer"
+                "authorName": {
+                    "type": "string"
+                },
+                "concertDate": {
+                    "type": "string"
                 },
                 "concertID": {
                     "type": "integer"
@@ -565,16 +568,19 @@ const docTemplate = `{
                 "createdAt": {
                     "type": "string"
                 },
-                "id": {
-                    "type": "integer"
-                },
                 "isPublic": {
                     "type": "boolean"
+                },
+                "postID": {
+                    "type": "integer"
                 },
                 "rating": {
                     "type": "integer"
                 },
                 "text": {
+                    "type": "string"
+                },
+                "tourName": {
                     "type": "string"
                 },
                 "type": {
@@ -585,6 +591,15 @@ const docTemplate = `{
                 },
                 "userPostID": {
                     "type": "integer"
+                },
+                "venueCity": {
+                    "type": "string"
+                },
+                "venueCountry": {
+                    "type": "string"
+                },
+                "venueName": {
+                    "type": "string"
                 }
             }
         },
