@@ -285,36 +285,38 @@ func (s *Store) GetNumberOfLikes(userPostID int64) (int64, error) {
 }
 
 func (s *Store) GetActivityFeed(userID int64, pageNumber int64) ([]types.UserPostGetResponse, error) {
-	var userPosts []types.UserPost
-	var userPostsReturn []types.UserPostGetResponse
+	var userPosts []types.UserPostGetResponse
 	result := s.db.Raw(`SELECT 
-				P.*
-				FROM users U
-				JOIN follows F ON U.id = F.user_id
-				JOIN user_posts P ON F.followed_user_id = P.author_id
-				WHERE U.id = ?
-				AND P.is_public = 1
-				ORDER BY P.updated_at DESC
-				LIMIT 20 OFFSET ?
-			;`, userID, 20*pageNumber).Scan(&userPosts)
+		P.id AS post_id,
+		U2.name AS author_name,
+		P.text,
+		P.type,
+		P.rating,
+		P.user_post_id,
+		P.is_public,
+		P.concert_id,
+		C.date AS concert_date,
+		T.name AS tour_name,
+		V.name AS venue_name,
+		V.city AS venue_city,
+		V.country AS venue_country,
+		P.created_at,
+		P.updated_at
+		FROM users U
+		JOIN follows F ON U.id = F.user_id
+		JOIN user_posts P ON F.followed_user_id = P.author_id
+		JOIN users U2 ON F.followed_user_id = U2.id
+		JOIN concerts C ON P.concert_id = C.id
+		JOIN tours T ON C.tour_id = T.id
+		JOIN venues V ON C.venue_id = V.id
+		WHERE U.id = ?
+		AND P.is_public = 1
+		ORDER BY P.updated_at DESC
+		LIMIT 20 OFFSET ?
+	;`, userID, 20*pageNumber).Scan(&userPosts)
 	if result.Error != nil {
 		return nil, result.Error
 	}
 
-	for _, post := range userPosts {
-		userPostsReturn = append(userPostsReturn, types.UserPostGetResponse{
-			ID:         post.ID,
-			AuthorID:   post.AuthorID,
-			Text:       post.Text,
-			Type:       post.Type,
-			Rating:     post.Rating,
-			UserPostID: post.UserPostID,
-			IsPublic:   post.IsPublic,
-			ConcertID:  post.ConcertID,
-			CreatedAt:  post.CreatedAt,
-			UpdatedAt:  post.UpdatedAt,
-		})
-	}
-
-	return userPostsReturn, nil
+	return userPosts, nil
 }
