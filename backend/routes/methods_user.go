@@ -81,7 +81,7 @@ func (h *Handler) UserPostOnGet(w http.ResponseWriter, r *http.Request) {
 
 	userID, err := strconv.ParseInt(userIDString, 10, 64)
 	if err != nil {
-		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("bad UserPostID provided %v", userIDString))
+		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("bad userID provided %v", userIDString))
 		return
 	}
 
