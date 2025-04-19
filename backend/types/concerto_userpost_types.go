@@ -17,6 +17,17 @@ type UserLikePostPayload struct {
 	UserPostID uint `json:"userPostID" validate:"required"`
 }
 
+type UserListCreatePayload struct {
+	UserID uint   `json:"userID" validate:"required"`
+	Name   string `json:"name" validate:"required"`
+}
+
+type UserListAddPayload struct {
+	ListID    uint  `json:"listID" validate:"required"`
+	ConcertID uint  `json:"concertID" validate:"required"`
+	Addition  *bool `json:"addition" validate:"required"`
+}
+
 type UserLikeGetResponse struct {
 	Count int64 `json:"count"`
 }
@@ -70,4 +81,26 @@ type Likes struct {
 
 	UserPost UserPost `gorm:"foreignKey:UserPostID"`
 	User     User     `gorm:"foreignKey:UserID"`
+}
+
+type List struct {
+	ID        uint   `gorm:"primaryKey"`
+	UserID    uint   `json:"userID"`
+	Name      string `json:"name"`
+	Type      string `json:"type"` // Limited to "ATTENDANCE", "FAVORITES", "WISHLIST", and "USERCREATED"
+	CreatedAt time.Time
+	UpdatedAt time.Time
+
+	User User `gorm:"foreignKey:UserID"`
+}
+
+type ListConcert struct {
+	ID        uint `gorm:"primaryKey"`
+	ListID    uint `gorm:"uniqueIndex:compositeIndex" json:"listID"`
+	ConcertID uint `gorm:"uniqueIndex:compositeIndex" json:"concertID"`
+	CreatedAt time.Time
+	UpdatedAt time.Time
+
+	List    List    `gorm:"foreignKey:ListID"`
+	Concert Concert `gorm:"foreignKey:ConcertID"`
 }
