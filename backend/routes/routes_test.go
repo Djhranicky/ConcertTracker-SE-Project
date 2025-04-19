@@ -789,6 +789,54 @@ func TestUserServiceHandlePost(t *testing.T) {
 
 		assertEqual(t, http.StatusCreated, rr.Code)
 	})
+
+	t.Run("GET should fail with no userID query parameter", func(t *testing.T) {
+		req, err := http.NewRequest(http.MethodGet, "/userpost", nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/userpost", handler.handleUserPost())
+
+		router.ServeHTTP(rr, req)
+
+		assertEqual(t, http.StatusBadRequest, rr.Code)
+	})
+
+	t.Run("GET should fail with bad userID query parameter", func(t *testing.T) {
+		req, err := http.NewRequest(http.MethodGet, "/userpost?userID=test", nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/userpost", handler.handleUserPost())
+
+		router.ServeHTTP(rr, req)
+
+		assertEqual(t, http.StatusBadRequest, rr.Code)
+	})
+
+	t.Run("GET should pass with valid userID query parameter", func(t *testing.T) {
+		req, err := http.NewRequest(http.MethodGet, "/userpost?userID=1", nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/userpost", handler.handleUserPost())
+
+		router.ServeHTTP(rr, req)
+
+		assertEqual(t, http.StatusOK, rr.Code)
+	})
 }
 
 func TestUserServiceHandleLike(t *testing.T) {
