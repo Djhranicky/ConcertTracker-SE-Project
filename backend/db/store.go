@@ -284,6 +284,46 @@ func (s *Store) GetNumberOfLikes(userPostID int64) (int64, error) {
 	return count, nil
 }
 
+func (s *Store) GetActivityFeed(userID int64, pageNumber int64) ([]types.UserPostGetResponse, error) {
+	var userPosts []types.UserPostGetResponse
+	result := s.db.Raw(`SELECT 
+		P.id AS post_id,
+		U2.name AS author_name,
+		P.text,
+		P.type,
+		P.rating,
+		P.user_post_id,
+		P.is_public,
+		P.concert_id,
+		A.name AS artist_name,
+		C.date AS concert_date,
+		T.name AS tour_name,
+		V.name AS venue_name,
+		V.city AS venue_city,
+		V.country AS venue_country,
+		P.created_at,
+		P.updated_at
+		FROM users U
+		JOIN follows F ON U.id = F.user_id
+		JOIN user_posts P ON F.followed_user_id = P.author_id
+		JOIN users U2 ON F.followed_user_id = U2.id
+		JOIN concerts C ON P.concert_id = C.id
+		JOIN tours T ON C.tour_id = T.id
+		JOIN venues V ON C.venue_id = V.id
+		JOIN artists A ON C.artist_id = A.id
+		WHERE U.id = ?
+		AND P.is_public = 1
+		ORDER BY P.updated_at DESC
+		LIMIT 20 OFFSET ?
+	;`, userID, 20*pageNumber).Scan(&userPosts)
+
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return userPosts, nil
+}
+
 func (s *Store) GetFollowersOrFollowing(userID int64, followType string, pageNum int64) ([]types.UserFollowGetResponse, error) {
 	var users []types.UserFollowGetResponse
 	var err error

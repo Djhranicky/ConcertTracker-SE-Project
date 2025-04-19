@@ -11,6 +11,16 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
+// @Summary Create user post
+// @Description Creates a post for a user. Can be set to public or private with IsPublic
+// @Tags User
+// @Accept json
+// @Produce json
+// @Param request body types.UserPostCreatePayload true "User Post Creation Payload"
+// @Success 201 {string} string "Post created successfully"
+// @Failure 400 {string} string "Error describing failure - including duplicate attendance posts"
+// @Failure 500 {string} string "Internal server error"
+// @Router /userpost [post]
 func (h *Handler) UserPostOnPost(w http.ResponseWriter, r *http.Request) {
 	var payload types.UserPostCreatePayload
 	if err := utils.ParseJSON(r, &payload); err != nil {
@@ -44,6 +54,44 @@ func (h *Handler) UserPostOnPost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	utils.WriteJSON(w, http.StatusCreated, nil)
+}
+
+// @Summary Get posts for user dashboard
+// @Description Gets public posts from a user's followed network, sorted with most recent first
+// @Tags User
+// @Produce json
+// @Param userID query string true "ID of logged in user"
+// @Param p query string false "page number of posts (sets of 20)"
+// @Success 200 {object} types.UserPostGetResponse "Activity from user's followed network"
+// @Failure 400 {string} string "Error describing failure"
+// @Failure 500 {string} string "Internal server error"
+// @Router /userpost [get]
+func (h *Handler) UserPostOnGet(w http.ResponseWriter, r *http.Request) {
+	userIDString := r.URL.Query().Get("userID")
+	if userIDString == "" {
+		utils.WriteError(w, http.StatusBadRequest, errors.New("userID not provided"))
+		return
+	}
+
+	pageNumberString := r.URL.Query().Get("p")
+	pageNumber, err := strconv.ParseInt(pageNumberString, 10, 64)
+	if err != nil {
+		pageNumber = 0
+	}
+
+	userID, err := strconv.ParseInt(userIDString, 10, 64)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("bad userID provided %v", userIDString))
+		return
+	}
+
+	posts, err := h.Store.GetActivityFeed(userID, pageNumber)
+	if err != nil {
+		utils.WriteError(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	utils.WriteJSON(w, http.StatusOK, posts)
 }
 
 // @Summary Like or unlike a post
