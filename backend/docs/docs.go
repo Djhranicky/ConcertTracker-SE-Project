@@ -339,6 +339,51 @@ const docTemplate = `{
             }
         },
         "/userpost": {
+            "get": {
+                "description": "Gets public posts from a user's followed network, sorted with most recent first",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Get posts for user dashboard",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID of logged in user",
+                        "name": "userID",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "page number of posts (sets of 20)",
+                        "name": "p",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Activity from user's followed network",
+                        "schema": {
+                            "$ref": "#/definitions/types.UserPostGetResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Error describing failure",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
             "post": {
                 "description": "Creates a post for a user. Can be set to public or private with IsPublic",
                 "consumes": [
@@ -502,6 +547,41 @@ const docTemplate = `{
                         "REVIEW",
                         "LISTCREATED"
                     ]
+                },
+                "userPostID": {
+                    "type": "integer"
+                }
+            }
+        },
+        "types.UserPostGetResponse": {
+            "type": "object",
+            "properties": {
+                "authorID": {
+                    "type": "integer"
+                },
+                "concertID": {
+                    "type": "integer"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "isPublic": {
+                    "type": "boolean"
+                },
+                "rating": {
+                    "type": "integer"
+                },
+                "text": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
                 },
                 "userPostID": {
                     "type": "integer"

@@ -65,6 +65,29 @@ definitions:
     - isPublic
     - type
     type: object
+  types.UserPostGetResponse:
+    properties:
+      authorID:
+        type: integer
+      concertID:
+        type: integer
+      createdAt:
+        type: string
+      id:
+        type: integer
+      isPublic:
+        type: boolean
+      rating:
+        type: integer
+      text:
+        type: string
+      type:
+        type: string
+      updatedAt:
+        type: string
+      userPostID:
+        type: integer
+    type: object
   types.UserRegisterPayload:
     properties:
       email:
@@ -302,6 +325,37 @@ paths:
       tags:
       - Auth
   /userpost:
+    get:
+      description: Gets public posts from a user's followed network, sorted with most
+        recent first
+      parameters:
+      - description: ID of logged in user
+        in: query
+        name: userID
+        required: true
+        type: string
+      - description: page number of posts (sets of 20)
+        in: query
+        name: p
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Activity from user's followed network
+          schema:
+            $ref: '#/definitions/types.UserPostGetResponse'
+        "400":
+          description: Error describing failure
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      summary: Get posts for user dashboard
+      tags:
+      - User
     post:
       consumes:
       - application/json

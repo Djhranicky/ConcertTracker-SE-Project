@@ -38,7 +38,7 @@ func (h *Handler) RegisterRoutes(router *mux.Router) {
 	router.HandleFunc("/artist", h.handleArtist(baseURL)).Methods("GET", "OPTIONS")
 	router.HandleFunc("/import", h.handleArtistImport(baseURL)).Methods("GET", "OPTIONS")
 	router.HandleFunc("/concert", h.handleConcert(baseURL)).Methods("GET", "OPTIONS")
-	router.HandleFunc("/userpost", h.handleUserPost()).Methods("POST", "OPTIONS")
+	router.HandleFunc("/userpost", h.handleUserPost()).Methods("GET", "POST", "OPTIONS")
 	router.HandleFunc("/like", h.handleUserLike()).Methods("GET", "POST", "OPTIONS")
 	router.HandleFunc("/follow", h.handleUserFollow()).Methods("POST", "OPTIONS")
 
