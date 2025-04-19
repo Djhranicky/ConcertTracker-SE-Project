@@ -21,6 +21,10 @@ type UserLikeGetResponse struct {
 	Count int64 `json:"count"`
 }
 
+type UserFollowGetResponse struct {
+	UserName string `json:"userName"`
+}
+
 type UserPost struct {
 	ID         uint    `gorm:"primaryKey"`
 	AuthorID   uint    `gorm:"index"`

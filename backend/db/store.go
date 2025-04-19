@@ -283,3 +283,58 @@ func (s *Store) GetNumberOfLikes(userPostID int64) (int64, error) {
 
 	return count, nil
 }
+
+func (s *Store) GetFollowersOrFollowing(userID int64, followType string, pageNum int64) ([]types.UserFollowGetResponse, error) {
+	var users []types.UserFollowGetResponse
+	var err error
+
+	if followType == "followers" {
+		users, err = s.getFollowers(userID, users, pageNum)
+	} else {
+		users, err = s.getFollowing(userID, users, pageNum)
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	return users, nil
+}
+
+func (s *Store) getFollowers(userID int64, users []types.UserFollowGetResponse, pageNum int64) ([]types.UserFollowGetResponse, error) {
+	pageSize := int64(20)
+	result := s.db.Raw(`
+		SELECT
+		U.name AS user_name
+		FROM follows F
+		JOIN users U ON F.followed_user_id = U.id
+		WHERE F.followed_user_id = ?
+		ORDER BY F.created_at DESC
+		LIMIT ? OFFSET ?;
+	`, userID, pageSize, pageNum*pageSize).Scan(&users)
+
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return users, nil
+}
+
+func (s *Store) getFollowing(userID int64, users []types.UserFollowGetResponse, pageNum int64) ([]types.UserFollowGetResponse, error) {
+	pageSize := int64(20)
+	result := s.db.Raw(`
+		SELECT
+		U.name AS user_name
+		FROM follows F
+		JOIN users U ON F.followed_user_id = U.id
+		WHERE F.user_id = ?
+		ORDER BY F.created_at DESC
+		LIMIT ? OFFSET ?;
+	`, userID, pageSize, pageNum*pageSize).Scan(&users)
+
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return users, nil
+}
