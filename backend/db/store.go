@@ -394,7 +394,7 @@ func (s *Store) CreateList(newList types.UserListCreatePayload) (*types.List, er
 	return &list, nil
 }
 
-func (s *Store) AddList(newList types.UserListAddPayload) error {
+func (s *Store) ToggleList(newList types.UserListAddPayload) error {
 	var listConcert types.ListConcert
 
 	result := s.db.Where("list_id = ? AND concert_id = ?", newList.ListID, newList.ConcertID).First(&listConcert)

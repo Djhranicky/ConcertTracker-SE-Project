@@ -18,6 +18,16 @@ definitions:
       userName:
         type: string
     type: object
+  types.UserFollowPayload:
+    properties:
+      followedUserID:
+        type: integer
+      userID:
+        type: integer
+    required:
+    - followedUserID
+    - userID
+    type: object
   types.UserLikeGetResponse:
     properties:
       count:
@@ -32,6 +42,26 @@ definitions:
     required:
     - userID
     - userPostID
+    type: object
+  types.UserListAddPayload:
+    properties:
+      concertID:
+        type: integer
+      listID:
+        type: integer
+    required:
+    - concertID
+    - listID
+    type: object
+  types.UserListCreatePayload:
+    properties:
+      name:
+        type: string
+      userID:
+        type: integer
+    required:
+    - name
+    - userID
     type: object
   types.UserLoginPayload:
     properties:
@@ -72,6 +102,8 @@ definitions:
     type: object
   types.UserPostGetResponse:
     properties:
+      artistName:
+        type: string
       authorName:
         type: string
       concertDate:
@@ -231,7 +263,16 @@ paths:
       tags:
       - User
     post:
+      consumes:
+      - application/json
       description: Toggles whether a user is following a second user
+      parameters:
+      - description: Follow toggle payload
+        in: body
+        name: follow
+        required: true
+        schema:
+          $ref: '#/definitions/types.UserFollowPayload'
       responses:
         "200":
           description: OK
@@ -322,6 +363,63 @@ paths:
           schema:
             type: string
       summary: Like or unlike a post
+      tags:
+      - User
+  /listadd:
+    post:
+      consumes:
+      - application/json
+      description: Adds or removes a concert from a given list. When concert doesn't
+        exist, it is added. If concert exists, it is deleted.
+      parameters:
+      - description: List and concert IDs
+        in: body
+        name: listconcert
+        required: true
+        schema:
+          $ref: '#/definitions/types.UserListAddPayload'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+        "400":
+          description: Error describing failure
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      summary: Add/Remove concert from a list
+      tags:
+      - User
+  /listcreate:
+    post:
+      consumes:
+      - application/json
+      description: Creates a new list for a user
+      parameters:
+      - description: List create payload
+        in: body
+        name: list
+        required: true
+        schema:
+          $ref: '#/definitions/types.UserListCreatePayload'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+        "400":
+          description: Error describing failure
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      summary: Create new list for user
       tags:
       - User
   /login:
