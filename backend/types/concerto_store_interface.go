@@ -25,4 +25,5 @@ type Store interface {
 	GetActivityFeed(int64, int64) ([]UserPostGetResponse, error)
 	GetFollowersOrFollowing(int64, string, int64) ([]UserFollowGetResponse, error)
 	CreateList(UserListCreatePayload) (*List, error)
+	AddList(UserListAddPayload) error
 }

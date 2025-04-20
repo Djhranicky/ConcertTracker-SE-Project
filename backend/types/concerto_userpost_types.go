@@ -23,9 +23,8 @@ type UserListCreatePayload struct {
 }
 
 type UserListAddPayload struct {
-	ListID    uint  `json:"listID" validate:"required"`
-	ConcertID uint  `json:"concertID" validate:"required"`
-	Addition  *bool `json:"addition" validate:"required"`
+	ListID    uint `json:"listID" validate:"required"`
+	ConcertID uint `json:"concertID" validate:"required"`
 }
 
 type UserLikeGetResponse struct {
