@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -8,6 +9,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/chromedp/chromedp"
 	"github.com/djhranicky/ConcertTracker-SE-Project/service/setlist"
 	"github.com/go-playground/validator/v10"
 	"github.com/joho/godotenv"
@@ -90,4 +92,18 @@ func GetArtistSetlistsFromAPI(w http.ResponseWriter, inputURL string, mbid strin
 	}
 
 	return &jsonData, nil
+}
+
+func getArtistDataFromAPI(url string) {
+	ctx, cancel := chromedp.NewContext(context.Background())
+	defer cancel()
+
+	var upcoming string
+	var stats string
+
+	err := chromedp.Run(ctx,
+		chromedp.Navigate(url),
+		chromedp.OuterHTML(`.upcomingSetlistsList`, &upcoming, chromedp.ByQuery),
+		chromedp.OuterHTML(`.artistStatsTeaser`, &stats, chromedp.ByQuery),
+	)
 }
