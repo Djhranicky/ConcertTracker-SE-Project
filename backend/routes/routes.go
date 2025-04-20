@@ -261,7 +261,10 @@ func (h *Handler) handleArtist(inputURL string) http.HandlerFunc {
 		tourNames := make(map[string]bool)
 		setlistDates := make([]string, 0)
 		recentSetlists := make([]map[string]string, 0)
-		upcomingShows := make([]map[string]string, 0)
+
+		// Variables for upcoming shows and top songs
+		var upcomingShows []map[string]string
+		var topSongs []map[string]string
 
 		// Process all setlists to gather information
 		for i := range jsonData.Setlist {
@@ -284,22 +287,30 @@ func (h *Handler) handleArtist(inputURL string) http.HandlerFunc {
 				}
 				recentSetlists = append(recentSetlists, setlistInfo)
 			}
+		}
 
-			// Check for upcoming shows (dates after current date)
-			// eventDate, err := time.Parse("02-01-2006", jsonData.Setlist[i].EventDate)
-			// if err == nil && eventDate.After(time.Now()) {
-			// 	upcomingShow := map[string]string{
-			// 		"id":    jsonData.Setlist[i].ID,
-			// 		"date":  jsonData.Setlist[i].EventDate,
-			// 		"venue": jsonData.Setlist[i].Venue.Name,
-			// 		"city":  jsonData.Setlist[i].Venue.City.Name,
-			// 		"url":   jsonData.Setlist[i].URL,
-			// 	}
-			// 	upcomingShows = append(upcomingShows, upcomingShow)
-			// }
+		// Get artist URL for scraping additional data
+		artistURL := ""
+		if len(jsonData.Setlist) > 0 {
+			artistURL = jsonData.Setlist[0].Artist.URL
+		}
 
-			upcomingShows = utils.getArtistDataFromAPI(jsonData.Setlist[i].Artist.URL)
-			fmt.Println(upcomingShows)
+		// Get upcoming shows and stats from artist's URL
+		if artistURL != "" {
+			artistData, err := utils.GetArtistDataFromAPI(artistURL)
+			if err == nil {
+				// Convert upcoming shows data to our format
+				if upcomingData, ok := artistData["upcoming"].([]map[string]string); ok {
+					upcomingShows = upcomingData
+				}
+
+				// Convert stats (top songs) data to our format
+				if statsData, ok := artistData["stats"].([]map[string]string); ok {
+					topSongs = statsData
+				}
+			} else {
+				fmt.Println("Error retrieving artist data:", err)
+			}
 		}
 
 		// Sort recent setlists by date (newest first)
@@ -329,6 +340,7 @@ func (h *Handler) handleArtist(inputURL string) http.HandlerFunc {
 			"total_setlists":  len(setlistDates),
 			"recent_setlists": recentSetlists,
 			"upcoming_shows":  upcomingShows,
+			"top_songs":       topSongs,
 		}
 
 		utils.WriteJSON(w, http.StatusOK, enhancedResponse)

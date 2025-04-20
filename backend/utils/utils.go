@@ -97,7 +97,7 @@ func GetArtistSetlistsFromAPI(w http.ResponseWriter, inputURL string, mbid strin
 	return &jsonData, nil
 }
 
-func getArtistDataFromAPI(url string) (map[string]interface{}, error) {
+func GetArtistDataFromAPI(url string) (map[string]interface{}, error) {
 	// Create a context with timeout
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
