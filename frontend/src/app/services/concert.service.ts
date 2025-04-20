@@ -1,35 +1,8 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import { of } from 'rxjs';
-
-export interface Artist {
-  artist: string;
-  img: string;
-}
-
-export interface Tour extends Artist {
-  tour: string;
-}
-
-export interface Concert extends Tour {
-  date: string | null;
-  venue: string | null;
-  setlist: string | null;
-}
-export interface Song {
-  name: string | null;
-  with: string | null;
-  cover: Cover | null;
-  info: string | null;
-  tape: boolean;
-}
-export interface Cover {
-  mbid: string | null;
-  name: string | null;
-  sortName: string | null;
-  disambiguation: string | null;
-  url: string | null;
-}
+import { HttpClient } from '@angular/common/http';
+import { Concert, Artist } from '../models/artist.model';
 @Injectable({
   providedIn: 'root',
 })
@@ -80,8 +53,17 @@ export class ConcertService {
   };
 
   artist1: Artist = {
-    artist: 'Billie Eilish',
-    img: 'https://res.cloudinary.com/hits-photos-archive/image/upload/v1736890770/legacy-migration/legacy-hitsdd_photo_gal__photo_1891402125.png',
+    name: 'Billie Eilish',
+    imageUrl:
+      'https://res.cloudinary.com/hits-photos-archive/image/upload/v1736890770/legacy-migration/legacy-hitsdd_photo_gal__photo_1891402125.png',
+
+    ID: 0,
+    MBID: 'mbid',
+    lastUpdate: new Date('2025-03-31T21:30:48.0945199-04:00'),
+    recentSetlists: null,
+    toursCount: 20,
+    showsCount: 150,
+    upcomingShows: null,
   };
 
   upcoming1: Concert = {
@@ -122,12 +104,32 @@ export class ConcertService {
     upcoming: [this.upcoming1, this.upcoming2, this.upcoming3],
   };
 
+  private url = 'http://localhost:8080/api';
+  constructor(private http: HttpClient) {}
+
   getConcert(): Concert {
     return this.concert1;
   }
 
   getArtist(): Artist {
     return this.artist1;
+  }
+
+  getArtistByName(name: string): Observable<Artist> {
+    const encoded = encodeURIComponent(name);
+    return this.http.get<any>(`${this.url}/artist?name=${encoded}`).pipe(
+      map((response: any) => ({
+        ID: response.artist.ID,
+        MBID: response.artist.MBID,
+        name: response.artist.name,
+        lastUpdate: response.artist.UpdatedAt,
+        imageUrl: null,
+        recentSetlists: null,
+        toursCount: response.number_of_tours,
+        showsCount: response.total_setlists,
+        upcomingShows: null,
+      }))
+    );
   }
 
   getRecentConcerts(): Observable<Concert[]> {

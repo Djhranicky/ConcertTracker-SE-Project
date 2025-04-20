@@ -7,7 +7,8 @@ import { AvatarGroup } from 'primeng/avatargroup';
 import { ImageModule } from 'primeng/image';
 import { Button } from 'primeng/button';
 import { Timeline } from 'primeng/timeline';
-import { Concert, Song, ConcertService } from '../../services/concert.service';
+import { Concert, Song } from '../../models/artist.model';
+import { ConcertService } from '../../services/concert.service';
 import { Post, PostService } from '../../services/post.service';
 
 @Component({

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { Post } from './post.service';
-import { Concert, Tour } from './concert.service';
+import { Concert, Tour } from '../models/artist.model';
 
 export interface UserProfile {
   name: string;
@@ -57,31 +57,36 @@ export class UserService {
       title: 'HIT ME HARD AND SOFT',
       artist: 'Billie Eilish',
       date: 'Feb 19, 2025',
-      image: 'https://res.cloudinary.com/hits-photos-archive/image/upload/v1736890770/legacy-migration/legacy-hitsdd_photo_gal__photo_1891402125.png',
+      image:
+        'https://res.cloudinary.com/hits-photos-archive/image/upload/v1736890770/legacy-migration/legacy-hitsdd_photo_gal__photo_1891402125.png',
     },
     {
       title: 'HIT ME HARD AND SOFT',
       artist: 'Billie Eilish',
       date: 'Feb 19, 2025',
-      image: 'https://res.cloudinary.com/hits-photos-archive/image/upload/v1736890770/legacy-migration/legacy-hitsdd_photo_gal__photo_1891402125.png',
+      image:
+        'https://res.cloudinary.com/hits-photos-archive/image/upload/v1736890770/legacy-migration/legacy-hitsdd_photo_gal__photo_1891402125.png',
     },
     {
       title: 'HIT ME HARD AND SOFT',
       artist: 'Billie Eilish',
       date: 'Feb 19, 2025',
-      image: 'https://res.cloudinary.com/hits-photos-archive/image/upload/v1736890770/legacy-migration/legacy-hitsdd_photo_gal__photo_1891402125.png',
+      image:
+        'https://res.cloudinary.com/hits-photos-archive/image/upload/v1736890770/legacy-migration/legacy-hitsdd_photo_gal__photo_1891402125.png',
     },
     {
       title: 'HIT ME HARD AND SOFT',
       artist: 'Billie Eilish',
       date: 'Feb 19, 2025',
-      image: 'https://res.cloudinary.com/hits-photos-archive/image/upload/v1736890770/legacy-migration/legacy-hitsdd_photo_gal__photo_1891402125.png',
+      image:
+        'https://res.cloudinary.com/hits-photos-archive/image/upload/v1736890770/legacy-migration/legacy-hitsdd_photo_gal__photo_1891402125.png',
     },
     {
       title: 'HIT ME HARD AND SOFT',
       artist: 'Billie Eilish',
       date: 'Feb 19, 2025',
-      image: 'https://res.cloudinary.com/hits-photos-archive/image/upload/v1736890770/legacy-migration/legacy-hitsdd_photo_gal__photo_1891402125.png',
+      image:
+        'https://res.cloudinary.com/hits-photos-archive/image/upload/v1736890770/legacy-migration/legacy-hitsdd_photo_gal__photo_1891402125.png',
     },
   ];
 
@@ -91,19 +96,22 @@ export class UserService {
       title: 'HIT ME HARD AND SOFT',
       artist: 'Billie Eilish',
       date: 'Feb 19, 2025',
-      image: 'https://res.cloudinary.com/hits-photos-archive/image/upload/v1736890770/legacy-migration/legacy-hitsdd_photo_gal__photo_1891402125.png',
+      image:
+        'https://res.cloudinary.com/hits-photos-archive/image/upload/v1736890770/legacy-migration/legacy-hitsdd_photo_gal__photo_1891402125.png',
     },
     {
       title: 'HIT ME HARD AND SOFT',
       artist: 'Billie Eilish',
       date: 'Feb 19, 2025',
-      image: 'https://res.cloudinary.com/hits-photos-archive/image/upload/v1736890770/legacy-migration/legacy-hitsdd_photo_gal__photo_1891402125.png',
+      image:
+        'https://res.cloudinary.com/hits-photos-archive/image/upload/v1736890770/legacy-migration/legacy-hitsdd_photo_gal__photo_1891402125.png',
     },
     {
       title: 'HIT ME HARD AND SOFT',
       artist: 'Billie Eilish',
       date: 'Feb 19, 2025',
-      image: 'https://res.cloudinary.com/hits-photos-archive/image/upload/v1736890770/legacy-migration/legacy-hitsdd_photo_gal__photo_1891402125.png',
+      image:
+        'https://res.cloudinary.com/hits-photos-archive/image/upload/v1736890770/legacy-migration/legacy-hitsdd_photo_gal__photo_1891402125.png',
     },
   ];
 
@@ -113,19 +121,22 @@ export class UserService {
       title: 'HIT ME HARD AND SOFT',
       artist: 'Billie Eilish',
       date: 'Feb 19, 2025',
-      image: 'https://res.cloudinary.com/hits-photos-archive/image/upload/v1736890770/legacy-migration/legacy-hitsdd_photo_gal__photo_1891402125.png',
+      image:
+        'https://res.cloudinary.com/hits-photos-archive/image/upload/v1736890770/legacy-migration/legacy-hitsdd_photo_gal__photo_1891402125.png',
     },
     {
       title: 'HIT ME HARD AND SOFT',
       artist: 'Billie Eilish',
       date: 'Feb 19, 2025',
-      image: 'https://res.cloudinary.com/hits-photos-archive/image/upload/v1736890770/legacy-migration/legacy-hitsdd_photo_gal__photo_1891402125.png',
+      image:
+        'https://res.cloudinary.com/hits-photos-archive/image/upload/v1736890770/legacy-migration/legacy-hitsdd_photo_gal__photo_1891402125.png',
     },
     {
       title: 'HIT ME HARD AND SOFT',
       artist: 'Billie Eilish',
       date: 'Feb 19, 2025',
-      image: 'https://res.cloudinary.com/hits-photos-archive/image/upload/v1736890770/legacy-migration/legacy-hitsdd_photo_gal__photo_1891402125.png',
+      image:
+        'https://res.cloudinary.com/hits-photos-archive/image/upload/v1736890770/legacy-migration/legacy-hitsdd_photo_gal__photo_1891402125.png',
     },
   ];
 
@@ -174,7 +185,8 @@ export class UserService {
       artist: 'Billie Eilish',
       tour: 'HIT ME HARD AND SOFT',
       img: 'https://res.cloudinary.com/hits-photos-archive/image/upload/v1736890770/legacy-migration/legacy-hitsdd_photo_gal__photo_1891402125.png',
-      reviewText: 'Lorem ipsum odor amet, consectetuer adipiscing elit. Potenti mus fermentum sed dapibus egestas; aptent faucibus quisque? Fames fringilla consectetur tortor leo potenti at porttitor aenean.',
+      reviewText:
+        'Lorem ipsum odor amet, consectetuer adipiscing elit. Potenti mus fermentum sed dapibus egestas; aptent faucibus quisque? Fames fringilla consectetur tortor leo potenti at porttitor aenean.',
       attachedImg: null,
       setlist: null,
       rating: 5,
@@ -197,7 +209,7 @@ export class UserService {
       rating: null,
       likes: 2,
       comments: 0,
-    }
+    },
   ];
 
   // Convert concert cards to post format
@@ -247,13 +259,13 @@ export class UserService {
     return of(this.recentLists);
   }
 
-  // Get user posts 
+  // Get user posts
   getUserPosts(): Observable<Post[]> {
     return of(this.userPosts);
   }
 
   // Get filtered posts by type
   getPostsByType(type: string): Observable<Post[]> {
-    return of(this.userPosts.filter(post => post.type === type));
+    return of(this.userPosts.filter((post) => post.type === type));
   }
 }

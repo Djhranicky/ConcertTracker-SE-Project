@@ -7,13 +7,8 @@ import { ImageModule } from 'primeng/image';
 import { Carousel, CarouselModule } from 'primeng/carousel';
 import { Tag } from 'primeng/tag';
 import { TableModule } from 'primeng/table';
-
-import {
-  Artist,
-  Concert,
-  Song,
-  ConcertService,
-} from '../../services/concert.service';
+import { ConcertService } from '../../services/concert.service';
+import { Artist, Concert, Song } from '../../models/artist.model';
 import { Post, PostService } from '../../services/post.service';
 
 @Component({
