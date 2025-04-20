@@ -286,17 +286,20 @@ func (h *Handler) handleArtist(inputURL string) http.HandlerFunc {
 			}
 
 			// Check for upcoming shows (dates after current date)
-			eventDate, err := time.Parse("02-01-2006", jsonData.Setlist[i].EventDate)
-			if err == nil && eventDate.After(time.Now()) {
-				upcomingShow := map[string]string{
-					"id":    jsonData.Setlist[i].ID,
-					"date":  jsonData.Setlist[i].EventDate,
-					"venue": jsonData.Setlist[i].Venue.Name,
-					"city":  jsonData.Setlist[i].Venue.City.Name,
-					"url":   jsonData.Setlist[i].URL,
-				}
-				upcomingShows = append(upcomingShows, upcomingShow)
-			}
+			// eventDate, err := time.Parse("02-01-2006", jsonData.Setlist[i].EventDate)
+			// if err == nil && eventDate.After(time.Now()) {
+			// 	upcomingShow := map[string]string{
+			// 		"id":    jsonData.Setlist[i].ID,
+			// 		"date":  jsonData.Setlist[i].EventDate,
+			// 		"venue": jsonData.Setlist[i].Venue.Name,
+			// 		"city":  jsonData.Setlist[i].Venue.City.Name,
+			// 		"url":   jsonData.Setlist[i].URL,
+			// 	}
+			// 	upcomingShows = append(upcomingShows, upcomingShow)
+			// }
+
+			upcomingShows = utils.getArtistDataFromAPI(jsonData.Setlist[i].Artist.URL)
+			fmt.Println(upcomingShows)
 		}
 
 		// Sort recent setlists by date (newest first)
