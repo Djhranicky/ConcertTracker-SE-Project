@@ -18,6 +18,10 @@ type Store interface {
 	CreateSongIfMissing(Song) *Song
 	CreateConcertSongIfMissing(ConcertSong) *ConcertSong
 	CreateUserPost(UserPostCreatePayload) (*UserPost, error)
-	ToggleUserLike(LikeCreatePayload) error
+	ToggleUserLike(UserLikePostPayload) error
+	ToggleUserFollow(UserFollowPayload) error
 	UserPostExists(authorID, concertID uint, postType string) (bool, error)
+	GetNumberOfLikes(int64) (int64, error)
+	GetActivityFeed(int64, int64) ([]UserPostGetResponse, error)
+	GetFollowersOrFollowing(int64, string, int64) ([]UserFollowGetResponse, error)
 }

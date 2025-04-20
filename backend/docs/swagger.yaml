@@ -13,7 +13,17 @@ definitions:
       updatedAt:
         type: string
     type: object
-  types.LikeCreatePayload:
+  types.UserFollowGetResponse:
+    properties:
+      userName:
+        type: string
+    type: object
+  types.UserLikeGetResponse:
+    properties:
+      count:
+        type: integer
+    type: object
+  types.UserLikePostPayload:
     properties:
       userID:
         type: integer
@@ -46,6 +56,11 @@ definitions:
       text:
         type: string
       type:
+        enum:
+        - ATTENDED
+        - WISHLIST
+        - REVIEW
+        - LISTCREATED
         type: string
       userPostID:
         type: integer
@@ -54,6 +69,39 @@ definitions:
     - concertID
     - isPublic
     - type
+    type: object
+  types.UserPostGetResponse:
+    properties:
+      authorName:
+        type: string
+      concertDate:
+        type: string
+      concertID:
+        type: integer
+      createdAt:
+        type: string
+      isPublic:
+        type: boolean
+      postID:
+        type: integer
+      rating:
+        type: integer
+      text:
+        type: string
+      tourName:
+        type: string
+      type:
+        type: string
+      updatedAt:
+        type: string
+      userPostID:
+        type: integer
+      venueCity:
+        type: string
+      venueCountry:
+        type: string
+      venueName:
+        type: string
     type: object
   types.UserRegisterPayload:
     properties:
@@ -142,6 +190,58 @@ paths:
       summary: Get concert setlist information
       tags:
       - Concert
+  /follow:
+    get:
+      description: Returns a list of either a given users followers, or who a given
+        user is following
+      parameters:
+      - description: Given user to find list for
+        in: query
+        name: userID
+        required: true
+        type: string
+      - description: Chooses between list of followers of list of who user is following.
+          Accepted values are 'followers' or 'following'
+        in: query
+        name: type
+        required: true
+        type: string
+      - description: page number
+        in: query
+        name: p
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/types.UserFollowGetResponse'
+            type: array
+        "400":
+          description: Message describing error
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      summary: Get lists of followers or following
+      tags:
+      - User
+    post:
+      description: Toggles whether a user is following a second user
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Error describing failure
+          schema:
+            type: string
+      summary: Handle following a user
+      tags:
+      - User
   /import:
     get:
       description: Gets setlist information from setlist.fm API for given artist,
@@ -167,6 +267,34 @@ paths:
       tags:
       - Artist
   /like:
+    get:
+      consumes:
+      - application/json
+      description: Returns the number of likes for a specific post
+      parameters:
+      - description: Get number of likes
+        in: query
+        name: userPostID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.UserLikeGetResponse'
+        "400":
+          description: Error describing failure
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      summary: Get number of likes
+      tags:
+      - User
     post:
       consumes:
       - application/json
@@ -174,10 +302,10 @@ paths:
       parameters:
       - description: Like Toggle Payload
         in: body
-        name: request
+        name: like
         required: true
         schema:
-          $ref: '#/definitions/types.LikeCreatePayload'
+          $ref: '#/definitions/types.UserLikePostPayload'
       produces:
       - application/json
       responses:
@@ -193,7 +321,7 @@ paths:
           description: Internal server error
           schema:
             type: string
-      summary: Handle liking a post
+      summary: Like or unlike a post
       tags:
       - User
   /login:
@@ -251,6 +379,37 @@ paths:
       tags:
       - Auth
   /userpost:
+    get:
+      description: Gets public posts from a user's followed network, sorted with most
+        recent first
+      parameters:
+      - description: ID of logged in user
+        in: query
+        name: userID
+        required: true
+        type: string
+      - description: page number of posts (sets of 20)
+        in: query
+        name: p
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Activity from user's followed network
+          schema:
+            $ref: '#/definitions/types.UserPostGetResponse'
+        "400":
+          description: Error describing failure
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      summary: Get posts for user dashboard
+      tags:
+      - User
     post:
       consumes:
       - application/json

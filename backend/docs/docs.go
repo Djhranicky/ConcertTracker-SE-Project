@@ -112,6 +112,81 @@ const docTemplate = `{
                 }
             }
         },
+        "/follow": {
+            "get": {
+                "description": "Returns a list of either a given users followers, or who a given user is following",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Get lists of followers or following",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Given user to find list for",
+                        "name": "userID",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Chooses between list of followers of list of who user is following. Accepted values are 'followers' or 'following'",
+                        "name": "type",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "page number",
+                        "name": "p",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/types.UserFollowGetResponse"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Message describing error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Toggles whether a user is following a second user",
+                "tags": [
+                    "User"
+                ],
+                "summary": "Handle following a user",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Error describing failure",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/import": {
             "get": {
                 "description": "Gets setlist information from setlist.fm API for given artist, and imports it into database",
@@ -148,6 +223,48 @@ const docTemplate = `{
             }
         },
         "/like": {
+            "get": {
+                "description": "Returns the number of likes for a specific post",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Get number of likes",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Get number of likes",
+                        "name": "userPostID",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/types.UserLikeGetResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Error describing failure",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
             "post": {
                 "description": "Toggles whether a user likes a given post",
                 "consumes": [
@@ -159,15 +276,15 @@ const docTemplate = `{
                 "tags": [
                     "User"
                 ],
-                "summary": "Handle liking a post",
+                "summary": "Like or unlike a post",
                 "parameters": [
                     {
                         "description": "Like Toggle Payload",
-                        "name": "request",
+                        "name": "like",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/types.LikeCreatePayload"
+                            "$ref": "#/definitions/types.UserLikePostPayload"
                         }
                     }
                 ],
@@ -277,6 +394,51 @@ const docTemplate = `{
             }
         },
         "/userpost": {
+            "get": {
+                "description": "Gets public posts from a user's followed network, sorted with most recent first",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Get posts for user dashboard",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID of logged in user",
+                        "name": "userID",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "page number of posts (sets of 20)",
+                        "name": "p",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Activity from user's followed network",
+                        "schema": {
+                            "$ref": "#/definitions/types.UserPostGetResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Error describing failure",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
             "post": {
                 "description": "Creates a post for a user. Can be set to public or private with IsPublic",
                 "consumes": [
@@ -370,7 +532,23 @@ const docTemplate = `{
                 }
             }
         },
-        "types.LikeCreatePayload": {
+        "types.UserFollowGetResponse": {
+            "type": "object",
+            "properties": {
+                "userName": {
+                    "type": "string"
+                }
+            }
+        },
+        "types.UserLikeGetResponse": {
+            "type": "object",
+            "properties": {
+                "count": {
+                    "type": "integer"
+                }
+            }
+        },
+        "types.UserLikePostPayload": {
             "type": "object",
             "required": [
                 "userID",
@@ -425,10 +603,66 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "type": {
+                    "type": "string",
+                    "enum": [
+                        "ATTENDED",
+                        "WISHLIST",
+                        "REVIEW",
+                        "LISTCREATED"
+                    ]
+                },
+                "userPostID": {
+                    "type": "integer"
+                }
+            }
+        },
+        "types.UserPostGetResponse": {
+            "type": "object",
+            "properties": {
+                "authorName": {
+                    "type": "string"
+                },
+                "concertDate": {
+                    "type": "string"
+                },
+                "concertID": {
+                    "type": "integer"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "isPublic": {
+                    "type": "boolean"
+                },
+                "postID": {
+                    "type": "integer"
+                },
+                "rating": {
+                    "type": "integer"
+                },
+                "text": {
+                    "type": "string"
+                },
+                "tourName": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "updatedAt": {
                     "type": "string"
                 },
                 "userPostID": {
                     "type": "integer"
+                },
+                "venueCity": {
+                    "type": "string"
+                },
+                "venueCountry": {
+                    "type": "string"
+                },
+                "venueName": {
+                    "type": "string"
                 }
             }
         },

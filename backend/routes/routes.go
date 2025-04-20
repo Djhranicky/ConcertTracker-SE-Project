@@ -6,7 +6,6 @@ import (
 	"math"
 	"net/http"
 	"os"
-	"slices"
 	"sort"
 	"time"
 
@@ -39,8 +38,9 @@ func (h *Handler) RegisterRoutes(router *mux.Router) {
 	router.HandleFunc("/artist", h.handleArtist(baseURL)).Methods("GET", "OPTIONS")
 	router.HandleFunc("/import", h.handleArtistImport(baseURL)).Methods("GET", "OPTIONS")
 	router.HandleFunc("/concert", h.handleConcert(baseURL)).Methods("GET", "OPTIONS")
-	router.HandleFunc("/userpost", h.handleUserPost()).Methods("POST", "OPTIONS")
-	router.HandleFunc("/like", h.handleUserLike()).Methods("POST", "OPTIONS")
+	router.HandleFunc("/userpost", h.handleUserPost()).Methods("GET", "POST", "OPTIONS")
+	router.HandleFunc("/like", h.handleUserLike()).Methods("GET", "POST", "OPTIONS")
+	router.HandleFunc("/follow", h.handleUserFollow()).Methods("GET", "POST", "OPTIONS")
 
 	// Serve Swagger UI
 	router.PathPrefix("/swagger/").Handler(httpSwagger.WrapHandler)
@@ -584,16 +584,6 @@ func (h *Handler) handleConcert(inputURL string) http.HandlerFunc {
 	}
 }
 
-// @Summary Create user post
-// @Description Creates a post for a user. Can be set to public or private with IsPublic
-// @Tags User
-// @Accept json
-// @Produce json
-// @Param request body types.UserPostCreatePayload true "User Post Creation Payload"
-// @Success 201 {string} string "Post created successfully"
-// @Failure 400 {string} string "Error describing failure - including duplicate attendance posts"
-// @Failure 500 {string} string "Internal server error"
-// @Router /userpost [post]
 func (h *Handler) handleUserPost() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		utils.SetCORSHeaders(w)
@@ -602,57 +592,16 @@ func (h *Handler) handleUserPost() http.HandlerFunc {
 			return
 		}
 
-		var payload types.UserPostCreatePayload
-		if err := utils.ParseJSON(r, &payload); err != nil {
-			utils.WriteError(w, http.StatusBadRequest, err)
-			return
+		if r.Method == http.MethodPost {
+			h.UserPostOnPost(w, r)
 		}
 
-		if err := utils.Validate.Struct(payload); err != nil {
-			errors := err.(validator.ValidationErrors)
-			utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("invalid payload %v", errors))
-			return
+		if r.Method == http.MethodGet {
+			h.UserPostOnGet(w, r)
 		}
-
-		userPostTypes := []string{"ATTENDED", "WISHLIST", "REVIEW", "LISTCREATED"}
-		if !slices.Contains(userPostTypes, payload.Type) {
-			utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("invalid UserPost type"))
-			return
-		}
-
-		// Check for duplicate ATTENDED and REVIEW posts
-		if payload.Type == "ATTENDED" || payload.Type == "REVIEW" {
-			exists, err := h.Store.UserPostExists(payload.AuthorID, payload.ConcertID, "ATTENDED")
-			if err != nil {
-				utils.WriteError(w, http.StatusInternalServerError, err)
-				return
-			}
-			if exists {
-				utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("you have already marked this concert as attended"))
-				return
-			}
-		}
-
-		_, err := h.Store.CreateUserPost(payload)
-		if err != nil {
-			utils.WriteError(w, http.StatusInternalServerError, err)
-			return
-		}
-
-		utils.WriteJSON(w, http.StatusCreated, nil)
 	}
 }
 
-// @Summary Handle liking a post
-// @Description Toggles whether a user likes a given post
-// @Tags User
-// @Accept json
-// @Produce json
-// @Param request body types.LikeCreatePayload true "Like Toggle Payload"
-// @Success 200 {string} string "Like status toggled successfully"
-// @Failure 400 {string} string "Error describing failure"
-// @Failure 500 {string} string "Internal server error"
-// @Router /like [post]
 func (h *Handler) handleUserLike() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		utils.SetCORSHeaders(w)
@@ -661,24 +610,34 @@ func (h *Handler) handleUserLike() http.HandlerFunc {
 			return
 		}
 
-		var payload types.LikeCreatePayload
-		if err := utils.ParseJSON(r, &payload); err != nil {
-			utils.WriteError(w, http.StatusBadRequest, err)
+		if r.Method == http.MethodPost {
+			h.UserLikeOnPost(w, r)
 			return
 		}
 
-		if err := utils.Validate.Struct(payload); err != nil {
-			errors := err.(validator.ValidationErrors)
-			utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("invalid payload %v", errors))
+		if r.Method == http.MethodGet {
+			h.UserLikeOnGet(w, r)
+			return
+		}
+	}
+}
+
+func (h *Handler) handleUserFollow() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		utils.SetCORSHeaders(w)
+		if r.Method == http.MethodOptions {
+			w.WriteHeader(http.StatusOK)
 			return
 		}
 
-		err := h.Store.ToggleUserLike(payload)
-		if err != nil {
-			utils.WriteError(w, http.StatusInternalServerError, err)
+		if r.Method == http.MethodPost {
+			h.UserFollowOnPost(w, r)
 			return
 		}
 
-		utils.WriteJSON(w, http.StatusOK, nil)
+		if r.Method == http.MethodGet {
+			h.UserFollowOnGet(w, r)
+			return
+		}
 	}
 }

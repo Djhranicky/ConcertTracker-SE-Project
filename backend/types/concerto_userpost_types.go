@@ -8,13 +8,40 @@ type UserPostCreatePayload struct {
 	Type       string  `json:"type" validate:"required,oneof=ATTENDED WISHLIST REVIEW LISTCREATED"`
 	Rating     *uint   `json:"rating,omitempty"`
 	UserPostID *uint   `json:"userPostID,omitempty"`
-	IsPublic   bool    `json:"isPublic" validate:"required"`
+	IsPublic   *bool   `json:"isPublic" validate:"required"`
 	ConcertID  uint    `json:"concertID" validate:"required"`
 }
 
-type LikeCreatePayload struct {
+type UserLikePostPayload struct {
 	UserID     uint `json:"userID" validate:"required"`
 	UserPostID uint `json:"userPostID" validate:"required"`
+}
+
+type UserLikeGetResponse struct {
+	Count int64 `json:"count"`
+}
+
+type UserPostGetResponse struct {
+	PostID       uint      `json:"postID"`
+	AuthorName   string    `json:"authorName"`
+	Text         *string   `json:"text"`
+	Type         string    `json:"type"`
+	Rating       *uint     `json:"rating"`
+	UserPostID   *uint     `json:"userPostID"`
+	IsPublic     bool      `json:"isPublic"`
+	ConcertID    uint      `json:"concertID"`
+	ArtistName   string    `json:"artistName"`
+	ConcertDate  time.Time `json:"concertDate"`
+	TourName     string    `json:"tourName"`
+	VenueName    string    `json:"venueName"`
+	VenueCity    string    `json:"venueCity"`
+	VenueCountry string    `json:"venueCountry"`
+	CreatedAt    time.Time `json:"createdAt"`
+	UpdatedAt    time.Time `json:"updatedAt"`
+}
+
+type UserFollowGetResponse struct {
+	UserName string `json:"userName"`
 }
 
 type UserPost struct {
