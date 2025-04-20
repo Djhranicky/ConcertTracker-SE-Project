@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { of } from 'rxjs';
-import { Concert, Tour } from './concert.service';
+import { Concert, Tour } from '../models/artist.model';
 
 export interface User {
   username: string;

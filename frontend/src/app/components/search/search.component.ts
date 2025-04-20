@@ -23,7 +23,6 @@ export class SearchComponent implements OnInit {
   results: any[] = [];
   loading: boolean = false;
   error: string = '';
-  encodeURIComponent = encodeURIComponent;
   constructor(private route: ActivatedRoute, private http: HttpClient) {}
 
   ngOnInit() {
