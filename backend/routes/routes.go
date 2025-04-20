@@ -251,12 +251,6 @@ func (h *Handler) handleArtist(inputURL string) http.HandlerFunc {
 		// Process artist info
 		setlist.ProcessArtistInfo(h.Store, *jsonData, artist)
 
-		// Get additional data needed for response
-		imageURL := "" // You may need to add this field to your API response
-		if len(jsonData.Setlist) > 0 && jsonData.Setlist[0].Artist.URL != "" {
-			imageURL = jsonData.Setlist[0].Artist.URL
-		}
-
 		// Extract tours and setlists
 		tourNames := make(map[string]bool)
 		setlistDates := make([]string, 0)
@@ -334,7 +328,7 @@ func (h *Handler) handleArtist(inputURL string) http.HandlerFunc {
 		// Create enhanced artist response
 		enhancedResponse := map[string]interface{}{
 			"artist":          artist,
-			"image_url":       imageURL,
+			"artist_url":      artistURL,
 			"number_of_tours": len(tourNames),
 			"tour_names":      tours,
 			"total_setlists":  len(setlistDates),
