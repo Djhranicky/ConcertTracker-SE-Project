@@ -96,8 +96,8 @@ type List struct {
 
 type ListConcert struct {
 	ID        uint `gorm:"primaryKey"`
-	ListID    uint `gorm:"uniqueIndex:compositeIndex" json:"listID"`
-	ConcertID uint `gorm:"uniqueIndex:compositeIndex" json:"concertID"`
+	ListID    uint `gorm:"uniqueIndex:listConcertUnique;index" json:"listID"`
+	ConcertID uint `gorm:"uniqueIndex:listConcertUnique" json:"concertID"`
 	CreatedAt time.Time
 	UpdatedAt time.Time
 

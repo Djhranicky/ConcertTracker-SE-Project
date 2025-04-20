@@ -1228,6 +1228,8 @@ func initTestDatabase(dbName string) *gorm.DB {
 		&types.UserPost{},
 		&types.Likes{},
 		&types.Follow{},
+		&types.List{},
+		&types.ListConcert{},
 	)
 
 	return mockDatabase
@@ -1270,6 +1272,8 @@ func destroyDatabase(database *gorm.DB) {
 		&types.UserPost{},
 		&types.Likes{},
 		&types.Follow{},
+		&types.List{},
+		&types.ListConcert{},
 	)
 }
 
