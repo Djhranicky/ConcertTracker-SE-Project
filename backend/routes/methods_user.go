@@ -294,5 +294,5 @@ func (h *Handler) ListAddOnPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.WriteJSON(w, http.StatusCreated, nil)
+	utils.WriteJSON(w, http.StatusOK, nil)
 }
