@@ -5,10 +5,16 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { Card } from 'primeng/card';
 import { NavbarComponent } from '../navbar/navbar.component';
 import { CommonModule } from '@angular/common';
-
+import { RouterModule } from '@angular/router';
 @Component({
   selector: 'app-search',
-  imports: [ProgressSpinnerModule, Card, NavbarComponent, CommonModule],
+  imports: [
+    ProgressSpinnerModule,
+    Card,
+    NavbarComponent,
+    CommonModule,
+    RouterModule,
+  ],
   templateUrl: './search.component.html',
   styleUrl: './search.component.css',
 })
@@ -17,7 +23,7 @@ export class SearchComponent implements OnInit {
   results: any[] = [];
   loading: boolean = false;
   error: string = '';
-
+  encodeURIComponent = encodeURIComponent;
   constructor(private route: ActivatedRoute, private http: HttpClient) {}
 
   ngOnInit() {
@@ -39,6 +45,7 @@ export class SearchComponent implements OnInit {
         next: (data: any) => {
           this.results = [data];
           this.loading = false;
+          console.log(data);
         },
         error: () => {
           this.error = 'No results found.';

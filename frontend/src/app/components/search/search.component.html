@@ -10,7 +10,13 @@
       <div *ngFor="let artist of results">
         <p-card *ngIf="!loading && !error">
           <ng-template #title>
-            <a href="/artists">{{ artist.artist.name }}</a>
+            <a
+              [routerLink]="[
+                '/artist/',
+                encodeURIComponent(artist.artist.name)
+              ]"
+              >{{ artist.artist.name }}</a
+            >
           </ng-template>
         </p-card>
       </div>
