@@ -6,10 +6,10 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/chromedp/chromedp"
@@ -97,51 +97,74 @@ func GetArtistSetlistsFromAPI(w http.ResponseWriter, inputURL string, mbid strin
 	return &jsonData, nil
 }
 
-func getArtistDataFromAPI(url string) {
-	ctx, cancel := chromedp.NewContext(context.Background())
+func getArtistDataFromAPI(url string) (map[string]interface{}, error) {
+	// Create a context with timeout
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
-	var upcoming string
-	var stats string
+	// Create new Chrome instance
+	browserCtx, _ := chromedp.NewContext(ctx)
 
-	err := chromedp.Run(ctx,
+	// Initialize variables to store HTML
+	var upcoming, stats string
+
+	// Execute Chrome tasks
+	err := chromedp.Run(browserCtx,
 		chromedp.Navigate(url),
 		chromedp.OuterHTML(`.upcomingSetlistsList`, &upcoming, chromedp.ByQuery),
 		chromedp.OuterHTML(`.artistStatsTeaser`, &stats, chromedp.ByQuery),
 	)
-
 	if err != nil {
-		log.Fatal(err)
-		return
+		return nil, fmt.Errorf("failed to navigate and extract HTML: %w", err)
 	}
 
-	upcomingHTML, err := goquery.NewDocumentFromReader(strings.NewReader(upcoming))
+	// Prepare result object
+	result := map[string]interface{}{
+		"upcoming": []map[string]string{},
+		"stats":    []map[string]string{},
+	}
 
+	// Parse upcoming events
+	upcomingHTML, err := goquery.NewDocumentFromReader(strings.NewReader(upcoming))
 	if err != nil {
-		log.Fatal(err)
-		return
+		return nil, fmt.Errorf("failed to parse upcoming HTML: %w", err)
 	}
 
 	upcomingHTML.Find(".setlist:not(.hidden)").Each(func(i int, s *goquery.Selection) {
 		day := s.Find("strong.big").Text()
 		month := s.Find("strong.text-uppercase").Text()
 		year := strings.TrimSpace(s.Find("span.smallDateBlock span").Text())
-
 		venue := s.Find(".content a span strong").Text()
 		location := s.Find(".content span.subline span").Text()
 
-		log.Println(day, month, year, venue, location)
+		event := map[string]string{
+			"day":      day,
+			"month":    month,
+			"year":     year,
+			"venue":    venue,
+			"location": location,
+		}
+
+		result["upcoming"] = append(result["upcoming"].([]map[string]string), event)
 	})
 
+	// Parse stats
 	statsHTML, err := goquery.NewDocumentFromReader(strings.NewReader(stats))
-
 	if err != nil {
-		log.Fatal(err)
+		return nil, fmt.Errorf("failed to parse stats HTML: %w", err)
 	}
 
 	statsHTML.Find("li").Each(func(i int, s *goquery.Selection) {
 		song := s.Find("a").Text()
 		count := s.Find("span").Text()
-		log.Println(song, count)
+
+		stat := map[string]string{
+			"song":  song,
+			"count": count,
+		}
+
+		result["stats"] = append(result["stats"].([]map[string]string), stat)
 	})
+
+	return result, nil
 }
