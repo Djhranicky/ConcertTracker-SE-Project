@@ -230,3 +230,25 @@ func (h *Handler) UserFollowOnGet(w http.ResponseWriter, r *http.Request) {
 
 	utils.WriteJSON(w, http.StatusOK, users)
 }
+
+func (h *Handler) ListCreateOnPost(w http.ResponseWriter, r *http.Request) {
+	var payload types.UserListCreatePayload
+	if err := utils.ParseJSON(r, &payload); err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	if err := utils.Validate.Struct(payload); err != nil {
+		errors := err.(validator.ValidationErrors)
+		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("invaid payload: %v", errors))
+		return
+	}
+
+	list, err := h.Store.CreateList(payload)
+	if err != nil {
+		utils.WriteError(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	utils.WriteJSON(w, http.StatusCreated, list)
+}
