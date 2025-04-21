@@ -36,7 +36,6 @@ func (h *Handler) RegisterRoutes(router *mux.Router) {
 	router.HandleFunc("/register", h.handleRegister).Methods("POST", "OPTIONS")
 	router.HandleFunc("/userinfo", h.handleUserInfo).Methods("GET", "OPTIONS")
 	router.HandleFunc("/users", h.handleUserList).Methods("GET", "OPTIONS")
-	router.HandleFunc("/validate", h.handleValidate).Methods("GET", "OPTIONS")
 	router.HandleFunc("/artist", h.handleArtist(baseURL)).Methods("GET", "OPTIONS")
 	router.HandleFunc("/import", h.handleArtistImport(baseURL)).Methods("GET", "OPTIONS")
 	router.HandleFunc("/concert", h.handleConcert(baseURL)).Methods("GET", "OPTIONS")
@@ -266,32 +265,6 @@ func (h *Handler) handleUserList(w http.ResponseWriter, r *http.Request) {
 	}
 
 	utils.WriteJSON(w, http.StatusOK, response)
-}
-
-// @Summary Validate user session
-// @Description Verifies if a user's session cookie contains an authenticated token
-// @Tags Auth
-// @Produce json
-// @Success 200 {string} string "user session validated"
-// @Failure 401 {string} string "missing or invalid authorization token"
-// @Router /validate [get]
-func (h *Handler) handleValidate(w http.ResponseWriter, r *http.Request) {
-	utils.SetCORSHeaders(w)
-	if r.Method == "OPTIONS" {
-		w.WriteHeader(http.StatusOK)
-		return
-	}
-
-	w.Header().Add("Content-Type", "application/json")
-
-	err := auth.ValidateUser(r, h.Store)
-	if err != nil {
-		utils.WriteError(w, http.StatusUnauthorized, err)
-		return
-	}
-
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(`{"message":"user session validated"}`))
 }
 
 // @Summary Serve information for a given artist
