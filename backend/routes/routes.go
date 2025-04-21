@@ -201,7 +201,7 @@ func (h *Handler) handleValidate(w http.ResponseWriter, r *http.Request) {
 // @Tags Artist
 // @Param name path string true "Artist Name"
 // @Produce json
-// @Success 200 {object} types.Artist "Object that holds artist information"
+// @Success 200 {object} types.ArtistResponse "Object that holds artist information"
 // @Failure 400 {string} error "Error describing failure"
 // @Router /artist [get]
 func (h *Handler) handleArtist(inputURL string) http.HandlerFunc {
@@ -402,7 +402,7 @@ func (h *Handler) handleArtistImport(inputURL string) http.HandlerFunc {
 // @Tags Concert
 // @Param id path string true "Setlist ID"
 // @Produce json
-// @Success 200 {object} map[string]interface{} "Concert setlist information"
+// @Success 200 {object} types.ConcertResponse "Concert setlist information"
 // @Failure 400 {string} error "Error describing failure"
 // @Router /concert [get]
 func (h *Handler) handleConcert(inputURL string) http.HandlerFunc {
