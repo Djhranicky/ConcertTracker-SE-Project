@@ -95,11 +95,6 @@ export class UserProfileComponent implements OnInit {
 
   // Method to change active tab
   setActiveTab(tab: string): void {
-    if (tab === 'following' || tab === 'followers') {
-      // Navigate to Not Found page instead of displaying the tab
-      this.router.navigate(['/not-found']);
-    } else {
-      this.activeTab = tab;
-    }
+    this.activeTab = tab;
   }
 }
