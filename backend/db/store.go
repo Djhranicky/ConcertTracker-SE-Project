@@ -398,3 +398,38 @@ func (s *Store) getFollowing(userID int64, users []types.UserFollowGetResponse, 
 
 	return users, nil
 }
+
+func (s *Store) CreateList(newList types.UserListCreatePayload) (*types.List, error) {
+	list := types.List{
+		UserID: newList.UserID,
+		Name:   newList.Name,
+		Type:   "USERCREATED",
+	}
+	result := s.db.Clauses(clause.Returning{}).Select("UserID", "Name", "Type").Create(&list)
+
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return &list, nil
+}
+
+func (s *Store) ToggleList(newList types.UserListAddPayload) error {
+	var listConcert types.ListConcert
+
+	result := s.db.Where("list_id = ? AND concert_id = ?", newList.ListID, newList.ConcertID).First(&listConcert)
+
+	if result.Error == nil {
+		return s.db.Delete(&listConcert).Error
+	}
+
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		newListConcert := types.ListConcert{
+			ListID:    newList.ListID,
+			ConcertID: newList.ConcertID,
+		}
+		return s.db.Create(&newListConcert).Error
+	}
+
+	return result.Error
+}

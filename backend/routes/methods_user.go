@@ -161,6 +161,9 @@ func (h *Handler) UserLikeOnGet(w http.ResponseWriter, r *http.Request) {
 // @Summary Handle following a user
 // @Description Toggles whether a user is following a second user
 // @Tags User
+// @Accept json
+// @Procude json
+// @Param follow body types.UserFollowPayload true "Follow toggle payload"
 // @Success 200
 // @Failure 400 {string} error "Error describing failure"
 // @Router /follow [post]
@@ -229,4 +232,67 @@ func (h *Handler) UserFollowOnGet(w http.ResponseWriter, r *http.Request) {
 	}
 
 	utils.WriteJSON(w, http.StatusOK, users)
+}
+
+// @Summary Create new list for user
+// @Description Creates a new list for a user
+// @Tags User
+// @Accept json
+// @Produce json
+// @Param list body types.UserListCreatePayload true "List create payload"
+// @Success 201
+// @Failure 400 {string} error "Error describing failure"
+// @Failure 500 {string} error "Internal server error"
+// @Router /listcreate [post]
+func (h *Handler) ListCreateOnPost(w http.ResponseWriter, r *http.Request) {
+	var payload types.UserListCreatePayload
+	if err := utils.ParseJSON(r, &payload); err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	if err := utils.Validate.Struct(payload); err != nil {
+		errors := err.(validator.ValidationErrors)
+		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("invalid payload: %v", errors))
+		return
+	}
+
+	list, err := h.Store.CreateList(payload)
+	if err != nil {
+		utils.WriteError(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	utils.WriteJSON(w, http.StatusCreated, list)
+}
+
+// @Summary Add/Remove concert from a list
+// @Description Adds or removes a concert from a given list. When concert doesn't exist, it is added. If concert exists, it is deleted.
+// @Tags User
+// @Accept json
+// @Produce json
+// @Param listconcert body types.UserListAddPayload true "List and concert IDs"
+// @Success 201
+// @Failure 400 {string} error "Error describing failure"
+// @Failure 500 {string} error "Internal server error"
+// @Router /listadd [post]
+func (h *Handler) ListAddOnPost(w http.ResponseWriter, r *http.Request) {
+	var payload types.UserListAddPayload
+	if err := utils.ParseJSON(r, &payload); err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	if err := utils.Validate.Struct(payload); err != nil {
+		errors := err.(validator.ValidationErrors)
+		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("invalid payload: %v", errors))
+		return
+	}
+
+	if err := h.Store.ToggleList(payload); err != nil {
+		utils.WriteError(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	utils.WriteJSON(w, http.StatusOK, nil)
 }

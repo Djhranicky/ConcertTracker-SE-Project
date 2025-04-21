@@ -169,10 +169,24 @@ const docTemplate = `{
             },
             "post": {
                 "description": "Toggles whether a user is following a second user",
+                "consumes": [
+                    "application/json"
+                ],
                 "tags": [
                     "User"
                 ],
                 "summary": "Handle following a user",
+                "parameters": [
+                    {
+                        "description": "Follow toggle payload",
+                        "name": "follow",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.UserFollowPayload"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK"
@@ -293,6 +307,92 @@ const docTemplate = `{
                         "schema": {
                             "type": "string"
                         }
+                    },
+                    "400": {
+                        "description": "Error describing failure",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/listadd": {
+            "post": {
+                "description": "Adds or removes a concert from a given list. When concert doesn't exist, it is added. If concert exists, it is deleted.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Add/Remove concert from a list",
+                "parameters": [
+                    {
+                        "description": "List and concert IDs",
+                        "name": "listconcert",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.UserListAddPayload"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    },
+                    "400": {
+                        "description": "Error describing failure",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/listcreate": {
+            "post": {
+                "description": "Creates a new list for a user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Create new list for user",
+                "parameters": [
+                    {
+                        "description": "List create payload",
+                        "name": "list",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.UserListCreatePayload"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created"
                     },
                     "400": {
                         "description": "Error describing failure",
@@ -730,6 +830,21 @@ const docTemplate = `{
                 }
             }
         },
+        "types.UserFollowPayload": {
+            "type": "object",
+            "required": [
+                "followedUserID",
+                "userID"
+            ],
+            "properties": {
+                "followedUserID": {
+                    "type": "integer"
+                },
+                "userID": {
+                    "type": "integer"
+                }
+            }
+        },
         "types.UserLikeGetResponse": {
             "type": "object",
             "properties": {
@@ -749,6 +864,36 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "userPostID": {
+                    "type": "integer"
+                }
+            }
+        },
+        "types.UserListAddPayload": {
+            "type": "object",
+            "required": [
+                "concertID",
+                "listID"
+            ],
+            "properties": {
+                "concertID": {
+                    "type": "integer"
+                },
+                "listID": {
+                    "type": "integer"
+                }
+            }
+        },
+        "types.UserListCreatePayload": {
+            "type": "object",
+            "required": [
+                "name",
+                "userID"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "userID": {
                     "type": "integer"
                 }
             }

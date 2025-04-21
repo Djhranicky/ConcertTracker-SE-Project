@@ -41,6 +41,8 @@ func (h *Handler) RegisterRoutes(router *mux.Router) {
 	router.HandleFunc("/userpost", h.handleUserPost()).Methods("GET", "POST", "OPTIONS")
 	router.HandleFunc("/like", h.handleUserLike()).Methods("GET", "POST", "OPTIONS")
 	router.HandleFunc("/follow", h.handleUserFollow()).Methods("GET", "POST", "OPTIONS")
+	router.HandleFunc("/listcreate", h.handleListCreate()).Methods("POST", "OPTIONS")
+	router.HandleFunc("/listadd", h.handleListAdd()).Methods("POST", "OPTIONS")
 
 	// Serve Swagger UI
 	router.PathPrefix("/swagger/").Handler(httpSwagger.WrapHandler)
@@ -644,6 +646,36 @@ func (h *Handler) handleUserFollow() http.HandlerFunc {
 
 		if r.Method == http.MethodGet {
 			h.UserFollowOnGet(w, r)
+			return
+		}
+	}
+}
+
+func (h *Handler) handleListCreate() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		utils.SetCORSHeaders(w)
+		if r.Method == http.MethodOptions {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+
+		if r.Method == http.MethodPost {
+			h.ListCreateOnPost(w, r)
+			return
+		}
+	}
+}
+
+func (h *Handler) handleListAdd() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		utils.SetCORSHeaders(w)
+		if r.Method == http.MethodOptions {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+
+		if r.Method == http.MethodPost {
+			h.ListAddOnPost(w, r)
 			return
 		}
 	}

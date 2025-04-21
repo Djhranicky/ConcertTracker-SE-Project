@@ -1211,6 +1211,162 @@ func TestUserServiceHandleFollow(t *testing.T) {
 	})
 }
 
+func TestUserServiceHandleList(t *testing.T) {
+	utils.Init()
+	handler, database := initTestHandler()
+	defer destroyDatabase(database)
+
+	t.Run("create should fail when userID not included", func(t *testing.T) {
+		payload := &types.UserListCreatePayload{
+			Name: "Test Name",
+		}
+		marshalled, _ := json.Marshal(payload)
+
+		req, err := http.NewRequest(http.MethodPost, "/listcreate", bytes.NewBuffer(marshalled))
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/listcreate", handler.handleListCreate())
+
+		router.ServeHTTP(rr, req)
+
+		assertEqual(t, http.StatusBadRequest, rr.Code)
+	})
+
+	t.Run("create should fail when name not included", func(t *testing.T) {
+		payload := &types.UserListCreatePayload{
+			UserID: 1,
+		}
+		marshalled, _ := json.Marshal(payload)
+
+		req, err := http.NewRequest(http.MethodPost, "/listcreate", bytes.NewBuffer(marshalled))
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/listcreate", handler.handleListCreate())
+
+		router.ServeHTTP(rr, req)
+
+		assertEqual(t, http.StatusBadRequest, rr.Code)
+	})
+
+	t.Run("create should pass when valid fields included", func(t *testing.T) {
+		payload := &types.UserListCreatePayload{
+			UserID: 1,
+			Name:   "Test Name",
+		}
+		marshalled, _ := json.Marshal(payload)
+
+		req, err := http.NewRequest(http.MethodPost, "/listcreate", bytes.NewBuffer(marshalled))
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/listcreate", handler.handleListCreate())
+
+		router.ServeHTTP(rr, req)
+
+		assertEqual(t, http.StatusCreated, rr.Code)
+	})
+
+	t.Run("add should fail when listID not included", func(t *testing.T) {
+		payload := &types.UserListAddPayload{
+			ConcertID: 1,
+		}
+		marshalled, _ := json.Marshal(payload)
+
+		req, err := http.NewRequest(http.MethodPost, "/listadd", bytes.NewBuffer(marshalled))
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/listadd", handler.handleListAdd())
+
+		router.ServeHTTP(rr, req)
+
+		assertEqual(t, http.StatusBadRequest, rr.Code)
+	})
+
+	t.Run("add should fail when concertID not included", func(t *testing.T) {
+		payload := &types.UserListAddPayload{
+			ListID: 1,
+		}
+		marshalled, _ := json.Marshal(payload)
+
+		req, err := http.NewRequest(http.MethodPost, "/listadd", bytes.NewBuffer(marshalled))
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/listadd", handler.handleListAdd())
+
+		router.ServeHTTP(rr, req)
+
+		assertEqual(t, http.StatusBadRequest, rr.Code)
+	})
+
+	t.Run("add should pass when adding a concert", func(t *testing.T) {
+		payload := &types.UserListAddPayload{
+			ListID:    1,
+			ConcertID: 1,
+		}
+		marshalled, _ := json.Marshal(payload)
+
+		req, err := http.NewRequest(http.MethodPost, "/listadd", bytes.NewBuffer(marshalled))
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/listadd", handler.handleListAdd())
+
+		router.ServeHTTP(rr, req)
+
+		assertEqual(t, http.StatusOK, rr.Code)
+	})
+
+	t.Run("add should pass when removing a concert", func(t *testing.T) {
+		payload := &types.UserListAddPayload{
+			ListID:    1,
+			ConcertID: 1,
+		}
+		marshalled, _ := json.Marshal(payload)
+
+		req, err := http.NewRequest(http.MethodPost, "/listadd", bytes.NewBuffer(marshalled))
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/listadd", handler.handleListAdd())
+
+		router.ServeHTTP(rr, req)
+
+		assertEqual(t, http.StatusOK, rr.Code)
+	})
+}
+
 func initTestDatabase(dbName string) *gorm.DB {
 	mockDatabase, err := db.NewSqliteStorage(dbName)
 	if err != nil {
@@ -1228,6 +1384,8 @@ func initTestDatabase(dbName string) *gorm.DB {
 		&types.UserPost{},
 		&types.Likes{},
 		&types.Follow{},
+		&types.List{},
+		&types.ListConcert{},
 	)
 
 	return mockDatabase
@@ -1270,6 +1428,8 @@ func destroyDatabase(database *gorm.DB) {
 		&types.UserPost{},
 		&types.Likes{},
 		&types.Follow{},
+		&types.List{},
+		&types.ListConcert{},
 	)
 }
 
