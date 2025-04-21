@@ -225,8 +225,6 @@ func (h *Handler) handleArtist(inputURL string) http.HandlerFunc {
 		// Check if artist exists in db
 		artist, err := h.Store.GetArtistByName(searchString)
 
-		fmt.Println("artist exists in db:", artist)
-
 		// If artist doesn't exist in db, search on setlist.fm
 		if err != nil {
 			url := fmt.Sprintf("%s/%s", inputURL, "search/artists")
@@ -332,9 +330,9 @@ func (h *Handler) handleArtist(inputURL string) http.HandlerFunc {
 		enhancedResponse := map[string]interface{}{
 			"artist":          artist,
 			"artist_url":      artistURL,
-			"number_of_tours": len(tourNames),
+			"number_of_tours": h.Store.GetTourTotalByArtist(artist.ID),
 			"tour_names":      tours,
-			"total_setlists":  len(setlistDates),
+			"total_setlists":  h.Store.GetConcertTotalByArtist(artist.ID),
 			"recent_setlists": recentSetlists,
 			"upcoming_shows":  upcomingShows,
 			"top_songs":       topSongs,
