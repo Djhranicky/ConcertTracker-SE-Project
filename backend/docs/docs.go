@@ -607,10 +607,7 @@ const docTemplate = `{
                     "description": "Scraped upcoming show data",
                     "type": "array",
                     "items": {
-                        "type": "object",
-                        "additionalProperties": {
-                            "type": "string"
-                        }
+                        "$ref": "#/definitions/types.RecentSetlistEntry"
                     }
                 }
             }
@@ -725,6 +722,37 @@ const docTemplate = `{
                 }
             }
         },
+        "types.UserFollowGetResponse": {
+            "type": "object",
+            "properties": {
+                "userName": {
+                    "type": "string"
+                }
+            }
+        },
+        "types.UserLikeGetResponse": {
+            "type": "object",
+            "properties": {
+                "count": {
+                    "type": "integer"
+                }
+            }
+        },
+        "types.UserLikePostPayload": {
+            "type": "object",
+            "required": [
+                "userID",
+                "userPostID"
+            ],
+            "properties": {
+                "userID": {
+                    "type": "integer"
+                },
+                "userPostID": {
+                    "type": "integer"
+                }
+            }
+        },
         "types.UserLoginPayload": {
             "type": "object",
             "required": [
@@ -781,6 +809,9 @@ const docTemplate = `{
         "types.UserPostGetResponse": {
             "type": "object",
             "properties": {
+                "artistName": {
+                    "type": "string"
+                },
                 "authorName": {
                     "type": "string"
                 },

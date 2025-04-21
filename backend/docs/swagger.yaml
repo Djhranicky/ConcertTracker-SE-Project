@@ -64,9 +64,7 @@ definitions:
       upcoming_shows:
         description: Scraped upcoming show data
         items:
-          additionalProperties:
-            type: string
-          type: object
+          $ref: '#/definitions/types.RecentSetlistEntry'
         type: array
     type: object
   types.CityMetadata:
@@ -140,6 +138,26 @@ definitions:
       name:
         type: string
     type: object
+  types.UserFollowGetResponse:
+    properties:
+      userName:
+        type: string
+    type: object
+  types.UserLikeGetResponse:
+    properties:
+      count:
+        type: integer
+    type: object
+  types.UserLikePostPayload:
+    properties:
+      userID:
+        type: integer
+      userPostID:
+        type: integer
+    required:
+    - userID
+    - userPostID
+    type: object
   types.UserLoginPayload:
     properties:
       email:
@@ -179,6 +197,8 @@ definitions:
     type: object
   types.UserPostGetResponse:
     properties:
+      artistName:
+        type: string
       authorName:
         type: string
       concertDate:
