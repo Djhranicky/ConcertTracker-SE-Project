@@ -34,7 +34,7 @@ func (h *Handler) RegisterRoutes(router *mux.Router) {
 	router.HandleFunc("/", h.handleHome).Methods("GET")
 	router.HandleFunc("/login", h.handleLogin).Methods("POST", "OPTIONS")
 	router.HandleFunc("/register", h.handleRegister).Methods("POST", "OPTIONS")
-	router.HandleFunc("/user", h.handleUser).Methods("GET", "OPTIONS")
+	router.HandleFunc("/userinfo", h.handleUserInfo).Methods("GET", "OPTIONS")
 	router.HandleFunc("/validate", h.handleValidate).Methods("GET", "OPTIONS")
 	router.HandleFunc("/artist", h.handleArtist(baseURL)).Methods("GET", "OPTIONS")
 	router.HandleFunc("/import", h.handleArtistImport(baseURL)).Methods("GET", "OPTIONS")
@@ -175,16 +175,16 @@ func (h *Handler) handleRegister(w http.ResponseWriter, r *http.Request) {
 }
 
 // @Summary Get user info
-// @Description Returns user information based on email provided in JSON payload
+// @Description Returns user information based on username provided in JSON payload
 // @Tags Auth
 // @Accept json
 // @Produce json
-// @Param request body types.UserEmailPayload true "Email Payload"
-// @Success 200 {object} map[string]string "User's full name"
+// @Param request body types.UserUsernamePayload true "Username Payload"
+// @Success 200 {object} map[string]string "User's name and email"
 // @Failure 400 {string} string "Invalid payload"
 // @Failure 404 {string} string "User not found"
 // @Router /user [get]
-func (h *Handler) handleUser(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) handleUserInfo(w http.ResponseWriter, r *http.Request) {
 	utils.SetCORSHeaders(w)
 	if r.Method == "OPTIONS" {
 		w.WriteHeader(http.StatusOK)
@@ -193,7 +193,7 @@ func (h *Handler) handleUser(w http.ResponseWriter, r *http.Request) {
 
 	// Parse JSON payload
 	var payload struct {
-		Email string `json:"email" validate:"required,email"`
+		Username string `json:"username" validate:"required"`
 	}
 
 	if err := utils.ParseJSON(r, &payload); err != nil {
@@ -201,23 +201,24 @@ func (h *Handler) handleUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Validate email field
+	// Validate username field
 	if err := utils.Validate.Struct(payload); err != nil {
 		errors := err.(validator.ValidationErrors)
 		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("invalid payload: %v", errors))
 		return
 	}
 
-	// Fetch user from database by email
-	user, err := h.Store.GetUserByEmail(payload.Email)
+	// Fetch user from database by username
+	user, err := h.Store.GetUserByUsername(payload.Username)
 	if err != nil {
 		utils.WriteError(w, http.StatusNotFound, errors.New("user not found"))
 		return
 	}
 
-	// Return the user's full name
+	// Return the user's name and email
 	response := map[string]string{
-		"name": user.Name,
+		"name":  user.Name,
+		"email": user.Email,
 	}
 
 	utils.WriteJSON(w, http.StatusOK, response)
