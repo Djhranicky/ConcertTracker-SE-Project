@@ -120,7 +120,7 @@ func (h *Handler) handleLogin(w http.ResponseWriter, r *http.Request) {
 
 	// Return username in response
 	response := map[string]string{
-		"username": u.Name,
+		"username": u.Username,
 	}
 
 	utils.WriteJSON(w, http.StatusOK, response)
@@ -284,9 +284,7 @@ func (h *Handler) handleValidate(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Add("Content-Type", "application/json")
 
-	cookie, err := auth.GetJWTCookie(r)
-
-	err = auth.VerifyJWTCookie(cookie, err, "something@test.com", h.Store)
+	err := auth.ValidateUser(r, h.Store)
 	if err != nil {
 		utils.WriteError(w, http.StatusUnauthorized, err)
 		return

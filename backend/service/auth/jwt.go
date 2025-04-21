@@ -6,7 +6,6 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/djhranicky/ConcertTracker-SE-Project/types"
 	"github.com/golang-jwt/jwt/v5"
 )
 
@@ -34,12 +33,7 @@ func CreateJWT(secret []byte, userID uint, seconds int) (string, error) {
 	return tokenString, nil
 }
 
-func VerifyToken(tokenString string, email string, store types.Store) error {
-	user, err := store.GetUserByEmail(email)
-	if err != nil {
-		return err
-	}
-
+func VerifyToken(tokenString string, userID uint) error {
 	token, err := jwt.ParseWithClaims(tokenString, &CustomClaims{}, func(token *jwt.Token) (interface{}, error) {
 		return []byte(os.Getenv("JWT_SECRET")), nil
 	})
@@ -59,7 +53,7 @@ func VerifyToken(tokenString string, email string, store types.Store) error {
 
 	claimsInt, err := strconv.Atoi(claims.UserID)
 
-	if err != nil || uint(claimsInt) != user.ID {
+	if err != nil || uint(claimsInt) != userID {
 		return fmt.Errorf("user not validated")
 	}
 

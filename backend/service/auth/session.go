@@ -34,17 +34,33 @@ func GetJWTCookie(r *http.Request) (*http.Cookie, error) {
 	return cookie, nil
 }
 
-func VerifyJWTCookie(cookie *http.Cookie, inErr error, email string, store types.Store) error {
-	if cookie == nil {
-		return inErr
-	}
+func VerifyJWTCookie(cookie *http.Cookie, userID uint) error {
 	tokenString := cookie.Value
 	if tokenString == "" {
 		return fmt.Errorf("missing authorization token")
 	}
-	err := VerifyToken(tokenString, email, store)
+	err := VerifyToken(tokenString, userID)
 	if err != nil {
 		return err
 	}
 	return nil
+}
+
+func ValidateUser(r *http.Request, store types.Store) error {
+	cookie, err := GetJWTCookie(r)
+	if err != nil {
+		return err
+	}
+
+	username := r.Header.Get("username")
+	if username == "" {
+		return fmt.Errorf("no username provided")
+	}
+
+	user, err := store.GetUserByUsername(username)
+	if err != nil {
+		return err
+	}
+
+	return VerifyJWTCookie(cookie, user.ID)
 }
