@@ -604,6 +604,613 @@ func TestConcertServiceHandleConcert(t *testing.T) {
 	})
 }
 
+func TestUserServiceHandlePost(t *testing.T) {
+	utils.Init()
+	handler, database := initTestHandler()
+	defer destroyDatabase(database)
+
+	t.Run("should fail with no 'authorID' field included in incoming json", func(t *testing.T) {
+		text := "Test"
+		rating := uint(1)
+		userPostID := uint(1)
+		isPublic := true
+		payload := &types.UserPostCreatePayload{
+			Text:       &text,
+			Type:       "WISHLIST",
+			Rating:     &rating,
+			UserPostID: &userPostID,
+			IsPublic:   &isPublic,
+			ConcertID:  1,
+		}
+		marshalled, _ := json.Marshal(payload)
+
+		req, err := http.NewRequest(http.MethodPost, "/userpost", bytes.NewBuffer(marshalled))
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/userpost", handler.handleUserPost())
+
+		router.ServeHTTP(rr, req)
+
+		assertEqual(t, http.StatusBadRequest, rr.Code)
+	})
+
+	t.Run("should fail with no 'type' field included in incoming json", func(t *testing.T) {
+		text := "Test"
+		rating := uint(1)
+		userPostID := uint(1)
+		isPublic := true
+		payload := &types.UserPostCreatePayload{
+			AuthorID:   1,
+			Text:       &text,
+			Rating:     &rating,
+			UserPostID: &userPostID,
+			IsPublic:   &isPublic,
+			ConcertID:  1,
+		}
+		marshalled, _ := json.Marshal(payload)
+
+		req, err := http.NewRequest(http.MethodPost, "/userpost", bytes.NewBuffer(marshalled))
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/userpost", handler.handleUserPost())
+
+		router.ServeHTTP(rr, req)
+
+		assertEqual(t, http.StatusBadRequest, rr.Code)
+	})
+
+	t.Run("should fail with no 'isPublic' field included in incoming json", func(t *testing.T) {
+		text := "Test"
+		rating := uint(1)
+		userPostID := uint(1)
+		payload := &types.UserPostCreatePayload{
+			AuthorID:   1,
+			Text:       &text,
+			Type:       "WISHLIST",
+			Rating:     &rating,
+			UserPostID: &userPostID,
+			ConcertID:  1,
+		}
+		marshalled, _ := json.Marshal(payload)
+
+		req, err := http.NewRequest(http.MethodPost, "/userpost", bytes.NewBuffer(marshalled))
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/userpost", handler.handleUserPost())
+
+		router.ServeHTTP(rr, req)
+
+		assertEqual(t, http.StatusBadRequest, rr.Code)
+	})
+
+	t.Run("should fail with no 'concertID' field included in incoming json", func(t *testing.T) {
+		text := "Test"
+		rating := uint(1)
+		userPostID := uint(1)
+		isPublic := true
+		payload := &types.UserPostCreatePayload{
+			AuthorID:   1,
+			Text:       &text,
+			Type:       "WISHLIST",
+			Rating:     &rating,
+			UserPostID: &userPostID,
+			IsPublic:   &isPublic,
+		}
+		marshalled, _ := json.Marshal(payload)
+
+		req, err := http.NewRequest(http.MethodPost, "/userpost", bytes.NewBuffer(marshalled))
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/userpost", handler.handleUserPost())
+
+		router.ServeHTTP(rr, req)
+
+		assertEqual(t, http.StatusBadRequest, rr.Code)
+	})
+
+	t.Run("should fail if invalid 'type' supplied", func(t *testing.T) {
+		text := "Test"
+		rating := uint(1)
+		userPostID := uint(1)
+		isPublic := true
+		payload := &types.UserPostCreatePayload{
+			AuthorID:   1,
+			Text:       &text,
+			Type:       "WRONG_TYPE",
+			Rating:     &rating,
+			UserPostID: &userPostID,
+			IsPublic:   &isPublic,
+			ConcertID:  1,
+		}
+		marshalled, _ := json.Marshal(payload)
+
+		req, err := http.NewRequest(http.MethodPost, "/userpost", bytes.NewBuffer(marshalled))
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/userpost", handler.handleUserPost())
+
+		router.ServeHTTP(rr, req)
+
+		assertEqual(t, http.StatusBadRequest, rr.Code)
+	})
+
+	t.Run("should pass and create post in database", func(t *testing.T) {
+		text := "Test"
+		rating := uint(1)
+		userPostID := uint(1)
+		isPublic := true
+		payload := &types.UserPostCreatePayload{
+			AuthorID:   1,
+			Text:       &text,
+			Type:       "WISHLIST",
+			Rating:     &rating,
+			UserPostID: &userPostID,
+			IsPublic:   &isPublic,
+			ConcertID:  1,
+		}
+		marshalled, _ := json.Marshal(payload)
+
+		req, err := http.NewRequest(http.MethodPost, "/userpost", bytes.NewBuffer(marshalled))
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/userpost", handler.handleUserPost())
+
+		router.ServeHTTP(rr, req)
+
+		assertEqual(t, http.StatusCreated, rr.Code)
+	})
+
+	t.Run("GET should fail with no userID query parameter", func(t *testing.T) {
+		req, err := http.NewRequest(http.MethodGet, "/userpost", nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/userpost", handler.handleUserPost())
+
+		router.ServeHTTP(rr, req)
+
+		assertEqual(t, http.StatusBadRequest, rr.Code)
+	})
+
+	t.Run("GET should fail with bad userID query parameter", func(t *testing.T) {
+		req, err := http.NewRequest(http.MethodGet, "/userpost?userID=test", nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/userpost", handler.handleUserPost())
+
+		router.ServeHTTP(rr, req)
+
+		assertEqual(t, http.StatusBadRequest, rr.Code)
+	})
+
+	t.Run("GET should pass with valid userID query parameter", func(t *testing.T) {
+		req, err := http.NewRequest(http.MethodGet, "/userpost?userID=1", nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/userpost", handler.handleUserPost())
+
+		router.ServeHTTP(rr, req)
+
+		assertEqual(t, http.StatusOK, rr.Code)
+	})
+}
+
+func TestUserServiceHandleLike(t *testing.T) {
+	utils.Init()
+	handler, database := initTestHandler()
+	defer destroyDatabase(database)
+
+	t.Run("should fail if UserPostID not included", func(t *testing.T) {
+		payload := &types.UserLikePostPayload{
+			UserID: 1,
+		}
+		marshalled, _ := json.Marshal(payload)
+
+		req, err := http.NewRequest(http.MethodPost, "/like", bytes.NewBuffer(marshalled))
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/like", handler.handleUserLike())
+
+		router.ServeHTTP(rr, req)
+
+		assertEqual(t, http.StatusBadRequest, rr.Code)
+	})
+
+	t.Run("should fail if UserID not included", func(t *testing.T) {
+		payload := &types.UserLikePostPayload{
+			UserPostID: 1,
+		}
+		marshalled, _ := json.Marshal(payload)
+
+		req, err := http.NewRequest(http.MethodPost, "/like", bytes.NewBuffer(marshalled))
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/like", handler.handleUserLike())
+
+		router.ServeHTTP(rr, req)
+
+		assertEqual(t, http.StatusBadRequest, rr.Code)
+	})
+
+	t.Run("should succeed when user first likes a post", func(t *testing.T) {
+		payload := &types.UserLikePostPayload{
+			UserID:     1,
+			UserPostID: 1,
+		}
+		marshalled, _ := json.Marshal(payload)
+
+		req, err := http.NewRequest(http.MethodPost, "/like", bytes.NewBuffer(marshalled))
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/like", handler.handleUserLike())
+
+		router.ServeHTTP(rr, req)
+
+		assertEqual(t, http.StatusOK, rr.Code)
+	})
+
+	t.Run("should succeed when user removes like from post", func(t *testing.T) {
+		payload := &types.UserLikePostPayload{
+			UserID:     1,
+			UserPostID: 1,
+		}
+		marshalled, _ := json.Marshal(payload)
+
+		req, err := http.NewRequest(http.MethodPost, "/like", bytes.NewBuffer(marshalled))
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/like", handler.handleUserLike())
+
+		router.ServeHTTP(rr, req)
+
+		assertEqual(t, http.StatusOK, rr.Code)
+	})
+
+	t.Run("should succeed when user likes a post again", func(t *testing.T) {
+		payload := &types.UserLikePostPayload{
+			UserID:     1,
+			UserPostID: 1,
+		}
+		marshalled, _ := json.Marshal(payload)
+
+		req, err := http.NewRequest(http.MethodPost, "/like", bytes.NewBuffer(marshalled))
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/like", handler.handleUserLike())
+
+		router.ServeHTTP(rr, req)
+
+		assertEqual(t, http.StatusOK, rr.Code)
+	})
+
+	t.Run("GET should fail when query param not provided", func(t *testing.T) {
+		req, err := http.NewRequest(http.MethodGet, "/like", nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/like", handler.handleUserLike())
+
+		router.ServeHTTP(rr, req)
+
+		assertEqual(t, http.StatusBadRequest, rr.Code)
+	})
+
+	t.Run("GET should fail when bad query param provided", func(t *testing.T) {
+		req, err := http.NewRequest(http.MethodGet, "/like?userPostID=test", nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/like", handler.handleUserLike())
+
+		router.ServeHTTP(rr, req)
+
+		assertEqual(t, http.StatusBadRequest, rr.Code)
+	})
+
+	t.Run("GET should return like count for valid input", func(t *testing.T) {
+		req, err := http.NewRequest(http.MethodGet, "/like?userPostID=1", nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/like", handler.handleUserLike())
+
+		router.ServeHTTP(rr, req)
+
+		assertEqual(t, http.StatusOK, rr.Code)
+	})
+}
+
+func TestUserServiceHandleFollow(t *testing.T) {
+	utils.Init()
+	handler, database := initTestHandler()
+	defer destroyDatabase(database)
+
+	t.Run("should fail if FollowedUserID not included", func(t *testing.T) {
+		payload := &types.UserFollowPayload{
+			UserID: 1,
+		}
+		marshalled, _ := json.Marshal(payload)
+
+		req, err := http.NewRequest(http.MethodPost, "/follow", bytes.NewBuffer(marshalled))
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/follow", handler.handleUserFollow())
+
+		router.ServeHTTP(rr, req)
+
+		assertEqual(t, http.StatusBadRequest, rr.Code)
+	})
+
+	t.Run("should fail if UserID not included", func(t *testing.T) {
+		payload := &types.UserFollowPayload{
+			FollowedUserID: 1,
+		}
+		marshalled, _ := json.Marshal(payload)
+
+		req, err := http.NewRequest(http.MethodPost, "/follow", bytes.NewBuffer(marshalled))
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/follow", handler.handleUserFollow())
+
+		router.ServeHTTP(rr, req)
+
+		assertEqual(t, http.StatusBadRequest, rr.Code)
+	})
+
+	t.Run("should succeed when user first follows another user", func(t *testing.T) {
+		payload := &types.UserFollowPayload{
+			UserID:         1,
+			FollowedUserID: 1,
+		}
+		marshalled, _ := json.Marshal(payload)
+
+		req, err := http.NewRequest(http.MethodPost, "/follow", bytes.NewBuffer(marshalled))
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/follow", handler.handleUserFollow())
+
+		router.ServeHTTP(rr, req)
+
+		assertEqual(t, http.StatusOK, rr.Code)
+	})
+
+	t.Run("should succeed when user unfollows another user", func(t *testing.T) {
+		payload := &types.UserFollowPayload{
+			UserID:         1,
+			FollowedUserID: 1,
+		}
+		marshalled, _ := json.Marshal(payload)
+
+		req, err := http.NewRequest(http.MethodPost, "/follow", bytes.NewBuffer(marshalled))
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/follow", handler.handleUserFollow())
+
+		router.ServeHTTP(rr, req)
+
+		assertEqual(t, http.StatusOK, rr.Code)
+	})
+
+	t.Run("should succeed when user follows another user again", func(t *testing.T) {
+		payload := &types.UserFollowPayload{
+			UserID:         1,
+			FollowedUserID: 1,
+		}
+		marshalled, _ := json.Marshal(payload)
+
+		req, err := http.NewRequest(http.MethodPost, "/follow", bytes.NewBuffer(marshalled))
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/follow", handler.handleUserFollow())
+
+		router.ServeHTTP(rr, req)
+
+		assertEqual(t, http.StatusOK, rr.Code)
+	})
+
+	t.Run("GET should fail if userID param not included", func(t *testing.T) {
+		req, err := http.NewRequest(http.MethodGet, "/follow?type=followers", nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/follow", handler.handleUserFollow())
+
+		router.ServeHTTP(rr, req)
+
+		assertEqual(t, http.StatusBadRequest, rr.Code)
+	})
+
+	t.Run("GET should fail if type param not included", func(t *testing.T) {
+		req, err := http.NewRequest(http.MethodGet, "/follow?userID=1", nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/follow", handler.handleUserFollow())
+
+		router.ServeHTTP(rr, req)
+
+		assertEqual(t, http.StatusBadRequest, rr.Code)
+	})
+
+	t.Run("GET should fail if type param invalid", func(t *testing.T) {
+		req, err := http.NewRequest(http.MethodGet, "/follow?userID=1&type=blah", nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/follow", handler.handleUserFollow())
+
+		router.ServeHTTP(rr, req)
+
+		assertEqual(t, http.StatusBadRequest, rr.Code)
+	})
+
+	t.Run("GET should fail bad userID provided", func(t *testing.T) {
+		req, err := http.NewRequest(http.MethodGet, "/follow?userID=test&type=followers", nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/follow", handler.handleUserFollow())
+
+		router.ServeHTTP(rr, req)
+
+		assertEqual(t, http.StatusBadRequest, rr.Code)
+	})
+
+	t.Run("GET should pass with valid userID and type = followers", func(t *testing.T) {
+		req, err := http.NewRequest(http.MethodGet, "/follow?userID=1&type=followers", nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/follow", handler.handleUserFollow())
+
+		router.ServeHTTP(rr, req)
+
+		assertEqual(t, http.StatusOK, rr.Code)
+	})
+
+	t.Run("GET should pass with valid userID and type = following", func(t *testing.T) {
+		req, err := http.NewRequest(http.MethodGet, "/follow?userID=1&type=following", nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/follow", handler.handleUserFollow())
+
+		router.ServeHTTP(rr, req)
+
+		assertEqual(t, http.StatusOK, rr.Code)
+	})
+}
+
 func initTestDatabase(dbName string) *gorm.DB {
 	mockDatabase, err := db.NewSqliteStorage(dbName)
 	if err != nil {
@@ -618,6 +1225,9 @@ func initTestDatabase(dbName string) *gorm.DB {
 		&types.Concert{},
 		&types.Song{},
 		&types.ConcertSong{},
+		&types.UserPost{},
+		&types.Likes{},
+		&types.Follow{},
 	)
 
 	return mockDatabase
@@ -657,6 +1267,9 @@ func destroyDatabase(database *gorm.DB) {
 		&types.Concert{},
 		&types.Song{},
 		&types.ConcertSong{},
+		&types.UserPost{},
+		&types.Likes{},
+		&types.Follow{},
 	)
 }
 
