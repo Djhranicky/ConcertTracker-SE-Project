@@ -239,7 +239,9 @@ func (h *Handler) handleValidate(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Add("Content-Type", "application/json")
 
-	err := auth.VerifyJWTCookie(auth.GetJWTCookie(r))
+	cookie, err := auth.GetJWTCookie(r)
+
+	err = auth.VerifyJWTCookie(cookie, err, "something@test.com", h.Store)
 	if err != nil {
 		utils.WriteError(w, http.StatusUnauthorized, err)
 		return
