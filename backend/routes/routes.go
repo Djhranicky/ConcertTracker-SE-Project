@@ -204,7 +204,7 @@ func (h *Handler) handleValidate(w http.ResponseWriter, r *http.Request) {
 // @Tags Artist
 // @Param name path string true "Artist Name"
 // @Produce json
-// @Success 200 {object} types.Artist "Object that holds artist information"
+// @Success 200 {object} types.ArtistResponse "Object that holds artist information"
 // @Failure 400 {string} error "Error describing failure"
 // @Router /artist [get]
 func (h *Handler) handleArtist(inputURL string) http.HandlerFunc {
@@ -224,8 +224,6 @@ func (h *Handler) handleArtist(inputURL string) http.HandlerFunc {
 
 		// Check if artist exists in db
 		artist, err := h.Store.GetArtistByName(searchString)
-
-		fmt.Println("artist exists in db:", artist)
 
 		// If artist doesn't exist in db, search on setlist.fm
 		if err != nil {
@@ -254,17 +252,14 @@ func (h *Handler) handleArtist(inputURL string) http.HandlerFunc {
 		// Process artist info
 		setlist.ProcessArtistInfo(h.Store, *jsonData, artist)
 
-		// Get additional data needed for response
-		imageURL := "" // You may need to add this field to your API response
-		if len(jsonData.Setlist) > 0 && jsonData.Setlist[0].Artist.URL != "" {
-			imageURL = jsonData.Setlist[0].Artist.URL
-		}
-
 		// Extract tours and setlists
 		tourNames := make(map[string]bool)
 		setlistDates := make([]string, 0)
 		recentSetlists := make([]map[string]string, 0)
-		upcomingShows := make([]map[string]string, 0)
+
+		// Variables for upcoming shows and top songs
+		var upcomingShows []map[string]string
+		var topSongs []map[string]string
 
 		// Process all setlists to gather information
 		for i := range jsonData.Setlist {
@@ -287,18 +282,29 @@ func (h *Handler) handleArtist(inputURL string) http.HandlerFunc {
 				}
 				recentSetlists = append(recentSetlists, setlistInfo)
 			}
+		}
 
-			// Check for upcoming shows (dates after current date)
-			eventDate, err := time.Parse("02-01-2006", jsonData.Setlist[i].EventDate)
-			if err == nil && eventDate.After(time.Now()) {
-				upcomingShow := map[string]string{
-					"id":    jsonData.Setlist[i].ID,
-					"date":  jsonData.Setlist[i].EventDate,
-					"venue": jsonData.Setlist[i].Venue.Name,
-					"city":  jsonData.Setlist[i].Venue.City.Name,
-					"url":   jsonData.Setlist[i].URL,
+		// Get artist URL for scraping additional data
+		artistURL := ""
+		if len(jsonData.Setlist) > 0 {
+			artistURL = jsonData.Setlist[0].Artist.URL
+		}
+
+		// Get upcoming shows and stats from artist's URL
+		if artistURL != "" {
+			artistData, err := utils.GetArtistDataFromAPI(artistURL)
+			if err == nil {
+				// Convert upcoming shows data to our format
+				if upcomingData, ok := artistData["upcoming"].([]map[string]string); ok {
+					upcomingShows = upcomingData
 				}
-				upcomingShows = append(upcomingShows, upcomingShow)
+
+				// Convert stats (top songs) data to our format
+				if statsData, ok := artistData["stats"].([]map[string]string); ok {
+					topSongs = statsData
+				}
+			} else {
+				fmt.Println("Error retrieving artist data:", err)
 			}
 		}
 
@@ -323,12 +329,13 @@ func (h *Handler) handleArtist(inputURL string) http.HandlerFunc {
 		// Create enhanced artist response
 		enhancedResponse := map[string]interface{}{
 			"artist":          artist,
-			"image_url":       imageURL,
-			"number_of_tours": len(tourNames),
+			"artist_url":      artistURL,
+			"number_of_tours": h.Store.GetTourTotalByArtist(artist.ID),
 			"tour_names":      tours,
-			"total_setlists":  len(setlistDates),
+			"total_setlists":  h.Store.GetConcertTotalByArtist(artist.ID),
 			"recent_setlists": recentSetlists,
 			"upcoming_shows":  upcomingShows,
+			"top_songs":       topSongs,
 		}
 
 		utils.WriteJSON(w, http.StatusOK, enhancedResponse)
@@ -396,7 +403,7 @@ func (h *Handler) handleArtistImport(inputURL string) http.HandlerFunc {
 // @Tags Concert
 // @Param id path string true "Setlist ID"
 // @Produce json
-// @Success 200 {object} map[string]interface{} "Concert setlist information"
+// @Success 200 {object} types.ConcertResponse "Concert setlist information"
 // @Failure 400 {string} error "Error describing failure"
 // @Router /concert [get]
 func (h *Handler) handleConcert(inputURL string) http.HandlerFunc {
