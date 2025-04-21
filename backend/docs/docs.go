@@ -394,7 +394,7 @@ const docTemplate = `{
         },
         "/user": {
             "get": {
-                "description": "Returns user information based on email provided in JSON payload",
+                "description": "Returns user information based on username provided in JSON payload",
                 "consumes": [
                     "application/json"
                 ],
@@ -407,18 +407,18 @@ const docTemplate = `{
                 "summary": "Get user info",
                 "parameters": [
                     {
-                        "description": "Email Payload",
+                        "description": "Username Payload",
                         "name": "request",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/types.UserEmailPayload"
+                            "$ref": "#/definitions/types.UserUsernamePayload"
                         }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "User's full name",
+                        "description": "User's name and email",
                         "schema": {
                             "type": "object",
                             "additionalProperties": {
@@ -771,14 +771,6 @@ const docTemplate = `{
                 }
             }
         },
-        "types.UserEmailPayload": {
-            "type": "object",
-            "properties": {
-                "email": {
-                    "type": "string"
-                }
-            }
-        },
         "types.UserFollowGetResponse": {
             "type": "object",
             "properties": {
@@ -921,7 +913,8 @@ const docTemplate = `{
             "required": [
                 "email",
                 "name",
-                "password"
+                "password",
+                "username"
             ],
             "properties": {
                 "email": {
@@ -934,6 +927,17 @@ const docTemplate = `{
                     "type": "string",
                     "maxLength": 130,
                     "minLength": 3
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "types.UserUsernamePayload": {
+            "type": "object",
+            "properties": {
+                "username": {
+                    "type": "string"
                 }
             }
         },

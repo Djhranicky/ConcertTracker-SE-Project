@@ -138,11 +138,6 @@ definitions:
       name:
         type: string
     type: object
-  types.UserEmailPayload:
-    properties:
-      email:
-        type: string
-    type: object
   types.UserFollowGetResponse:
     properties:
       userName:
@@ -245,10 +240,18 @@ definitions:
         maxLength: 130
         minLength: 3
         type: string
+      username:
+        type: string
     required:
     - email
     - name
     - password
+    - username
+    type: object
+  types.UserUsernamePayload:
+    properties:
+      username:
+        type: string
     type: object
   types.VenueMetadata:
     properties:
@@ -524,19 +527,19 @@ paths:
     get:
       consumes:
       - application/json
-      description: Returns user information based on email provided in JSON payload
+      description: Returns user information based on username provided in JSON payload
       parameters:
-      - description: Email Payload
+      - description: Username Payload
         in: body
         name: request
         required: true
         schema:
-          $ref: '#/definitions/types.UserEmailPayload'
+          $ref: '#/definitions/types.UserUsernamePayload'
       produces:
       - application/json
       responses:
         "200":
-          description: User's full name
+          description: User's name and email
           schema:
             additionalProperties:
               type: string
