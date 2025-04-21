@@ -149,13 +149,21 @@ func GetArtistDataFromAPI(url string) (map[string]interface{}, error) {
 		formattedDate := parsedTime.Format("02-01-2006")
 
 		// Extract the link from the anchor tag
-		url, _ := s.Find(".content a").Attr("href")
+		url, exists := s.Find(".content a").Attr("href")
 		formattedUrl := "https://www.setlist.fm" + url[2:]
+
+		// Extract id from the link
+		id := ""
+		if exists {
+			trimmed := strings.TrimSuffix(url, ".html")
+			split := strings.Split(trimmed, "-")
+			id = split[len(split)-1]
+		}
 
 		event := map[string]string{
 			"city":  city,
 			"date":  formattedDate,
-			"id":    "",
+			"id":    id,
 			"url":   formattedUrl,
 			"venue": venue,
 		}
