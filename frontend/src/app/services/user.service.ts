@@ -1,38 +1,9 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
-import { Post } from './post.service';
 import { Concert, Tour } from '../models/artist.model';
-
-export interface UserProfile {
-  name: string;
-  username: string;
-  bio: string;
-  profileImage: string;
-  stats: {
-    concerts: number;
-    lists: number;
-    following: number;
-    followers: number;
-  };
-}
-
-export interface ConcertCard {
-  title: string;
-  artist: string;
-  date: string;
-  image: string;
-}
-
-export interface Activity {
-  text: string;
-}
-
-export interface List {
-  title: string;
-  thumbnails: string[];
-}
-
+import { UserProfile, ConcertCard, Activity, List } from '../models/user.model';
+import { Post } from '../models/post.model';
 @Injectable({
   providedIn: 'root',
 })
@@ -238,8 +209,9 @@ export class UserService {
       comments: 3,
     };
   }
+  private url = 'http://localhost:8080/api';
 
-  constructor() {}
+  constructor(private http: HttpClient) {}
 
   getUserProfile(): Observable<UserProfile> {
     return of(this.userProfile);
@@ -273,5 +245,26 @@ export class UserService {
   // Get filtered posts by type
   getPostsByType(type: string): Observable<Post[]> {
     return of(this.userPosts.filter((post) => post.type === type));
+  }
+
+  //getfollowlist
+  getFollowList(
+    userID: number,
+    type: string,
+    page: number = 1
+  ): Observable<any[]> {
+    return this.http.get<any[]>(
+      `${this.url}/follow?userID=${userID}&type=${type}`
+    );
+  }
+
+  //follow
+  followUser(userID: number, followedUserID: number): Observable<any> {
+    const payload = {
+      UserID: userID,
+      FollowedUserID: followedUserID,
+    };
+
+    return this.http.post(`${this.url}/follow`, payload);
   }
 }

@@ -17,11 +17,7 @@ export const appRoutes: Routes = [
   { path: 'register', component: SignupComponent, canActivate: [GuestGuard] },
   { path: 'concert/:id', component: ConcertComponent },
   { path: 'artist/:name', component: ArtistComponent },
-  {
-    path: 'user-profile',
-    component: UserProfileComponent,
-    // canActivate: [AuthGuard],
-  },
+  { path: 'user/:user', component: UserProfileComponent },
   { path: 'search', component: SearchPage },
   { path: '**', component: NotFoundComponent },
 ];

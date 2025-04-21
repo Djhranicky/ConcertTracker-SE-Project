@@ -9,11 +9,13 @@ import { Button } from 'primeng/button';
 import { Timeline } from 'primeng/timeline';
 import { Concert, Song } from '../../models/artist.model';
 import { ConcertService } from '../../services/concert.service';
-import { Post, PostService } from '../../services/post.service';
+import { PostService } from '../../services/post.service';
 import { ActivatedRoute } from '@angular/router';
 import { FriendlyDatePipe } from '../../utils/friendlyDate.pipe';
 import { ProgressSpinner } from 'primeng/progressspinner';
 import { RouterModule } from '@angular/router';
+import { Post } from '../../models/post.model';
+
 @Component({
   selector: 'app-concert',
   imports: [
@@ -48,13 +50,6 @@ export class ConcertComponent {
     private route: ActivatedRoute
   ) {}
 
-  // parseSetlist() {
-  //   if (this.concert.setlist) {
-  //     // this.setlist = JSON.parse(this.concert.setlist);
-  //     // console.log(this.setlist);
-  //   }
-  // }
-
   objectEntries(obj: any): [string, any][] {
     return Object.entries(obj);
   }
@@ -71,14 +66,9 @@ export class ConcertComponent {
       this.toggleLoading();
     });
 
-    // this.parseSetlist();
-
     this.postService.getPosts().subscribe((data) => {
       this.posts = data;
-      // console.log(this.posts);
     });
-
-    // console.log(this.concert);
   }
 
   private toggleLoading() {

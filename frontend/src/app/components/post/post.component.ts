@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { PostService, Post } from '../../services/post.service';
+import { PostService } from '../../services/post.service';
+import { Post } from '../../models/post.model';
 import { UserService } from '../../services/user.service';
 import { Button } from 'primeng/button';
 import { CardModule } from 'primeng/card';
@@ -20,12 +21,12 @@ export class PostComponent implements OnInit {
   currentUsername: string = '';
 
   @Input() post: Post;
-  
+
   constructor(private userService: UserService) {}
-  
+
   ngOnInit(): void {
     // Check if the post is from the current user
-    this.userService.getUserProfile().subscribe(profile => {
+    this.userService.getUserProfile().subscribe((profile) => {
       this.currentUsername = profile.name;
       this.isCurrentUser = this.post.username === this.currentUsername;
     });
@@ -43,7 +44,7 @@ export class PostComponent implements OnInit {
       this.post.likes = this.post.likes - 1;
     }
   }
-  
+
   getDisplayUsername(): string {
     return this.isCurrentUser ? 'You' : this.post.username;
   }

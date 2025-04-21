@@ -29,6 +29,8 @@ export class AuthenticationService {
     };
 
     localStorage.setItem('isAuth', '1');
+    localStorage.setItem('user', 'paola');
+    localStorage.setItem('id', '2');
 
     return this.http.post(
       `${this.url}/login`,

@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PostComponent } from '../../components/post/post.component';
-import { PostService, Post } from '../../services/post.service';
+import { PostService } from '../../services/post.service';
+import { Post } from '../../models/post.model';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
 import { Button } from 'primeng/button';
 import { Card } from 'primeng/card';
