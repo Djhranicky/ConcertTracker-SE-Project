@@ -62,12 +62,12 @@ func (h *Handler) handleHome(w http.ResponseWriter, r *http.Request) {
 }
 
 // @Summary Login user
-// @Description Authenticates a user and returns a JWT token
+// @Description Authenticates a user and returns a JWT token and username
 // @Tags Auth
 // @Accept json
 // @Produce json
 // @Param request body types.UserLoginPayload true "Login Payload"
-// @Success 200 {object} map[string]string
+// @Success 200 {object} map[string]string "Token and username"
 // @Failure 400 {string} string "Invalid email or password"
 // @Router /login [post]
 func (h *Handler) handleLogin(w http.ResponseWriter, r *http.Request) {
@@ -117,7 +117,13 @@ func (h *Handler) handleLogin(w http.ResponseWriter, r *http.Request) {
 
 	// implement jwt
 	auth.SetJWTCookie(w, token)
-	utils.WriteJSON(w, http.StatusOK, nil)
+
+	// Return username in response
+	response := map[string]string{
+		"username": u.Name,
+	}
+
+	utils.WriteJSON(w, http.StatusOK, response)
 }
 
 // @Summary Register user
