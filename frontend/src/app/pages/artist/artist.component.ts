@@ -13,6 +13,7 @@ import { Post, PostService } from '../../services/post.service';
 import { Observable, map } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
 import { FriendlyDatePipe } from '../../utils/friendlyDate.pipe';
+import { ProgressSpinner } from 'primeng/progressspinner';
 @Component({
   selector: 'app-artist',
   imports: [
@@ -25,6 +26,7 @@ import { FriendlyDatePipe } from '../../utils/friendlyDate.pipe';
     Tag,
     TableModule,
     FriendlyDatePipe,
+    ProgressSpinner,
   ],
   templateUrl: './artist.component.html',
   styleUrl: './artist.component.css',
@@ -33,11 +35,11 @@ import { FriendlyDatePipe } from '../../utils/friendlyDate.pipe';
 export class ArtistComponent implements OnInit {
   @Input() artist: Artist;
   name: string;
-  concerts: Concert[] = [];
   upcoming: Concert[] = [];
   responsiveOptions: any[] | undefined;
   upcomingTuples: [Concert, string[]][] = [];
   mostPlayed: [string, string][] = [];
+  loading: boolean = true;
 
   constructor(
     private concertService: ConcertService,
@@ -48,19 +50,20 @@ export class ArtistComponent implements OnInit {
   ngOnInit() {
     this.route.paramMap.subscribe((params) => {
       this.name = params.get('name') as string;
+
+      this.loading = true;
     });
 
     this.concertService.getArtist(this.name).subscribe((artist) => {
       this.artist = artist;
-      console.log(this.artist);
+      //console.log(this.artist);
+      this.toggleLoading();
     });
 
-    this.concertService.getRecentConcerts().subscribe((concerts) => {
-      this.concerts = concerts;
-    });
     this.concertService.getUpcomingConcerts().subscribe((upcoming) => {
       this.upcoming = upcoming;
     });
+
     for (const item of this.upcoming) {
       let date = item.date!.split(' ');
       let month = date[0];
@@ -98,5 +101,9 @@ export class ArtistComponent implements OnInit {
         numScroll: 1,
       },
     ];
+  }
+
+  private toggleLoading() {
+    if (this.loading) this.loading = false;
   }
 }

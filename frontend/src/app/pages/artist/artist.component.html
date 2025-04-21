@@ -1,5 +1,9 @@
 <app-navbar></app-navbar>
-<body>
+<p-progressSpinner
+  *ngIf="loading"
+  styleClass="custom-spinner"
+></p-progressSpinner>
+<body *ngIf="!loading">
   <p-card class="header">
     <div class="content">
       <div class="details">
