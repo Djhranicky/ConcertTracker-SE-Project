@@ -26,4 +26,6 @@ type Store interface {
 	GetFollowersOrFollowing(int64, string, int64) ([]UserFollowGetResponse, error)
 	CreateList(UserListCreatePayload) (*List, error)
 	ToggleList(UserListAddPayload) error
+	GetConcertTotalByArtist(uint) int64
+	GetTourTotalByArtist(uint) int64
 }

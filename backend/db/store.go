@@ -155,6 +155,16 @@ func (s *Store) GetTourByName(name string) (*types.Tour, error) {
 	return &tour, nil
 }
 
+func (s *Store) GetTourTotalByArtist(artistID uint) int64 {
+	var count int64
+	result := s.db.Model(&types.Tour{}).Where("artist_id = ?", artistID).Count(&count)
+	if result.Error != nil {
+		return 0
+	}
+
+	return count
+}
+
 func (s *Store) CreateConcertIfMissing(concert types.Concert) *types.Concert {
 	var Exists bool
 	var returnConcert types.Concert
@@ -179,6 +189,16 @@ func (s *Store) CreateSongIfMissing(song types.Song) *types.Song {
 
 	s.db.First(&returnSong, "lower(name) = lower(?) AND artist_id = ?", song.Name, song.Artist.ID)
 	return &returnSong
+}
+
+func (s *Store) GetConcertTotalByArtist(artistID uint) int64 {
+	var count int64
+	result := s.db.Model(&types.Concert{}).Where("artist_id = ?", artistID).Count(&count)
+	if result.Error != nil {
+		return 0
+	}
+
+	return count
 }
 
 func (s *Store) CreateConcertSongIfMissing(concertSong types.ConcertSong) *types.ConcertSong {

@@ -64,7 +64,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Object that holds artist information",
                         "schema": {
-                            "$ref": "#/definitions/types.Artist"
+                            "$ref": "#/definitions/types.ArtistResponse"
                         }
                     },
                     "400": {
@@ -99,8 +99,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Concert setlist information",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/types.ConcertResponse"
                         }
                     },
                     "400": {
@@ -632,6 +631,197 @@ const docTemplate = `{
                 }
             }
         },
+        "types.ArtistBrief": {
+            "type": "object",
+            "properties": {
+                "mbid": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "types.ArtistMetadata": {
+            "type": "object",
+            "properties": {
+                "mbid": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
+                }
+            }
+        },
+        "types.ArtistResponse": {
+            "type": "object",
+            "properties": {
+                "artist": {
+                    "description": "Basic artist info (MBID, Name, etc.)",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/types.Artist"
+                        }
+                    ]
+                },
+                "artist_url": {
+                    "description": "Setlist.fm artist URL",
+                    "type": "string"
+                },
+                "number_of_tours": {
+                    "description": "Count of distinct tours",
+                    "type": "integer"
+                },
+                "recent_setlists": {
+                    "description": "Most recent setlists (max 20)",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/types.RecentSetlistEntry"
+                    }
+                },
+                "top_songs": {
+                    "description": "Scraped top song stats",
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "total_setlists": {
+                    "description": "Total number of setlists found",
+                    "type": "integer"
+                },
+                "tour_names": {
+                    "description": "List of tour names",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "upcoming_shows": {
+                    "description": "Scraped upcoming show data",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/types.RecentSetlistEntry"
+                    }
+                }
+            }
+        },
+        "types.CityMetadata": {
+            "type": "object",
+            "properties": {
+                "country": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "state": {
+                    "type": "string"
+                }
+            }
+        },
+        "types.ConcertResponse": {
+            "type": "object",
+            "properties": {
+                "artist": {
+                    "$ref": "#/definitions/types.ArtistMetadata"
+                },
+                "event_date": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "info": {
+                    "description": "Optional additional info",
+                    "type": "string"
+                },
+                "last_updated": {
+                    "type": "string"
+                },
+                "songs": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/types.SongMetadata"
+                    }
+                },
+                "tour": {
+                    "description": "Optional",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/types.TourMetadata"
+                        }
+                    ]
+                },
+                "url": {
+                    "type": "string"
+                },
+                "venue": {
+                    "$ref": "#/definitions/types.VenueMetadata"
+                },
+                "version_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "types.RecentSetlistEntry": {
+            "type": "object",
+            "properties": {
+                "city": {
+                    "type": "string"
+                },
+                "date": {
+                    "description": "Format: \"02-01-2006\"",
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
+                },
+                "venue": {
+                    "type": "string"
+                }
+            }
+        },
+        "types.SongMetadata": {
+            "type": "object",
+            "properties": {
+                "cover": {
+                    "$ref": "#/definitions/types.ArtistBrief"
+                },
+                "info": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "order": {
+                    "type": "integer"
+                },
+                "tape": {
+                    "type": "boolean"
+                },
+                "with": {
+                    "$ref": "#/definitions/types.ArtistBrief"
+                }
+            }
+        },
+        "types.TourMetadata": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
         "types.UserFollowGetResponse": {
             "type": "object",
             "properties": {
@@ -832,6 +1022,23 @@ const docTemplate = `{
                     "type": "string",
                     "maxLength": 130,
                     "minLength": 3
+                }
+            }
+        },
+        "types.VenueMetadata": {
+            "type": "object",
+            "properties": {
+                "city": {
+                    "$ref": "#/definitions/types.CityMetadata"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
                 }
             }
         }
