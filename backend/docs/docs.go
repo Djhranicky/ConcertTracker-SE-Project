@@ -311,7 +311,7 @@ const docTemplate = `{
         },
         "/login": {
             "post": {
-                "description": "Authenticates a user and returns a JWT token",
+                "description": "Authenticates a user and returns a JWT token and username",
                 "consumes": [
                     "application/json"
                 ],
@@ -335,7 +335,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "Token and username",
                         "schema": {
                             "type": "object",
                             "additionalProperties": {

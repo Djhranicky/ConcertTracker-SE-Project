@@ -473,7 +473,7 @@ paths:
     post:
       consumes:
       - application/json
-      description: Authenticates a user and returns a JWT token
+      description: Authenticates a user and returns a JWT token and username
       parameters:
       - description: Login Payload
         in: body
@@ -485,7 +485,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: OK
+          description: Token and username
           schema:
             additionalProperties:
               type: string
