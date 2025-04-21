@@ -116,6 +116,7 @@ type ConcertSong struct {
 	Song    Song    `gorm:"foreignKey:SongID"`
 }
 
+// Artist
 type ArtistResponse struct {
 	Artist         Artist               `json:"artist"`          // Basic artist info (MBID, Name, etc.)
 	ArtistURL      string               `json:"artist_url"`      // Setlist.fm artist URL
@@ -123,7 +124,7 @@ type ArtistResponse struct {
 	TourNames      []string             `json:"tour_names"`      // List of tour names
 	TotalSetlists  int                  `json:"total_setlists"`  // Total number of setlists found
 	RecentSetlists []RecentSetlistEntry `json:"recent_setlists"` // Most recent setlists (max 20)
-	UpcomingShows  []map[string]string  `json:"upcoming_shows"`  // Scraped upcoming show data
+	UpcomingShows  []RecentSetlistEntry `json:"upcoming_shows"`  // Scraped upcoming show data
 	TopSongs       []map[string]string  `json:"top_songs"`       // Scraped top song stats
 }
 
@@ -134,6 +135,8 @@ type RecentSetlistEntry struct {
 	City  string `json:"city"`
 	URL   string `json:"url"`
 }
+
+// concerts
 type ConcertResponse struct {
 	ID          string         `json:"id"`
 	VersionID   string         `json:"version_id"`
