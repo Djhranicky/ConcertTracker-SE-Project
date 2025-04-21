@@ -197,6 +197,11 @@ func (h *Handler) handleUserInfo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if err := auth.ValidateUser(r, h.Store); err != nil {
+		utils.WriteError(w, http.StatusUnauthorized, err)
+		return
+	}
+
 	// Parse JSON payload
 	var payload struct {
 		Username string `json:"username" validate:"required"`
@@ -245,6 +250,11 @@ func (h *Handler) handleUserList(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if err := auth.ValidateUser(r, h.Store); err != nil {
+		utils.WriteError(w, http.StatusUnauthorized, err)
+		return
+	}
+
 	// Fetch all users from the database
 	users, err := h.Store.GetAllUsers()
 	if err != nil {
@@ -280,6 +290,11 @@ func (h *Handler) handleArtist(inputURL string) http.HandlerFunc {
 		utils.SetCORSHeaders(w)
 		if r.Method == "OPTIONS" {
 			w.WriteHeader(http.StatusOK)
+			return
+		}
+
+		if err := auth.ValidateUser(r, h.Store); err != nil {
+			utils.WriteError(w, http.StatusUnauthorized, err)
 			return
 		}
 
@@ -425,6 +440,12 @@ func (h *Handler) handleArtistImport(inputURL string) http.HandlerFunc {
 			w.WriteHeader(http.StatusOK)
 			return
 		}
+
+		if err := auth.ValidateUser(r, h.Store); err != nil {
+			utils.WriteError(w, http.StatusUnauthorized, err)
+			return
+		}
+
 		// Get artist search from request
 		mbid := r.URL.Query().Get("mbid")
 		if mbid == "" {
@@ -479,6 +500,11 @@ func (h *Handler) handleConcert(inputURL string) http.HandlerFunc {
 		utils.SetCORSHeaders(w)
 		if r.Method == "OPTIONS" {
 			w.WriteHeader(http.StatusOK)
+			return
+		}
+
+		if err := auth.ValidateUser(r, h.Store); err != nil {
+			utils.WriteError(w, http.StatusUnauthorized, err)
 			return
 		}
 
@@ -667,6 +693,11 @@ func (h *Handler) handleUserPost() http.HandlerFunc {
 			return
 		}
 
+		if err := auth.ValidateUser(r, h.Store); err != nil {
+			utils.WriteError(w, http.StatusUnauthorized, err)
+			return
+		}
+
 		if r.Method == http.MethodPost {
 			h.UserPostOnPost(w, r)
 		}
@@ -682,6 +713,11 @@ func (h *Handler) handleUserLike() http.HandlerFunc {
 		utils.SetCORSHeaders(w)
 		if r.Method == "OPTIONS" {
 			w.WriteHeader(http.StatusOK)
+			return
+		}
+
+		if err := auth.ValidateUser(r, h.Store); err != nil {
+			utils.WriteError(w, http.StatusUnauthorized, err)
 			return
 		}
 
@@ -702,6 +738,11 @@ func (h *Handler) handleUserFollow() http.HandlerFunc {
 		utils.SetCORSHeaders(w)
 		if r.Method == http.MethodOptions {
 			w.WriteHeader(http.StatusOK)
+			return
+		}
+
+		if err := auth.ValidateUser(r, h.Store); err != nil {
+			utils.WriteError(w, http.StatusUnauthorized, err)
 			return
 		}
 

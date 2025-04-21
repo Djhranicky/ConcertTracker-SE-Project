@@ -288,6 +288,7 @@ func TestArtistServiceHandleArtist(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
+		addDefaultValidation(req)
 
 		rr := httptest.NewRecorder()
 		router := mux.NewRouter()
@@ -316,6 +317,7 @@ func TestArtistServiceHandleArtist(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
+		addDefaultValidation(req)
 
 		rr := httptest.NewRecorder()
 		router := mux.NewRouter()
@@ -350,6 +352,7 @@ func TestArtistServiceHandleImport(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
+		addDefaultValidation(req)
 
 		rr := httptest.NewRecorder()
 		router := mux.NewRouter()
@@ -366,6 +369,7 @@ func TestArtistServiceHandleImport(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
+		addDefaultValidation(req)
 
 		rr := httptest.NewRecorder()
 		router := mux.NewRouter()
@@ -382,6 +386,7 @@ func TestArtistServiceHandleImport(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
+		addDefaultValidation(req)
 
 		rr := httptest.NewRecorder()
 		router := mux.NewRouter()
@@ -408,6 +413,7 @@ func TestArtistServiceHandleImport(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
+		addDefaultValidation(req)
 
 		rr := httptest.NewRecorder()
 		router := mux.NewRouter()
@@ -435,6 +441,7 @@ func TestArtistServiceHandleImport(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
+		addDefaultValidation(req)
 
 		rr := httptest.NewRecorder()
 		router := mux.NewRouter()
@@ -462,6 +469,7 @@ func TestArtistServiceHandleImport(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
+		addDefaultValidation(req)
 
 		rr := httptest.NewRecorder()
 		router := mux.NewRouter()
@@ -484,6 +492,7 @@ func TestConcertServiceHandleConcert(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
+		addDefaultValidation(req)
 
 		rr := httptest.NewRecorder()
 		router := mux.NewRouter()
@@ -511,6 +520,7 @@ func TestConcertServiceHandleConcert(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
+		addDefaultValidation(req)
 
 		rr := httptest.NewRecorder()
 		router := mux.NewRouter()
@@ -547,6 +557,7 @@ func TestUserServiceHandlePost(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
+		addDefaultValidation(req)
 
 		rr := httptest.NewRecorder()
 		router := mux.NewRouter()
@@ -577,6 +588,7 @@ func TestUserServiceHandlePost(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
+		addDefaultValidation(req)
 
 		rr := httptest.NewRecorder()
 		router := mux.NewRouter()
@@ -606,6 +618,7 @@ func TestUserServiceHandlePost(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
+		addDefaultValidation(req)
 
 		rr := httptest.NewRecorder()
 		router := mux.NewRouter()
@@ -636,6 +649,7 @@ func TestUserServiceHandlePost(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
+		addDefaultValidation(req)
 
 		rr := httptest.NewRecorder()
 		router := mux.NewRouter()
@@ -667,6 +681,7 @@ func TestUserServiceHandlePost(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
+		addDefaultValidation(req)
 
 		rr := httptest.NewRecorder()
 		router := mux.NewRouter()
@@ -698,6 +713,7 @@ func TestUserServiceHandlePost(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
+		addDefaultValidation(req)
 
 		rr := httptest.NewRecorder()
 		router := mux.NewRouter()
@@ -714,6 +730,7 @@ func TestUserServiceHandlePost(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
+		addDefaultValidation(req)
 
 		rr := httptest.NewRecorder()
 		router := mux.NewRouter()
@@ -730,6 +747,7 @@ func TestUserServiceHandlePost(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
+		addDefaultValidation(req)
 
 		rr := httptest.NewRecorder()
 		router := mux.NewRouter()
@@ -746,6 +764,7 @@ func TestUserServiceHandlePost(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
+		addDefaultValidation(req)
 
 		rr := httptest.NewRecorder()
 		router := mux.NewRouter()
@@ -773,6 +792,7 @@ func TestUserServiceHandleLike(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
+		addDefaultValidation(req)
 
 		rr := httptest.NewRecorder()
 		router := mux.NewRouter()
@@ -794,6 +814,7 @@ func TestUserServiceHandleLike(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
+		addDefaultValidation(req)
 
 		rr := httptest.NewRecorder()
 		router := mux.NewRouter()
@@ -816,6 +837,7 @@ func TestUserServiceHandleLike(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
+		addDefaultValidation(req)
 
 		rr := httptest.NewRecorder()
 		router := mux.NewRouter()
@@ -838,6 +860,7 @@ func TestUserServiceHandleLike(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
+		addDefaultValidation(req)
 
 		rr := httptest.NewRecorder()
 		router := mux.NewRouter()
@@ -860,6 +883,7 @@ func TestUserServiceHandleLike(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
+		addDefaultValidation(req)
 
 		rr := httptest.NewRecorder()
 		router := mux.NewRouter()
@@ -876,6 +900,7 @@ func TestUserServiceHandleLike(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
+		addDefaultValidation(req)
 
 		rr := httptest.NewRecorder()
 		router := mux.NewRouter()
@@ -892,6 +917,7 @@ func TestUserServiceHandleLike(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
+		addDefaultValidation(req)
 
 		rr := httptest.NewRecorder()
 		router := mux.NewRouter()
@@ -908,6 +934,7 @@ func TestUserServiceHandleLike(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
+		addDefaultValidation(req)
 
 		rr := httptest.NewRecorder()
 		router := mux.NewRouter()
@@ -935,6 +962,7 @@ func TestUserServiceHandleFollow(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
+		addDefaultValidation(req)
 
 		rr := httptest.NewRecorder()
 		router := mux.NewRouter()
@@ -956,6 +984,7 @@ func TestUserServiceHandleFollow(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
+		addDefaultValidation(req)
 
 		rr := httptest.NewRecorder()
 		router := mux.NewRouter()
@@ -978,6 +1007,7 @@ func TestUserServiceHandleFollow(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
+		addDefaultValidation(req)
 
 		rr := httptest.NewRecorder()
 		router := mux.NewRouter()
@@ -1000,6 +1030,7 @@ func TestUserServiceHandleFollow(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
+		addDefaultValidation(req)
 
 		rr := httptest.NewRecorder()
 		router := mux.NewRouter()
@@ -1022,6 +1053,7 @@ func TestUserServiceHandleFollow(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
+		addDefaultValidation(req)
 
 		rr := httptest.NewRecorder()
 		router := mux.NewRouter()
@@ -1038,6 +1070,7 @@ func TestUserServiceHandleFollow(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
+		addDefaultValidation(req)
 
 		rr := httptest.NewRecorder()
 		router := mux.NewRouter()
@@ -1054,6 +1087,7 @@ func TestUserServiceHandleFollow(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
+		addDefaultValidation(req)
 
 		rr := httptest.NewRecorder()
 		router := mux.NewRouter()
@@ -1070,6 +1104,7 @@ func TestUserServiceHandleFollow(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
+		addDefaultValidation(req)
 
 		rr := httptest.NewRecorder()
 		router := mux.NewRouter()
@@ -1086,6 +1121,7 @@ func TestUserServiceHandleFollow(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
+		addDefaultValidation(req)
 
 		rr := httptest.NewRecorder()
 		router := mux.NewRouter()
@@ -1102,6 +1138,7 @@ func TestUserServiceHandleFollow(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
+		addDefaultValidation(req)
 
 		rr := httptest.NewRecorder()
 		router := mux.NewRouter()
@@ -1118,6 +1155,7 @@ func TestUserServiceHandleFollow(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
+		addDefaultValidation(req)
 
 		rr := httptest.NewRecorder()
 		router := mux.NewRouter()
@@ -1231,6 +1269,21 @@ func TestSessionMethods(t *testing.T) {
 			t.Errorf("expected no error code, got %v", err)
 		}
 	})
+}
+
+func addDefaultValidation(req *http.Request) {
+	err := godotenv.Load("./.env")
+	if err != nil {
+		log.Fatal("cannot load env file")
+	}
+	secret := []byte(os.Getenv("JWT_SECRET"))
+	token, _ := auth.CreateJWT(secret, 1, 10)
+	req.AddCookie(&http.Cookie{
+		Name:     "id",
+		Value:    token,
+		HttpOnly: true,
+	})
+	req.Header.Add("username", "johndoe")
 }
 
 func initTestDatabase(dbName string) *gorm.DB {
