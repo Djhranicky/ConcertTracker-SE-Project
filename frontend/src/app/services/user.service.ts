@@ -33,6 +33,14 @@ export interface List {
   thumbnails: string[];
 }
 
+export interface Followers {
+  userName: string;
+}
+
+export interface Following {
+  userName: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -268,6 +276,14 @@ export class UserService {
   // Get user posts 
   getUserPosts(): Observable<Post[]> {
     return of(this.userPosts);
+  }
+
+  getFollowers(): Observable<Followers[]> {
+    return of(this.followers);
+  }
+
+  getFollowing(): Observable<Following[]> {
+    return of(this.following);
   }
 
   // Get filtered posts by type

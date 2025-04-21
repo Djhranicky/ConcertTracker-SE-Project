@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
 import { PostComponent } from '../../components/post/post.component';
-import { UserService, UserProfile, ConcertCard, Activity, List } from '../../services/user.service';
+import { UserService, UserProfile, ConcertCard, Activity, List, Following, Followers } from '../../services/user.service';
 import { Post } from '../../services/post.service';
 // import { Button } from 'primeng/button';
 import { Card } from 'primeng/card';
@@ -74,6 +74,14 @@ export class UserProfileComponent implements OnInit {
     this.userService.getRecentLists().subscribe(lists => {
       this.recentLists = lists;
     });
+
+    this.userService.getFollowers().subscribe(followers => {
+      this.followers = followers;
+    });
+
+    this.userService.getFollowing().subscribe(following => {
+      this.followings = following;
+    })
 
     // Get posts for concert display
     this.userService.getUserPosts().subscribe(posts => {
