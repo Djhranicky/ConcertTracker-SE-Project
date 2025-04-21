@@ -34,6 +34,7 @@ func (h *Handler) RegisterRoutes(router *mux.Router) {
 	router.HandleFunc("/", h.handleHome).Methods("GET")
 	router.HandleFunc("/login", h.handleLogin).Methods("POST", "OPTIONS")
 	router.HandleFunc("/register", h.handleRegister).Methods("POST", "OPTIONS")
+	router.HandleFunc("/user", h.handleUser).Methods("GET", "OPTIONS")
 	router.HandleFunc("/validate", h.handleValidate).Methods("GET", "OPTIONS")
 	router.HandleFunc("/artist", h.handleArtist(baseURL)).Methods("GET", "OPTIONS")
 	router.HandleFunc("/import", h.handleArtistImport(baseURL)).Methods("GET", "OPTIONS")
@@ -171,6 +172,55 @@ func (h *Handler) handleRegister(w http.ResponseWriter, r *http.Request) {
 	}
 
 	utils.WriteJSON(w, http.StatusCreated, nil)
+}
+
+// @Summary Get user info
+// @Description Returns user information based on email provided in JSON payload
+// @Tags Auth
+// @Accept json
+// @Produce json
+// @Param request body types.UserEmailPayload true "Email Payload"
+// @Success 200 {object} map[string]string "User's full name"
+// @Failure 400 {string} string "Invalid payload"
+// @Failure 404 {string} string "User not found"
+// @Router /user [get]
+func (h *Handler) handleUser(w http.ResponseWriter, r *http.Request) {
+	utils.SetCORSHeaders(w)
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
+	// Parse JSON payload
+	var payload struct {
+		Email string `json:"email" validate:"required,email"`
+	}
+
+	if err := utils.ParseJSON(r, &payload); err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	// Validate email field
+	if err := utils.Validate.Struct(payload); err != nil {
+		errors := err.(validator.ValidationErrors)
+		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("invalid payload: %v", errors))
+		return
+	}
+
+	// Fetch user from database by email
+	user, err := h.Store.GetUserByEmail(payload.Email)
+	if err != nil {
+		utils.WriteError(w, http.StatusNotFound, errors.New("user not found"))
+		return
+	}
+
+	// Return the user's full name
+	response := map[string]string{
+		"name": user.Name,
+	}
+
+	utils.WriteJSON(w, http.StatusOK, response)
 }
 
 // @Summary Validate user session
