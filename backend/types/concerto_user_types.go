@@ -15,6 +15,10 @@ type UserLoginPayload struct {
 	Password string `json:"password" validate:"required"`
 }
 
+type UserEmailPayload struct {
+	Email string `json:"email"`
+}
+
 type UserFollowPayload struct {
 	UserID         uint `json:"userID" validate:"required"`
 	FollowedUserID uint `json:"followedUserID" validate:"required"`

@@ -392,6 +392,55 @@ const docTemplate = `{
                 }
             }
         },
+        "/user": {
+            "get": {
+                "description": "Returns user information based on email provided in JSON payload",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Get user info",
+                "parameters": [
+                    {
+                        "description": "Email Payload",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.UserEmailPayload"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "User's full name",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid payload",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "User not found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/userpost": {
             "get": {
                 "description": "Gets public posts from a user's followed network, sorted with most recent first",
@@ -718,6 +767,14 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "types.UserEmailPayload": {
+            "type": "object",
+            "properties": {
+                "email": {
                     "type": "string"
                 }
             }

@@ -138,6 +138,11 @@ definitions:
       name:
         type: string
     type: object
+  types.UserEmailPayload:
+    properties:
+      email:
+        type: string
+    type: object
   types.UserFollowGetResponse:
     properties:
       userName:
@@ -513,6 +518,38 @@ paths:
           schema:
             type: string
       summary: Register user
+      tags:
+      - Auth
+  /user:
+    get:
+      consumes:
+      - application/json
+      description: Returns user information based on email provided in JSON payload
+      parameters:
+      - description: Email Payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/types.UserEmailPayload'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User's full name
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Invalid payload
+          schema:
+            type: string
+        "404":
+          description: User not found
+          schema:
+            type: string
+      summary: Get user info
       tags:
       - Auth
   /userpost:
