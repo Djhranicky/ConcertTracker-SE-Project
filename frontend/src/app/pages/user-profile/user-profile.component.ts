@@ -42,6 +42,10 @@ export class UserProfileComponent implements OnInit {
   favoritePosts: Post[] = [];
   bucketListPosts: Post[] = [];
 
+  // Following and followers
+  followings: Following[] = [];
+  followers: Followers[] = [];
+
   constructor(private userService: UserService, private router: Router) { }
 
   ngOnInit(): void {
