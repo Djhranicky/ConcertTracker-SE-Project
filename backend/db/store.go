@@ -46,6 +46,15 @@ func (s *Store) GetUserByUsername(username string) (*types.User, error) {
 	return &user, nil
 }
 
+func (s *Store) GetAllUsers() ([]types.User, error) {
+	var users []types.User
+	err := s.db.Find(&users).Error
+	if err != nil {
+		return nil, err
+	}
+	return users, nil
+}
+
 func (s *Store) CreateUser(user types.User) error {
 	result := s.db.Create(&user)
 

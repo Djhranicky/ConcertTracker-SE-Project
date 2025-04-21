@@ -35,6 +35,7 @@ func (h *Handler) RegisterRoutes(router *mux.Router) {
 	router.HandleFunc("/login", h.handleLogin).Methods("POST", "OPTIONS")
 	router.HandleFunc("/register", h.handleRegister).Methods("POST", "OPTIONS")
 	router.HandleFunc("/userinfo", h.handleUserInfo).Methods("GET", "OPTIONS")
+	router.HandleFunc("/users", h.handleUserList).Methods("GET", "OPTIONS")
 	router.HandleFunc("/validate", h.handleValidate).Methods("GET", "OPTIONS")
 	router.HandleFunc("/artist", h.handleArtist(baseURL)).Methods("GET", "OPTIONS")
 	router.HandleFunc("/import", h.handleArtistImport(baseURL)).Methods("GET", "OPTIONS")
@@ -219,6 +220,43 @@ func (h *Handler) handleUserInfo(w http.ResponseWriter, r *http.Request) {
 	response := map[string]string{
 		"name":  user.Name,
 		"email": user.Email,
+	}
+
+	utils.WriteJSON(w, http.StatusOK, response)
+}
+
+// @Summary Get list of all users
+// @Description Returns a list of all usernames in the database
+// @Tags Auth
+// @Accept json
+// @Produce json
+// @Success 200 {array} string "List of usernames"
+// @Failure 500 {string} string "Internal server error"
+// @Router /users [get]
+func (h *Handler) handleUserList(w http.ResponseWriter, r *http.Request) {
+	utils.SetCORSHeaders(w)
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
+	// Fetch all users from the database
+	users, err := h.Store.GetAllUsers()
+	if err != nil {
+		utils.WriteError(w, http.StatusInternalServerError, fmt.Errorf("error retrieving users: %v", err))
+		return
+	}
+
+	// Extract just the usernames into a separate slice
+	var usernames []string
+	for _, user := range users {
+		usernames = append(usernames, user.Name)
+	}
+
+	// Return the list of usernames
+	response := map[string]interface{}{
+		"usernames": usernames,
+		"count":     len(usernames),
 	}
 
 	utils.WriteJSON(w, http.StatusOK, response)
