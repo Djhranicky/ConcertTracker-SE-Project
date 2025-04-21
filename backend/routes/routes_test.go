@@ -3,6 +3,7 @@ package routes
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"net/http/httptest"
@@ -16,6 +17,7 @@ import (
 	"github.com/djhranicky/ConcertTracker-SE-Project/types"
 	"github.com/djhranicky/ConcertTracker-SE-Project/utils"
 	"github.com/gorilla/mux"
+	"github.com/joho/godotenv"
 	"gorm.io/gorm"
 )
 
@@ -96,6 +98,7 @@ func TestUserServiceHandleRegister(t *testing.T) {
 		payload := types.UserRegisterPayload{
 			Name:     "Created User",
 			Email:    "test2@example.com",
+			Username: "createduser",
 			Password: "testpw",
 		}
 		marshalled, _ := json.Marshal(payload)
@@ -240,90 +243,6 @@ func TestUserServiceHandleLogin(t *testing.T) {
 
 		if rr.Code != http.StatusOK {
 			t.Errorf("expected status code %v, got status code %v. JSON Body: %v", http.StatusOK, rr.Code, rr.Body)
-		}
-	})
-}
-
-func TestUserServiceHandleValidate(t *testing.T) {
-	utils.Init()
-	handler, database := initTestHandler()
-	defer destroyDatabase(database)
-
-	t.Run("should fail when no id cookie is present", func(t *testing.T) {
-		req, err := http.NewRequest(http.MethodGet, "/validate", nil)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		rr := httptest.NewRecorder()
-		router := mux.NewRouter()
-
-		router.HandleFunc("/validate", handler.handleValidate)
-
-		router.ServeHTTP(rr, req)
-
-		if rr.Code != http.StatusUnauthorized {
-			t.Errorf("expected status code %v, got status code %v", http.StatusBadRequest, rr.Code)
-		}
-	})
-
-	t.Run("should fail when invalid jwt string is present", func(t *testing.T) {
-		req, err := http.NewRequest(http.MethodGet, "/validate", nil)
-		if err != nil {
-			t.Fatal(err)
-		}
-		req.AddCookie(&http.Cookie{
-			Name:  "id",
-			Value: "invalid jwt token",
-		})
-
-		rr := httptest.NewRecorder()
-		router := mux.NewRouter()
-
-		router.HandleFunc("/validate", handler.handleValidate)
-
-		router.ServeHTTP(rr, req)
-
-		if rr.Code != http.StatusUnauthorized {
-			t.Errorf("expected status code %v, got status code %v", http.StatusBadRequest, rr.Code)
-		}
-	})
-
-	t.Run("should pass when valid cookie is present", func(t *testing.T) {
-		payload := &types.UserRegisterPayload{
-			Name:     "John Doe",
-			Email:    "test@example.com",
-			Password: "test",
-		}
-		marshalled, _ := json.Marshal(payload)
-
-		req, err := http.NewRequest(http.MethodPost, "/login", bytes.NewBuffer(marshalled))
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		rr := httptest.NewRecorder()
-		router := mux.NewRouter()
-
-		router.HandleFunc("/login", handler.handleLogin)
-		router.ServeHTTP(rr, req)
-
-		cookie := rr.Result().Cookies()
-		req, err = http.NewRequest(http.MethodGet, "/validate", nil)
-		if err != nil {
-			t.Fatal(err)
-		}
-		req.AddCookie(cookie[0])
-
-		rr = httptest.NewRecorder()
-		router = mux.NewRouter()
-
-		router.HandleFunc("/validate", handler.handleValidate)
-
-		router.ServeHTTP(rr, req)
-
-		if rr.Code != http.StatusOK {
-			t.Errorf("expected status code %v, got status code %v", http.StatusBadRequest, rr.Code)
 		}
 	})
 }
@@ -1211,6 +1130,109 @@ func TestUserServiceHandleFollow(t *testing.T) {
 	})
 }
 
+func TestSessionMethods(t *testing.T) {
+	utils.Init()
+	handler, database := initTestHandler()
+	defer destroyDatabase(database)
+	err := godotenv.Load("./.env")
+	if err != nil {
+		log.Fatal("cannot load env file")
+	}
+	secret := []byte(os.Getenv("JWT_SECRET"))
+	t.Run("should fail if request has no cookie", func(t *testing.T) {
+		req, err := http.NewRequest(http.MethodGet, "/", nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+		_, err = auth.GetJWTCookie(req)
+		if err != http.ErrNoCookie {
+			t.Errorf("expected error code %v, got nothing", http.ErrNoCookie)
+		}
+	})
+
+	t.Run("should pass if request has cookie", func(t *testing.T) {
+		req, err := http.NewRequest(http.MethodGet, "/", nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+		req.AddCookie(&http.Cookie{
+			Name:     "id",
+			Value:    "",
+			HttpOnly: true,
+		})
+		cookie, err := auth.GetJWTCookie(req)
+		if err != nil {
+			t.Errorf("expected cookie in request, got %v", cookie)
+		}
+	})
+
+	t.Run("verification should fail if no cookie present", func(t *testing.T) {
+		req, err := http.NewRequest(http.MethodGet, "/", nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+		err = auth.ValidateUser(req, handler.Store)
+		if err != http.ErrNoCookie {
+			t.Errorf("expected error code %v, got %v", http.ErrNoCookie, err)
+		}
+	})
+
+	t.Run("verification should fail if no JWT token present", func(t *testing.T) {
+		expectedErr := fmt.Errorf("missing authorization token")
+		req, err := http.NewRequest(http.MethodGet, "/", nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+		req.AddCookie(&http.Cookie{
+			Name:     "id",
+			Value:    "",
+			HttpOnly: true,
+		})
+		req.Header.Add("username", "johndoe")
+		err = auth.ValidateUser(req, handler.Store)
+		if err.Error() != expectedErr.Error() {
+			t.Errorf("expected error code %v, got %v", expectedErr, err)
+		}
+	})
+
+	t.Run("verification should fail if JWT token is expired", func(t *testing.T) {
+		expectedErr := fmt.Errorf("token has invalid claims: token is expired")
+		req, err := http.NewRequest(http.MethodGet, "/", nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+		token, _ := auth.CreateJWT(secret, 1, -1)
+		req.AddCookie(&http.Cookie{
+			Name:     "id",
+			Value:    token,
+			HttpOnly: true,
+		})
+		req.Header.Add("username", "johndoe")
+		err = auth.ValidateUser(req, handler.Store)
+		if err == nil || err.Error() != expectedErr.Error() {
+			t.Errorf("expected error code %v, got %v", expectedErr, err)
+		}
+	})
+
+	t.Run("verification should succeed if JWT token is valid", func(t *testing.T) {
+		req, err := http.NewRequest(http.MethodGet, "/", nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+		token, _ := auth.CreateJWT(secret, 1, 10)
+		req.AddCookie(&http.Cookie{
+			Name:     "id",
+			Value:    token,
+			HttpOnly: true,
+		})
+		req.Header.Add("username", "johndoe")
+		err = auth.ValidateUser(req, handler.Store)
+		if err != nil {
+			t.Errorf("expected no error code, got %v", err)
+		}
+	})
+}
+
 func initTestDatabase(dbName string) *gorm.DB {
 	mockDatabase, err := db.NewSqliteStorage(dbName)
 	if err != nil {
@@ -1245,6 +1267,7 @@ func initTestHandler() (*Handler, *gorm.DB) {
 	user := types.User{
 		Name:     "John Doe",
 		Email:    "test@example.com",
+		Username: "johndoe",
 		Password: hashedPassword,
 	}
 	artist := types.Artist{
