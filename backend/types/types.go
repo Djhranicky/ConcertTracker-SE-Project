@@ -115,3 +115,71 @@ type ConcertSong struct {
 	Concert Concert `gorm:"foreignKey:ConcertID"`
 	Song    Song    `gorm:"foreignKey:SongID"`
 }
+
+type ArtistResponse struct {
+	Artist         Artist               `json:"artist"`          // Basic artist info (MBID, Name, etc.)
+	ArtistURL      string               `json:"artist_url"`      // Setlist.fm artist URL
+	NumberOfTours  int                  `json:"number_of_tours"` // Count of distinct tours
+	TourNames      []string             `json:"tour_names"`      // List of tour names
+	TotalSetlists  int                  `json:"total_setlists"`  // Total number of setlists found
+	RecentSetlists []RecentSetlistEntry `json:"recent_setlists"` // Most recent setlists (max 20)
+	UpcomingShows  []map[string]string  `json:"upcoming_shows"`  // Scraped upcoming show data
+	TopSongs       []map[string]string  `json:"top_songs"`       // Scraped top song stats
+}
+
+type RecentSetlistEntry struct {
+	ID    string `json:"id"`
+	Date  string `json:"date"` // Format: "02-01-2006"
+	Venue string `json:"venue"`
+	City  string `json:"city"`
+	URL   string `json:"url"`
+}
+type ConcertResponse struct {
+	ID          string         `json:"id"`
+	VersionID   string         `json:"version_id"`
+	EventDate   string         `json:"event_date"`
+	LastUpdated string         `json:"last_updated"`
+	Artist      ArtistMetadata `json:"artist"`
+	Venue       VenueMetadata  `json:"venue"`
+	Tour        *TourMetadata  `json:"tour,omitempty"` // Optional
+	Info        string         `json:"info,omitempty"` // Optional additional info
+	Songs       []SongMetadata `json:"songs"`
+	URL         string         `json:"url"`
+}
+
+type ArtistMetadata struct {
+	MBID string `json:"mbid"`
+	Name string `json:"name"`
+	URL  string `json:"url"`
+}
+
+type VenueMetadata struct {
+	ID   string       `json:"id"`
+	Name string       `json:"name"`
+	City CityMetadata `json:"city"`
+	URL  string       `json:"url"`
+}
+
+type CityMetadata struct {
+	Name    string `json:"name"`
+	State   string `json:"state"`
+	Country string `json:"country"`
+}
+
+type TourMetadata struct {
+	Name string `json:"name"`
+}
+
+type SongMetadata struct {
+	Name  string       `json:"name"`
+	Info  string       `json:"info"`
+	Tape  bool         `json:"tape"`
+	Order uint         `json:"order"`
+	With  *ArtistBrief `json:"with,omitempty"`
+	Cover *ArtistBrief `json:"cover,omitempty"`
+}
+
+type ArtistBrief struct {
+	MBID string `json:"mbid"`
+	Name string `json:"name"`
+}
