@@ -38,6 +38,9 @@ func (h *Handler) RegisterRoutes(router *mux.Router) {
 	router.HandleFunc("/artist", h.handleArtist(baseURL)).Methods("GET", "OPTIONS")
 	router.HandleFunc("/import", h.handleArtistImport(baseURL)).Methods("GET", "OPTIONS")
 	router.HandleFunc("/concert", h.handleConcert(baseURL)).Methods("GET", "OPTIONS")
+	router.HandleFunc("/userpost", h.handleUserPost()).Methods("GET", "POST", "OPTIONS")
+	router.HandleFunc("/like", h.handleUserLike()).Methods("GET", "POST", "OPTIONS")
+	router.HandleFunc("/follow", h.handleUserFollow()).Methods("GET", "POST", "OPTIONS")
 
 	// Serve Swagger UI
 	router.PathPrefix("/swagger/").Handler(httpSwagger.WrapHandler)
@@ -587,5 +590,63 @@ func (h *Handler) handleConcert(inputURL string) http.HandlerFunc {
 		}
 
 		utils.WriteJSON(w, http.StatusOK, response)
+	}
+}
+
+func (h *Handler) handleUserPost() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		utils.SetCORSHeaders(w)
+		if r.Method == "OPTIONS" {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+
+		if r.Method == http.MethodPost {
+			h.UserPostOnPost(w, r)
+		}
+
+		if r.Method == http.MethodGet {
+			h.UserPostOnGet(w, r)
+		}
+	}
+}
+
+func (h *Handler) handleUserLike() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		utils.SetCORSHeaders(w)
+		if r.Method == "OPTIONS" {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+
+		if r.Method == http.MethodPost {
+			h.UserLikeOnPost(w, r)
+			return
+		}
+
+		if r.Method == http.MethodGet {
+			h.UserLikeOnGet(w, r)
+			return
+		}
+	}
+}
+
+func (h *Handler) handleUserFollow() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		utils.SetCORSHeaders(w)
+		if r.Method == http.MethodOptions {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+
+		if r.Method == http.MethodPost {
+			h.UserFollowOnPost(w, r)
+			return
+		}
+
+		if r.Method == http.MethodGet {
+			h.UserFollowOnGet(w, r)
+			return
+		}
 	}
 }
