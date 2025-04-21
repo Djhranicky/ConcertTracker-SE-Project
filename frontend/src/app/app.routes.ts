@@ -15,7 +15,7 @@ export const appRoutes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'login', component: LoginComponent, canActivate: [GuestGuard] },
   { path: 'register', component: SignupComponent, canActivate: [GuestGuard] },
-  { path: 'concerts', component: ConcertComponent },
+  { path: 'concert/:id', component: ConcertComponent },
   { path: 'artist/:name', component: ArtistComponent },
   {
     path: 'user-profile',

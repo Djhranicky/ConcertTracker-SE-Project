@@ -26,14 +26,12 @@ export interface Concert extends Tour {
 export interface Song {
   name: string | null;
   with: string | null;
-  cover: Cover | null;
+  order: number;
   info: string | null;
   tape: boolean;
+  cover: Cover | null;
 }
 export interface Cover {
   mbid: string | null;
   name: string | null;
-  sortName: string | null;
-  disambiguation: string | null;
-  url: string | null;
 }

@@ -46,14 +46,16 @@
         <div class="border border-surface rounded-border m-2 p-2">
           <div class="mb-2">
             <div class="relative mx-auto">
-              <img
-                [src]="
-                  artist.imageUrl ||
-                  'https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small_2x/default-avatar-icon-of-social-media-user-vector.jpg'
-                "
-                [alt]="concert.artist"
-                class="w-full rounded-border"
-              />
+              <a [routerLink]="['/concert/', concert.id]"
+                ><img
+                  [src]="
+                    artist.imageUrl ||
+                    'https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small_2x/default-avatar-icon-of-social-media-user-vector.jpg'
+                  "
+                  [alt]="concert.artist"
+                  class="w-full rounded-border"
+                />
+              </a>
               <p-tag
                 [value]="concert.date | friendlyDate"
                 class="absolute"

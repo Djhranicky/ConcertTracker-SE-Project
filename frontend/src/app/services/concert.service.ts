@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable, map } from 'rxjs';
 import { of } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
-import { Concert, Artist } from '../models/artist.model';
+import { Concert, Artist, Song, Cover } from '../models/artist.model';
 @Injectable({
   providedIn: 'root',
 })
@@ -128,8 +128,40 @@ export class ConcertService {
   private url = 'http://localhost:8080/api';
   constructor(private http: HttpClient) {}
 
-  getConcert(): Concert {
-    return this.concert1;
+  getConcert(id: string): Observable<Concert> {
+    return this.http.get<any>(`${this.url}/concert?id=${id}`).pipe(
+      map((response) => {
+        const location = (response?.venue?.city.name +
+          ', ' +
+          response?.venue?.city.country) as string;
+
+        const setlists: Song[] =
+          (response.songs || []).map((item: any) => ({
+            name: item.name,
+            with: item.with ?? null,
+            order: item.order,
+            info: item.info ?? null,
+            tape: item.tape,
+            cover: item.cover
+              ? {
+                  mbid: item.cover.mbid ?? null,
+                  name: item.cover.name ?? null,
+                }
+              : null,
+          })) ?? [];
+
+        return {
+          id: response.id ?? null,
+          city: location ?? null,
+          date: response.event_date ?? null,
+          venue: response.venue.name ?? null,
+          tour: response.tour.name,
+          artist: response.artist.name,
+          img: null,
+          setlist: setlists,
+        };
+      })
+    );
   }
 
   getArtist(name: string): Observable<Artist> {

@@ -10,7 +10,10 @@ import { Timeline } from 'primeng/timeline';
 import { Concert, Song } from '../../models/artist.model';
 import { ConcertService } from '../../services/concert.service';
 import { Post, PostService } from '../../services/post.service';
-
+import { ActivatedRoute } from '@angular/router';
+import { FriendlyDatePipe } from '../../utils/friendlyDate.pipe';
+import { ProgressSpinner } from 'primeng/progressspinner';
+import { RouterModule } from '@angular/router';
 @Component({
   selector: 'app-concert',
   imports: [
@@ -22,6 +25,9 @@ import { Post, PostService } from '../../services/post.service';
     AvatarModule,
     AvatarGroup,
     Timeline,
+    ProgressSpinner,
+    FriendlyDatePipe,
+    RouterModule,
   ],
   templateUrl: './concert.component.html',
   styleUrl: './concert.component.css',
@@ -33,35 +39,49 @@ export class ConcertComponent {
   day: string;
   month: string;
   year: string;
-  setlist: Song[];
+  loading: boolean = true;
+  id: string;
+
   constructor(
     private concertService: ConcertService,
-    private postService: PostService
+    private postService: PostService,
+    private route: ActivatedRoute
   ) {}
 
-  parseSetlist() {
-    if (this.concert.setlist) {
-      // this.setlist = JSON.parse(this.concert.setlist);
-      // console.log(this.setlist);
-    }
-  }
+  // parseSetlist() {
+  //   if (this.concert.setlist) {
+  //     // this.setlist = JSON.parse(this.concert.setlist);
+  //     // console.log(this.setlist);
+  //   }
+  // }
 
   objectEntries(obj: any): [string, any][] {
     return Object.entries(obj);
   }
 
   ngOnInit() {
-    this.concert = this.concertService.getConcert();
-    let date = this.concert.date!.split(' ');
-    this.month = date[0];
-    this.day = date[1].slice(0, -1);
-    this.year = date[2];
-    this.parseSetlist();
+    this.route.paramMap.subscribe((params) => {
+      this.id = params.get('id') as string;
+      this.loading = true;
+    });
+
+    this.concertService.getConcert(this.id).subscribe((concert) => {
+      this.concert = concert;
+      console.log(this.concert);
+      this.toggleLoading();
+    });
+
+    // this.parseSetlist();
+
     this.postService.getPosts().subscribe((data) => {
       this.posts = data;
       // console.log(this.posts);
     });
 
     // console.log(this.concert);
+  }
+
+  private toggleLoading() {
+    if (this.loading) this.loading = false;
   }
 }

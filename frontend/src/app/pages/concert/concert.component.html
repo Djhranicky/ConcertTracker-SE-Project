@@ -1,20 +1,34 @@
 <app-navbar></app-navbar>
-<body>
+<p-progressSpinner
+  *ngIf="loading"
+  styleClass="custom-spinner"
+></p-progressSpinner>
+<body *ngIf="!loading">
   <p-card class="header">
     <div class="content">
       <div class="details">
-        <img class="header-img" src="{{ concert.img }}" />
+        <img
+          class="header-img"
+          [src]="
+            concert.img ||
+            'https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small_2x/default-avatar-icon-of-social-media-user-vector.jpg'
+          "
+        />
         <div class="date-frame">
-          {{ month }}
+          {{ (concert.date | friendlyDate).split(" ")[0] }}
           <div class="day-box">
-            {{ day }}
+            {{ (concert.date | friendlyDate).split(" ")[1].replace(",", "") }}
           </div>
-          {{ year }}
+          {{ (concert.date | friendlyDate).split(" ")[2] }}
         </div>
         <div>
-          <div class="header-artist">{{ concert.artist }}</div>
+          <a class="header-artist" [routerLink]="['/artist/', concert.artist]">
+            {{ concert.artist }}</a
+          >
           <div class="header-tour">{{ concert.tour }}</div>
-          <div class="header-venue">{{ concert.venue }}</div>
+          <div class="header-venue">
+            {{ concert.venue }}, {{ concert.city }}
+          </div>
         </div>
       </div>
       <div class="stats">
@@ -34,12 +48,26 @@
       <p-card class="setlist">
         <ng-template #title> Setlist </ng-template>
         <ol>
-          <li *ngFor="let song of setlist">
-            <span *ngIf="song.tape">
-              {{ song.info }}
+          <div class="setlistItem" *ngFor="let song of concert.setlist">
+            <span *ngIf="song.tape" style="color: gray" class="tape">
+              <span *ngIf="song.info" class="songInfo"
+                >`({{ song.info }})`</span
+              >
+              <span *ngIf="song.tape" class="pi-headphones"></span><br />
+              <p>{{ song.name }}</p>
             </span>
-            {{ song.name }}
-          </li>
+            <span *ngIf="!song.tape">
+              <li>
+                <p>{{ song.name }}</p>
+                <p style="color: gray" *ngIf="song.info" class="songInfo">
+                  ({{ song.info }})
+                </p>
+                <p style="color: gray" *ngIf="song.cover" class="songInfo">
+                  ({{ song.cover.name }} cover)
+                </p>
+              </li>
+            </span>
+          </div>
         </ol>
       </p-card>
       <p-card class="recent">

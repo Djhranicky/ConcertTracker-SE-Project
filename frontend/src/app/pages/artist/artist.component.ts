@@ -10,10 +10,11 @@ import { TableModule } from 'primeng/table';
 import { ConcertService } from '../../services/concert.service';
 import { Artist, Concert, Song } from '../../models/artist.model';
 import { Post, PostService } from '../../services/post.service';
-import { Observable, map } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
 import { FriendlyDatePipe } from '../../utils/friendlyDate.pipe';
 import { ProgressSpinner } from 'primeng/progressspinner';
+import { RouterModule } from '@angular/router';
+
 @Component({
   selector: 'app-artist',
   imports: [
@@ -27,6 +28,7 @@ import { ProgressSpinner } from 'primeng/progressspinner';
     TableModule,
     FriendlyDatePipe,
     ProgressSpinner,
+    RouterModule,
   ],
   templateUrl: './artist.component.html',
   styleUrl: './artist.component.css',
