@@ -200,6 +200,24 @@ export class UserService {
     }
   ];
 
+  followers: Followers[] = [
+    {
+      userName: "pinky234"
+    },
+    {
+      userName: "reddy123"
+    }
+  ];
+
+  following: Following[] = [
+    {
+      userName: "mrbrown234"
+    },
+    {
+      userName: "heart123"
+    }
+  ]
+
   // Convert concert cards to post format
   convertToPost(concertCard: ConcertCard, type: string = 'review'): Post {
     return {
