@@ -135,14 +135,29 @@ func GetArtistDataFromAPI(url string) (map[string]interface{}, error) {
 		month := s.Find("strong.text-uppercase").Text()
 		year := strings.TrimSpace(s.Find("span.smallDateBlock span").Text())
 		venue := s.Find(".content a span strong").Text()
-		location := s.Find(".content span.subline span").Text()
+		city := s.Find(".content span.subline span").Text()
+
+		dateStr := fmt.Sprintf("%s-%s-%s", day, month, year) // "11-Apr-2025"
+
+		// Parse the date
+		parsedTime, err := time.Parse("02-Jan-2006", dateStr)
+		if err != nil {
+			fmt.Println("Error parsing date:", err)
+			return
+		}
+
+		formattedDate := parsedTime.Format("02-01-2006")
+
+		// Extract the link from the anchor tag
+		url, _ := s.Find(".content a").Attr("href")
+		formattedUrl := "https://www.setlist.fm" + url[2:]
 
 		event := map[string]string{
-			"day":      day,
-			"month":    month,
-			"year":     year,
-			"venue":    venue,
-			"location": location,
+			"city":  city,
+			"date":  formattedDate,
+			"id":    "",
+			"url":   formattedUrl,
+			"venue": venue,
 		}
 
 		result["upcoming"] = append(result["upcoming"].([]map[string]string), event)
