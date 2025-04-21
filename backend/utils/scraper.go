@@ -1,18 +1,17 @@
-package main
+package utils
 
 import (
 	"context"
 	"log"
 	"strings"
 
-	"github.com/chromedp/chromedp"
 	"github.com/PuerkitoBio/goquery"
+	"github.com/chromedp/chromedp"
 )
 
-func main(){
+func main() {
 	// url := `https://www.setlist.fm/setlists/billie-eilish-1bc3b540.html`
 	url := `https://www.setlist.fm/setlists/oasis-bd6bd7e.html`
-
 
 	ctx, cancel := chromedp.NewContext(context.Background())
 	defer cancel()
@@ -31,7 +30,7 @@ func main(){
 	}
 
 	upcomingHTML, err := goquery.NewDocumentFromReader(strings.NewReader(upcoming))
-	
+
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -43,11 +42,11 @@ func main(){
 		id := ""
 
 		url, exists := s.Find(".content a").Attr("href")
-		
-		if exists{
+
+		if exists {
 			trimmed := strings.TrimSuffix(url, ".html")
 			split := strings.Split(trimmed, "-")
-			id = split[len(split) - 1]
+			id = split[len(split)-1]
 		}
 
 		venue := s.Find(".content a span strong").Text()
@@ -57,7 +56,7 @@ func main(){
 	})
 
 	statsHTML, err := goquery.NewDocumentFromReader(strings.NewReader(stats))
-	
+
 	if err != nil {
 		log.Fatal(err)
 	}
