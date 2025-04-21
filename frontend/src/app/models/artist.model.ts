@@ -12,14 +12,16 @@ export interface Artist {
 
 export interface Tour {
   artist: string;
-  img: string;
+  img: string | null;
   tour: string;
 }
 
 export interface Concert extends Tour {
+  city: string | null;
   date: string | null;
+  id: string | null;
   venue: string | null;
-  setlist: string | null;
+  setlist: Song[] | null;
 }
 export interface Song {
   name: string | null;

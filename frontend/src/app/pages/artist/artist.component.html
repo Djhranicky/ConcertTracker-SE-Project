@@ -3,7 +3,13 @@
   <p-card class="header">
     <div class="content">
       <div class="details">
-        <img class="header-img" src="{{ artist.imageUrl }}" />
+        <img
+          class="header-img"
+          [src]="
+            artist.imageUrl ||
+            'https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small_2x/default-avatar-icon-of-social-media-user-vector.jpg'
+          "
+        />
 
         <div>
           <div class="header-artist">{{ artist.name }}</div>
@@ -13,11 +19,11 @@
       </div>
       <div class="stats-frame">
         <div class="stat-frame">
-          <div class="number-box">254</div>
+          <div class="number-box">{{ artist.showsCount }}</div>
           shows
         </div>
         <div class="stat-frame">
-          <div class="number-box">04</div>
+          <div class="number-box">{{ artist.toursCount }}</div>
           tours
         </div>
       </div>
@@ -26,7 +32,7 @@
   <p-card class="recent">
     <ng-template #title> Recent Shows </ng-template>
     <p-carousel
-      [value]="concerts"
+      [value]="artist?.recentSetlists?.slice(0, 5) || []"
       [numVisible]="5"
       [numScroll]="1"
       [circular]="false"
@@ -37,12 +43,15 @@
           <div class="mb-2">
             <div class="relative mx-auto">
               <img
-                src="{{ concert.img }}"
+                [src]="
+                  artist.imageUrl ||
+                  'https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small_2x/default-avatar-icon-of-social-media-user-vector.jpg'
+                "
                 [alt]="concert.artist"
                 class="w-full rounded-border"
               />
               <p-tag
-                [value]="concert.date"
+                [value]="concert.date | friendlyDate"
                 class="absolute"
                 severity="info"
                 [ngStyle]="{ 'left.px': 5, 'bottom.px': 10 }"
@@ -54,7 +63,9 @@
               {{ concert.tour }}
             </div>
           </div>
-          <div class="font-small text-xs">{{ concert.venue }}</div>
+          <div class="font-small text-xs">
+            {{ concert.venue }}, {{ concert.city }}
+          </div>
         </div>
       </ng-template>
     </p-carousel>

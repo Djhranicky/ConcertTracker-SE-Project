@@ -41,7 +41,7 @@ export class ConcertComponent {
 
   parseSetlist() {
     if (this.concert.setlist) {
-      this.setlist = JSON.parse(this.concert.setlist);
+      // this.setlist = JSON.parse(this.concert.setlist);
       // console.log(this.setlist);
     }
   }

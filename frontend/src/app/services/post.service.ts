@@ -29,7 +29,7 @@ export class PostService {
     avatar: 'imgurl',
     postDate: 'Feb 20, 2025',
     date: 'Feb 19, 2025',
-    venue: 'Brisbane Entertainment Centre, Brisbane, Australia',
+    venue: 'Brisbane Entertainment Centre',
     artist: 'Billie Eilish',
     setlist: null,
     tour: 'HIT ME HARD AND SOFT',
@@ -39,6 +39,8 @@ export class PostService {
     rating: 4,
     likes: 10,
     comments: 3,
+    city: 'Brisbane, Australia',
+    id: '',
   };
 
   post2: Post = {
@@ -57,6 +59,8 @@ export class PostService {
     rating: 4,
     likes: 2,
     comments: 0,
+    city: '',
+    id: '',
   };
 
   post3: Post = {
@@ -65,7 +69,7 @@ export class PostService {
     avatar: 'imgurl',
     postDate: 'Feb 20, 2025',
     date: 'Feb 19, 2025',
-    venue: 'Brisbane Entertainment Centre, Brisbane, Australia',
+    venue: 'Brisbane Entertainment Centre',
     artist: 'Billie Eilish',
     tour: 'HIT ME HARD AND SOFT',
     img: 'https://res.cloudinary.com/hits-photos-archive/image/upload/v1736890770/legacy-migration/legacy-hitsdd_photo_gal__photo_1891402125.png',
@@ -76,6 +80,8 @@ export class PostService {
     rating: 5,
     likes: 2,
     comments: 0,
+    city: 'Brisbane, Australia',
+    id: '',
   };
 
   data = {

@@ -10,7 +10,9 @@ import { TableModule } from 'primeng/table';
 import { ConcertService } from '../../services/concert.service';
 import { Artist, Concert, Song } from '../../models/artist.model';
 import { Post, PostService } from '../../services/post.service';
-
+import { Observable, map } from 'rxjs';
+import { ActivatedRoute } from '@angular/router';
+import { FriendlyDatePipe } from '../../utils/friendlyDate.pipe';
 @Component({
   selector: 'app-artist',
   imports: [
@@ -22,6 +24,7 @@ import { Post, PostService } from '../../services/post.service';
     CarouselModule,
     Tag,
     TableModule,
+    FriendlyDatePipe,
   ],
   templateUrl: './artist.component.html',
   styleUrl: './artist.component.css',
@@ -29,7 +32,7 @@ import { Post, PostService } from '../../services/post.service';
 })
 export class ArtistComponent implements OnInit {
   @Input() artist: Artist;
-
+  name: string;
   concerts: Concert[] = [];
   upcoming: Concert[] = [];
   responsiveOptions: any[] | undefined;
@@ -38,11 +41,20 @@ export class ArtistComponent implements OnInit {
 
   constructor(
     private concertService: ConcertService,
-    private postService: PostService
+    private postService: PostService,
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit() {
-    this.artist = this.concertService.getArtist();
+    this.route.paramMap.subscribe((params) => {
+      this.name = params.get('name') as string;
+    });
+
+    this.concertService.getArtist(this.name).subscribe((artist) => {
+      this.artist = artist;
+      console.log(this.artist);
+    });
+
     this.concertService.getRecentConcerts().subscribe((concerts) => {
       this.concerts = concerts;
     });
