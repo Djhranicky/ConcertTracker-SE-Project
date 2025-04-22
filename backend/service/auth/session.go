@@ -3,6 +3,7 @@ package auth
 import (
 	"errors"
 	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/djhranicky/ConcertTracker-SE-Project/types"
@@ -14,19 +15,26 @@ func SetJWTCookie(w http.ResponseWriter, token string) {
 	cookie := http.Cookie{
 		Name:     cookieName,
 		Value:    token,
+		Path:     "/",
 		SameSite: http.SameSiteNoneMode,
 		Secure:   true,
+		HttpOnly: true,
+		MaxAge:   3600 * 24,
 	}
 
 	http.SetCookie(w, &cookie)
 }
 
 func GetJWTCookie(r *http.Request) (*http.Cookie, error) {
+	for _, cookie := range r.Cookies() {
+		log.Printf("%v=%v\n", cookie.Name, cookie.Value)
+	}
 	cookie, err := r.Cookie(cookieName)
 	if err != nil {
 		var returnErr error
 		switch {
 		case errors.Is(err, http.ErrNoCookie):
+			log.Println("No cookie :(")
 			returnErr = err
 		default:
 			returnErr = fmt.Errorf("server error getting JWT Cookie")
