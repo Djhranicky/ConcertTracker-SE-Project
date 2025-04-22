@@ -242,4 +242,9 @@ export class ConcertService {
         })
       );
   }
+
+  runFullImport(mbid: string) {
+    let full: boolean = true;
+    return this.http.get(`${this.url}/import`, { params: { mbid, full } });
+  }
 }

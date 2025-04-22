@@ -15,6 +15,10 @@ import { ActivatedRoute } from '@angular/router';
 import { FriendlyDatePipe } from '../../utils/friendlyDate.pipe';
 import { ProgressSpinner } from 'primeng/progressspinner';
 import { RouterModule } from '@angular/router';
+import { Button } from 'primeng/button';
+import { Location } from '@angular/common';
+import { forkJoin, of } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-artist',
@@ -30,6 +34,7 @@ import { RouterModule } from '@angular/router';
     FriendlyDatePipe,
     ProgressSpinner,
     RouterModule,
+    Button,
   ],
   templateUrl: './artist.component.html',
   styleUrl: './artist.component.css',
@@ -44,37 +49,73 @@ export class ArtistComponent implements OnInit {
   mostPlayed: [string, string][] = [];
   loading: boolean = true;
   loadingCount = 0;
+  loadingTarget = 1;
   stats: [string, unknown][];
+  mbid: string;
+  recent: (string | null)[] | undefined;
+  tours: string[] = [];
 
   constructor(
     private concertService: ConcertService,
     private postService: PostService,
+    private location: Location,
     private route: ActivatedRoute
   ) {}
 
   ngOnInit() {
     this.route.paramMap.subscribe((params) => {
       this.name = params.get('name') as string;
-
       this.loading = true;
     });
 
     this.concertService.getArtist(this.name).subscribe((artist) => {
       this.artist = artist;
-      console.log(this.artist);
-      this.toggleLoading();
+      this.mbid = artist.MBID;
+      const recentIds = artist.recentSetlists?.map((item) => item.id);
+      console.log('recent', recentIds);
+
+      if (recentIds && recentIds.length > 0) {
+        const concertObservables = recentIds.map((id) => {
+          if (!id) return of('');
+          return this.concertService.getConcert(id).pipe(
+            map((concert) => concert?.tour || ''),
+            catchError(() => of(''))
+          );
+        });
+
+        forkJoin(concertObservables).subscribe((tourList) => {
+          this.tours = tourList;
+
+          // Now update each recentSetlist with its corresponding tour
+          this.artist.recentSetlists?.forEach((setlist, index) => {
+            setlist.tour = this.tours[index];
+          });
+
+          console.log(this.artist, this.tours);
+          this.toggleLoading();
+        });
+      } else {
+        this.toggleLoading();
+      }
     });
 
-    this.concertService.getUpcomingConcerts(this.name).subscribe((upcoming) => {
-      this.upcoming = upcoming;
-      this.toggleLoading();
-    });
+    if (
+      !(this.artist?.showsCount === 20 && this.artist?.upcomingShows === null)
+    ) {
+      this.loadingTarget = 3;
+      this.concertService
+        .getUpcomingConcerts(this.name)
+        .subscribe((upcoming) => {
+          this.upcoming = upcoming;
+          this.toggleLoading();
+        });
 
-    this.concertService.getStats(this.name).subscribe((stats) => {
-      this.stats = Object.entries(stats);
-      console.log('stats', this.stats);
-      this.toggleLoading();
-    });
+      this.concertService.getStats(this.name).subscribe((stats) => {
+        this.stats = Object.entries(stats);
+        console.log('stats', this.stats);
+        this.toggleLoading();
+      });
+    }
 
     this.responsiveOptions = [
       {
@@ -100,8 +141,17 @@ export class ArtistComponent implements OnInit {
     ];
   }
 
+  runImport() {
+    if (!this.mbid) return;
+
+    this.concertService.runFullImport(this.mbid).subscribe({
+      next: () => window.location.reload(),
+      error: (err) => console.error('Import failed:', err),
+    });
+  }
+
   private toggleLoading() {
     this.loadingCount++;
-    if (this.loadingCount === 3) this.loading = false;
+    if (this.loadingCount === this.loadingTarget) this.loading = false;
   }
 }

@@ -18,7 +18,14 @@
         <div>
           <div class="header-artist">{{ artist.name }}</div>
           <div class="header-tour"></div>
-          <div class="header-venue">Artist bio</div>
+          <div class="header-venue">
+            <p-button
+              class="import"
+              label="import"
+              icon="pi pi-plus-circle"
+              (click)="runImport()"
+            ></p-button>
+          </div>
         </div>
       </div>
       <div class="stats-frame">
@@ -76,7 +83,10 @@
       </ng-template>
     </p-carousel>
   </p-card>
-  <div class="grid">
+  <div
+    class="grid"
+    *ngIf="!(artist.showsCount === 20 && artist.upcomingShows === null)"
+  >
     <div class="upcoming">
       <p-card>
         <ng-template #title> Upcoming Shows </ng-template>
