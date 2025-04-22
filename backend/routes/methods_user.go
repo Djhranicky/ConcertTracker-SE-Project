@@ -36,7 +36,7 @@ func (h *Handler) UserPostOnPost(w http.ResponseWriter, r *http.Request) {
 
 	// Check for duplicate ATTENDED and REVIEW posts
 	if payload.Type == "ATTENDED" || payload.Type == "REVIEW" {
-		exists, err := h.Store.UserPostExists(payload.AuthorID, payload.ConcertID, "ATTENDED")
+		exists, err := h.Store.UserPostExists(payload.AuthorID, payload.ExternalConcertID, "ATTENDED")
 		if err != nil {
 			utils.WriteError(w, http.StatusInternalServerError, err)
 			return
