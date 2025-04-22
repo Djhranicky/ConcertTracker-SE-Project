@@ -16,6 +16,7 @@ export class AuthenticationService {
   register(email: string, username: string, password: string): Observable<any> {
     const body = {
       email: email,
+      username: username,
       name: username,
       password: password,
     };
