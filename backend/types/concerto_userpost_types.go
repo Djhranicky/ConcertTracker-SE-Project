@@ -41,7 +41,7 @@ type UserPostGetResponse struct {
 }
 
 type UserFollowGetResponse struct {
-	UserName string `json:"userName"`
+	Username string `json:"username"`
 }
 
 type UserPost struct {

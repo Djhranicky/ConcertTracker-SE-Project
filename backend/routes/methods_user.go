@@ -60,16 +60,16 @@ func (h *Handler) UserPostOnPost(w http.ResponseWriter, r *http.Request) {
 // @Description Gets public posts from a user's followed network, sorted with most recent first
 // @Tags User
 // @Produce json
-// @Param userID query string true "ID of logged in user"
+// @Param username query string true "username of logged in user"
 // @Param p query string false "page number of posts (sets of 20)"
 // @Success 200 {object} types.UserPostGetResponse "Activity from user's followed network"
 // @Failure 400 {string} string "Error describing failure"
 // @Failure 500 {string} string "Internal server error"
 // @Router /userpost [get]
 func (h *Handler) UserPostOnGet(w http.ResponseWriter, r *http.Request) {
-	userIDString := r.URL.Query().Get("userID")
-	if userIDString == "" {
-		utils.WriteError(w, http.StatusBadRequest, errors.New("userID not provided"))
+	username := r.URL.Query().Get("username")
+	if username == "" {
+		utils.WriteError(w, http.StatusBadRequest, errors.New("username not provided"))
 		return
 	}
 
@@ -79,13 +79,7 @@ func (h *Handler) UserPostOnGet(w http.ResponseWriter, r *http.Request) {
 		pageNumber = 0
 	}
 
-	userID, err := strconv.ParseInt(userIDString, 10, 64)
-	if err != nil {
-		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("bad userID provided %v", userIDString))
-		return
-	}
-
-	posts, err := h.Store.GetActivityFeed(userID, pageNumber)
+	posts, err := h.Store.GetActivityFeed(username, pageNumber)
 	if err != nil {
 		utils.WriteError(w, http.StatusInternalServerError, err)
 		return
@@ -198,9 +192,9 @@ func (h *Handler) UserFollowOnPost(w http.ResponseWriter, r *http.Request) {
 // @Failure 500 {string} string "Internal server error"
 // @Router /follow [get]
 func (h *Handler) UserFollowOnGet(w http.ResponseWriter, r *http.Request) {
-	userIDString := r.URL.Query().Get("userID")
-	if userIDString == "" {
-		utils.WriteError(w, http.StatusBadRequest, errors.New("userID not provided"))
+	username := r.URL.Query().Get("username")
+	if username == "" {
+		utils.WriteError(w, http.StatusBadRequest, errors.New("username not provided"))
 		return
 	}
 
@@ -216,13 +210,7 @@ func (h *Handler) UserFollowOnGet(w http.ResponseWriter, r *http.Request) {
 		pageNumber = 0
 	}
 
-	userID, err := strconv.ParseInt(userIDString, 10, 64)
-	if err != nil {
-		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("bad userID provided: %v", userIDString))
-		return
-	}
-
-	users, err := h.Store.GetFollowersOrFollowing(userID, followType, pageNumber)
+	users, err := h.Store.GetFollowersOrFollowing(username, followType, pageNumber)
 	if err != nil {
 		utils.WriteError(w, http.StatusInternalServerError, err)
 		return
