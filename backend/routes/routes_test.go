@@ -1354,3 +1354,318 @@ func assertEqual(t *testing.T, a interface{}, b interface{}) {
 		t.Errorf("expected %v (type %v), received %v (type %v)", a, reflect.TypeOf(a), b, reflect.TypeOf(b))
 	}
 }
+
+func TestUserInfoRoute(t *testing.T) {
+	utils.Init()
+	handler, database := initTestHandler()
+	defer destroyDatabase(database)
+
+	// Create a test user with unique credentials
+	uniqueEmail := "unique_test_user@example.com"
+	uniqueUsername := "unique_testuser"
+	testUser := types.User{
+		Name:     "Unique Test User",
+		Username: uniqueUsername,
+		Email:    uniqueEmail,
+		Password: "hashedpassword",
+	}
+	_ = handler.Store.CreateUser(testUser)
+
+	t.Run("should fail without authorization", func(t *testing.T) {
+		payload := map[string]string{
+			"username": uniqueUsername,
+		}
+		marshalled, _ := json.Marshal(payload)
+
+		req, err := http.NewRequest(http.MethodGet, "/userinfo", bytes.NewBuffer(marshalled))
+		if err != nil {
+			t.Fatal(err)
+		}
+		// No auth token added
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/userinfo", handler.handleUserInfo)
+
+		router.ServeHTTP(rr, req)
+
+		assertEqual(t, http.StatusUnauthorized, rr.Code)
+	})
+
+	t.Run("should fail with no username in payload", func(t *testing.T) {
+		payload := map[string]string{}
+		marshalled, _ := json.Marshal(payload)
+
+		req, err := http.NewRequest(http.MethodGet, "/userinfo", bytes.NewBuffer(marshalled))
+		if err != nil {
+			t.Fatal(err)
+		}
+		addDefaultValidation(req)
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/userinfo", handler.handleUserInfo)
+
+		router.ServeHTTP(rr, req)
+
+		assertEqual(t, http.StatusBadRequest, rr.Code)
+	})
+
+	t.Run("should fail with empty username", func(t *testing.T) {
+		payload := map[string]string{
+			"username": "",
+		}
+		marshalled, _ := json.Marshal(payload)
+
+		req, err := http.NewRequest(http.MethodGet, "/userinfo", bytes.NewBuffer(marshalled))
+		if err != nil {
+			t.Fatal(err)
+		}
+		addDefaultValidation(req)
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/userinfo", handler.handleUserInfo)
+
+		router.ServeHTTP(rr, req)
+
+		assertEqual(t, http.StatusBadRequest, rr.Code)
+	})
+
+	t.Run("should fail with non-existent username", func(t *testing.T) {
+		payload := map[string]string{
+			"username": "nonexistentuser_123456",
+		}
+		marshalled, _ := json.Marshal(payload)
+
+		req, err := http.NewRequest(http.MethodGet, "/userinfo", bytes.NewBuffer(marshalled))
+		if err != nil {
+			t.Fatal(err)
+		}
+		addDefaultValidation(req)
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/userinfo", handler.handleUserInfo)
+
+		router.ServeHTTP(rr, req)
+
+		assertEqual(t, http.StatusNotFound, rr.Code)
+	})
+
+	t.Run("should succeed with valid username", func(t *testing.T) {
+		payload := map[string]string{
+			"username": uniqueUsername,
+		}
+		marshalled, _ := json.Marshal(payload)
+
+		req, err := http.NewRequest(http.MethodGet, "/userinfo", bytes.NewBuffer(marshalled))
+		if err != nil {
+			t.Fatal(err)
+		}
+		addDefaultValidation(req)
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/userinfo", handler.handleUserInfo)
+
+		router.ServeHTTP(rr, req)
+
+		assertEqual(t, http.StatusOK, rr.Code)
+
+		// Check response contains expected fields
+		var response map[string]string
+		err = json.Unmarshal(rr.Body.Bytes(), &response)
+		if err != nil {
+			t.Fatalf("Failed to parse response JSON: %v", err)
+		}
+
+		if response["name"] != "Unique Test User" {
+			t.Errorf("Expected name 'Unique Test User', got '%s'", response["name"])
+		}
+		if response["email"] != uniqueEmail {
+			t.Errorf("Expected email '%s', got '%s'", uniqueEmail, response["email"])
+		}
+	})
+
+	t.Run("should handle OPTIONS request correctly", func(t *testing.T) {
+		req, err := http.NewRequest(http.MethodOptions, "/userinfo", nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/userinfo", handler.handleUserInfo)
+
+		router.ServeHTTP(rr, req)
+
+		assertEqual(t, http.StatusOK, rr.Code)
+	})
+}
+
+func TestUsersRoute(t *testing.T) {
+	utils.Init()
+	handler, database := initTestHandler()
+	defer destroyDatabase(database)
+
+	// First, get the current count of users to use as a baseline
+	var initialUserCount int
+
+	// Get all users first to know what we're starting with
+	existingUsers, _ := handler.Store.GetAllUsers()
+	initialUserCount = len(existingUsers)
+
+	t.Run("should fail without authorization", func(t *testing.T) {
+		req, err := http.NewRequest(http.MethodGet, "/users", nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+		// No auth token added
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/users", handler.handleUserList)
+
+		router.ServeHTTP(rr, req)
+
+		assertEqual(t, http.StatusUnauthorized, rr.Code)
+	})
+
+	t.Run("should return current users list", func(t *testing.T) {
+		req, err := http.NewRequest(http.MethodGet, "/users", nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+		addDefaultValidation(req)
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/users", handler.handleUserList)
+
+		router.ServeHTTP(rr, req)
+
+		assertEqual(t, http.StatusOK, rr.Code)
+
+		var response map[string]interface{}
+		err = json.Unmarshal(rr.Body.Bytes(), &response)
+		if err != nil {
+			t.Fatalf("Failed to parse response JSON: %v", err)
+		}
+
+		usernames, ok := response["usernames"].([]interface{})
+		if !ok {
+			t.Fatalf("Expected usernames field to be array, got %T", response["usernames"])
+		}
+
+		count, ok := response["count"].(float64)
+		if !ok {
+			t.Fatalf("Expected count field to be number, got %T", response["count"])
+		}
+
+		if int(count) != len(usernames) {
+			t.Errorf("Count %v doesn't match actual number of usernames %v", count, len(usernames))
+		}
+
+		if int(count) != initialUserCount {
+			t.Errorf("Expected %d users, got %v", initialUserCount, count)
+		}
+	})
+
+	t.Run("should return updated list after adding new users", func(t *testing.T) {
+		// Create test users with unique credentials
+		testUsers := []types.User{
+			{
+				Name:     "Test User One",
+				Username: "test_user1",
+				Email:    "test_user1@example.com",
+				Password: "hashedpassword1",
+			},
+			{
+				Name:     "Test User Two",
+				Username: "test_user2",
+				Email:    "test_user2@example.com",
+				Password: "hashedpassword2",
+			},
+		}
+
+		for _, user := range testUsers {
+			err := handler.Store.CreateUser(user)
+			if err != nil {
+				t.Fatalf("Failed to create test user: %v", err)
+			}
+		}
+
+		req, err := http.NewRequest(http.MethodGet, "/users", nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+		addDefaultValidation(req)
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/users", handler.handleUserList)
+
+		router.ServeHTTP(rr, req)
+
+		assertEqual(t, http.StatusOK, rr.Code)
+
+		var response map[string]interface{}
+		err = json.Unmarshal(rr.Body.Bytes(), &response)
+		if err != nil {
+			t.Fatalf("Failed to parse response JSON: %v", err)
+		}
+
+		usernames, ok := response["usernames"].([]interface{})
+		if !ok {
+			t.Fatalf("Expected usernames field to be array, got %T", response["usernames"])
+		}
+
+		count, ok := response["count"].(float64)
+		if !ok {
+			t.Fatalf("Expected count field to be number, got %T", response["count"])
+		}
+
+		expectedCount := initialUserCount + len(testUsers)
+		if int(count) != expectedCount {
+			t.Errorf("Expected %d users, got %v", expectedCount, count)
+		}
+
+		// Check if all our new test users are in the response
+		foundUsers := make(map[string]bool)
+		for _, username := range usernames {
+			foundUsers[username.(string)] = true
+		}
+
+		for _, user := range testUsers {
+			if !foundUsers[user.Name] {
+				t.Errorf("Expected user %s in response, but not found", user.Name)
+			}
+		}
+	})
+
+	t.Run("should handle OPTIONS request correctly", func(t *testing.T) {
+		req, err := http.NewRequest(http.MethodOptions, "/users", nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/users", handler.handleUserList)
+
+		router.ServeHTTP(rr, req)
+
+		assertEqual(t, http.StatusOK, rr.Code)
+	})
+}
