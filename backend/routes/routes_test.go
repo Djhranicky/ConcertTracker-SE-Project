@@ -544,12 +544,12 @@ func TestUserServiceHandlePost(t *testing.T) {
 		userPostID := uint(1)
 		isPublic := true
 		payload := &types.UserPostCreatePayload{
-			Text:       &text,
-			Type:       "WISHLIST",
-			Rating:     &rating,
-			UserPostID: &userPostID,
-			IsPublic:   &isPublic,
-			ConcertID:  1,
+			Text:              &text,
+			Type:              "WISHLIST",
+			Rating:            &rating,
+			UserPostID:        &userPostID,
+			IsPublic:          &isPublic,
+			ExternalConcertID: "test",
 		}
 		marshalled, _ := json.Marshal(payload)
 
@@ -575,12 +575,12 @@ func TestUserServiceHandlePost(t *testing.T) {
 		userPostID := uint(1)
 		isPublic := true
 		payload := &types.UserPostCreatePayload{
-			AuthorID:   1,
-			Text:       &text,
-			Rating:     &rating,
-			UserPostID: &userPostID,
-			IsPublic:   &isPublic,
-			ConcertID:  1,
+			AuthorUsername:    "johndoe",
+			Text:              &text,
+			Rating:            &rating,
+			UserPostID:        &userPostID,
+			IsPublic:          &isPublic,
+			ExternalConcertID: "test",
 		}
 		marshalled, _ := json.Marshal(payload)
 
@@ -605,12 +605,12 @@ func TestUserServiceHandlePost(t *testing.T) {
 		rating := uint(1)
 		userPostID := uint(1)
 		payload := &types.UserPostCreatePayload{
-			AuthorID:   1,
-			Text:       &text,
-			Type:       "WISHLIST",
-			Rating:     &rating,
-			UserPostID: &userPostID,
-			ConcertID:  1,
+			AuthorUsername:    "johndoe",
+			Text:              &text,
+			Type:              "WISHLIST",
+			Rating:            &rating,
+			UserPostID:        &userPostID,
+			ExternalConcertID: "test",
 		}
 		marshalled, _ := json.Marshal(payload)
 
@@ -636,12 +636,12 @@ func TestUserServiceHandlePost(t *testing.T) {
 		userPostID := uint(1)
 		isPublic := true
 		payload := &types.UserPostCreatePayload{
-			AuthorID:   1,
-			Text:       &text,
-			Type:       "WISHLIST",
-			Rating:     &rating,
-			UserPostID: &userPostID,
-			IsPublic:   &isPublic,
+			AuthorUsername: "johndoe",
+			Text:           &text,
+			Type:           "WISHLIST",
+			Rating:         &rating,
+			UserPostID:     &userPostID,
+			IsPublic:       &isPublic,
 		}
 		marshalled, _ := json.Marshal(payload)
 
@@ -667,13 +667,13 @@ func TestUserServiceHandlePost(t *testing.T) {
 		userPostID := uint(1)
 		isPublic := true
 		payload := &types.UserPostCreatePayload{
-			AuthorID:   1,
-			Text:       &text,
-			Type:       "WRONG_TYPE",
-			Rating:     &rating,
-			UserPostID: &userPostID,
-			IsPublic:   &isPublic,
-			ConcertID:  1,
+			AuthorUsername:    "johndoe",
+			Text:              &text,
+			Type:              "WRONG_TYPE",
+			Rating:            &rating,
+			UserPostID:        &userPostID,
+			IsPublic:          &isPublic,
+			ExternalConcertID: "test",
 		}
 		marshalled, _ := json.Marshal(payload)
 
@@ -699,13 +699,13 @@ func TestUserServiceHandlePost(t *testing.T) {
 		userPostID := uint(1)
 		isPublic := true
 		payload := &types.UserPostCreatePayload{
-			AuthorID:   1,
-			Text:       &text,
-			Type:       "WISHLIST",
-			Rating:     &rating,
-			UserPostID: &userPostID,
-			IsPublic:   &isPublic,
-			ConcertID:  1,
+			AuthorUsername:    "johndoe",
+			Text:              &text,
+			Type:              "WISHLIST",
+			Rating:            &rating,
+			UserPostID:        &userPostID,
+			IsPublic:          &isPublic,
+			ExternalConcertID: "test",
 		}
 		marshalled, _ := json.Marshal(payload)
 
@@ -784,7 +784,7 @@ func TestUserServiceHandleLike(t *testing.T) {
 
 	t.Run("should fail if UserPostID not included", func(t *testing.T) {
 		payload := &types.UserLikePostPayload{
-			UserID: 1,
+			Username: "johndoe",
 		}
 		marshalled, _ := json.Marshal(payload)
 
@@ -828,7 +828,7 @@ func TestUserServiceHandleLike(t *testing.T) {
 
 	t.Run("should succeed when user first likes a post", func(t *testing.T) {
 		payload := &types.UserLikePostPayload{
-			UserID:     1,
+			Username:   "johndoe",
 			UserPostID: 1,
 		}
 		marshalled, _ := json.Marshal(payload)
@@ -851,7 +851,7 @@ func TestUserServiceHandleLike(t *testing.T) {
 
 	t.Run("should succeed when user removes like from post", func(t *testing.T) {
 		payload := &types.UserLikePostPayload{
-			UserID:     1,
+			Username:   "johndoe",
 			UserPostID: 1,
 		}
 		marshalled, _ := json.Marshal(payload)
@@ -874,7 +874,7 @@ func TestUserServiceHandleLike(t *testing.T) {
 
 	t.Run("should succeed when user likes a post again", func(t *testing.T) {
 		payload := &types.UserLikePostPayload{
-			UserID:     1,
+			Username:   "johndoe",
 			UserPostID: 1,
 		}
 		marshalled, _ := json.Marshal(payload)
@@ -954,7 +954,7 @@ func TestUserServiceHandleFollow(t *testing.T) {
 
 	t.Run("should fail if FollowedUserID not included", func(t *testing.T) {
 		payload := &types.UserFollowPayload{
-			UserID: 1,
+			Username: "johndoe",
 		}
 		marshalled, _ := json.Marshal(payload)
 
@@ -998,7 +998,7 @@ func TestUserServiceHandleFollow(t *testing.T) {
 
 	t.Run("should succeed when user first follows another user", func(t *testing.T) {
 		payload := &types.UserFollowPayload{
-			UserID:         1,
+			Username:       "johndoe",
 			FollowedUserID: 1,
 		}
 		marshalled, _ := json.Marshal(payload)
@@ -1021,7 +1021,7 @@ func TestUserServiceHandleFollow(t *testing.T) {
 
 	t.Run("should succeed when user unfollows another user", func(t *testing.T) {
 		payload := &types.UserFollowPayload{
-			UserID:         1,
+			Username:       "johndoe",
 			FollowedUserID: 1,
 		}
 		marshalled, _ := json.Marshal(payload)
@@ -1044,7 +1044,7 @@ func TestUserServiceHandleFollow(t *testing.T) {
 
 	t.Run("should succeed when user follows another user again", func(t *testing.T) {
 		payload := &types.UserFollowPayload{
-			UserID:         1,
+			Username:       "johndoe",
 			FollowedUserID: 1,
 		}
 		marshalled, _ := json.Marshal(payload)
@@ -1269,90 +1269,6 @@ func TestSessionMethods(t *testing.T) {
 			t.Errorf("expected no error code, got %v", err)
 		}
 	})
-}
-
-func addDefaultValidation(req *http.Request) {
-	err := godotenv.Load("./.env")
-	if err != nil {
-		log.Fatal("cannot load env file")
-	}
-	secret := []byte(os.Getenv("JWT_SECRET"))
-	token, _ := auth.CreateJWT(secret, 1, 10)
-	req.AddCookie(&http.Cookie{
-		Name:     "id",
-		Value:    token,
-		HttpOnly: true,
-	})
-	req.Header.Add("username", "johndoe")
-}
-
-func initTestDatabase(dbName string) *gorm.DB {
-	mockDatabase, err := db.NewSqliteStorage(dbName)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	mockDatabase.AutoMigrate(
-		&types.User{},
-		&types.Artist{},
-		&types.Tour{},
-		&types.Venue{},
-		&types.Concert{},
-		&types.Song{},
-		&types.ConcertSong{},
-		&types.UserPost{},
-		&types.Likes{},
-		&types.Follow{},
-	)
-
-	return mockDatabase
-}
-
-func initTestHandler() (*Handler, *gorm.DB) {
-	database := initTestDatabase("test.db")
-	userStore := db.NewStore(database)
-	handler := NewHandler(userStore)
-
-	hashedPassword, err := auth.HashPassword("test")
-	if err != nil {
-		log.Fatal(err)
-	}
-	user := types.User{
-		Name:     "John Doe",
-		Email:    "test@example.com",
-		Username: "johndoe",
-		Password: hashedPassword,
-	}
-	artist := types.Artist{
-		MBID: "mbid1",
-		Name: "Artist1",
-	}
-
-	database.Create(&user)
-	database.Create(&artist)
-
-	return handler, database
-}
-
-func destroyDatabase(database *gorm.DB) {
-	database.Migrator().DropTable(
-		&types.User{},
-		&types.Artist{},
-		&types.Tour{},
-		&types.Venue{},
-		&types.Concert{},
-		&types.Song{},
-		&types.ConcertSong{},
-		&types.UserPost{},
-		&types.Likes{},
-		&types.Follow{},
-	)
-}
-
-func assertEqual(t *testing.T, a interface{}, b interface{}) {
-	if a != b {
-		t.Errorf("expected %v (type %v), received %v (type %v)", a, reflect.TypeOf(a), b, reflect.TypeOf(b))
-	}
 }
 
 func TestUserInfoRoute(t *testing.T) {
@@ -1668,4 +1584,88 @@ func TestUsersRoute(t *testing.T) {
 
 		assertEqual(t, http.StatusOK, rr.Code)
 	})
+}
+
+func addDefaultValidation(req *http.Request) {
+	err := godotenv.Load("./.env")
+	if err != nil {
+		log.Fatal("cannot load env file")
+	}
+	secret := []byte(os.Getenv("JWT_SECRET"))
+	token, _ := auth.CreateJWT(secret, 1, 10)
+	req.AddCookie(&http.Cookie{
+		Name:     "id",
+		Value:    token,
+		HttpOnly: true,
+	})
+	req.Header.Add("username", "johndoe")
+}
+
+func initTestDatabase(dbName string) *gorm.DB {
+	mockDatabase, err := db.NewSqliteStorage(dbName)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	mockDatabase.AutoMigrate(
+		&types.User{},
+		&types.Artist{},
+		&types.Tour{},
+		&types.Venue{},
+		&types.Concert{},
+		&types.Song{},
+		&types.ConcertSong{},
+		&types.UserPost{},
+		&types.Likes{},
+		&types.Follow{},
+	)
+
+	return mockDatabase
+}
+
+func initTestHandler() (*Handler, *gorm.DB) {
+	database := initTestDatabase("test.db")
+	userStore := db.NewStore(database)
+	handler := NewHandler(userStore)
+
+	hashedPassword, err := auth.HashPassword("test")
+	if err != nil {
+		log.Fatal(err)
+	}
+	user := types.User{
+		Name:     "John Doe",
+		Email:    "test@example.com",
+		Username: "johndoe",
+		Password: hashedPassword,
+	}
+	artist := types.Artist{
+		MBID: "mbid1",
+		Name: "Artist1",
+	}
+
+	database.Create(&user)
+	database.Create(&artist)
+
+	return handler, database
+}
+
+func destroyDatabase(database *gorm.DB) {
+	database.Migrator().DropTable(
+		&types.User{},
+		&types.Artist{},
+		&types.Tour{},
+		&types.Venue{},
+		&types.Concert{},
+		&types.Song{},
+		&types.ConcertSong{},
+		&types.UserPost{},
+		&types.Likes{},
+		&types.Follow{},
+	)
+}
+
+func assertEqual(t *testing.T, a interface{}, b interface{}) {
+	if a != b {
+		t.Errorf("expected %v (type %v), received %v (type %v)", a, reflect.TypeOf(a), b, reflect.TypeOf(b))
+	}
 }

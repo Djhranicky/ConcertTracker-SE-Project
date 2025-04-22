@@ -3,7 +3,7 @@ package types
 import "time"
 
 type UserPostCreatePayload struct {
-	AuthorID          uint    `json:"authorID" validate:"required"`
+	AuthorUsername    string  `json:"authorUsername" validate:"required"`
 	Text              *string `json:"text,omitempty"`
 	Type              string  `json:"type" validate:"required,oneof=ATTENDED WISHLIST REVIEW LISTCREATED"`
 	Rating            *uint   `json:"rating,omitempty"`
@@ -13,8 +13,8 @@ type UserPostCreatePayload struct {
 }
 
 type UserLikePostPayload struct {
-	UserID     uint `json:"userID" validate:"required"`
-	UserPostID uint `json:"userPostID" validate:"required"`
+	Username   string `json:"username" validate:"required"`
+	UserPostID uint   `json:"userPostID" validate:"required"`
 }
 
 type UserLikeGetResponse struct {
@@ -23,7 +23,7 @@ type UserLikeGetResponse struct {
 
 type UserPostGetResponse struct {
 	PostID            uint      `json:"postID"`
-	AuthorName        string    `json:"authorName"`
+	AuthorUsername    string    `json:"authorUsername"`
 	Text              *string   `json:"text"`
 	Type              string    `json:"type"`
 	Rating            *uint     `json:"rating"`
