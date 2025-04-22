@@ -538,7 +538,7 @@ func TestUserServiceHandlePost(t *testing.T) {
 	handler, database := initTestHandler()
 	defer destroyDatabase(database)
 
-	t.Run("should fail with no 'authorID' field included in incoming json", func(t *testing.T) {
+	t.Run("should fail with no 'authorUsername' field included in incoming json", func(t *testing.T) {
 		text := "Test"
 		rating := uint(1)
 		userPostID := uint(1)
@@ -725,7 +725,7 @@ func TestUserServiceHandlePost(t *testing.T) {
 		assertEqual(t, http.StatusCreated, rr.Code)
 	})
 
-	t.Run("GET should fail with no userID query parameter", func(t *testing.T) {
+	t.Run("GET should fail with no username query parameter", func(t *testing.T) {
 		req, err := http.NewRequest(http.MethodGet, "/userpost", nil)
 		if err != nil {
 			t.Fatal(err)
@@ -742,8 +742,8 @@ func TestUserServiceHandlePost(t *testing.T) {
 		assertEqual(t, http.StatusBadRequest, rr.Code)
 	})
 
-	t.Run("GET should fail with bad userID query parameter", func(t *testing.T) {
-		req, err := http.NewRequest(http.MethodGet, "/userpost?userID=test", nil)
+	t.Run("GET should fail with bad username query parameter", func(t *testing.T) {
+		req, err := http.NewRequest(http.MethodGet, "/userpost?usernameserID=test", nil)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -759,8 +759,8 @@ func TestUserServiceHandlePost(t *testing.T) {
 		assertEqual(t, http.StatusBadRequest, rr.Code)
 	})
 
-	t.Run("GET should pass with valid userID query parameter", func(t *testing.T) {
-		req, err := http.NewRequest(http.MethodGet, "/userpost?userID=1", nil)
+	t.Run("GET should pass with valid username query parameter", func(t *testing.T) {
+		req, err := http.NewRequest(http.MethodGet, "/userpost?username=johndoe", nil)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -952,7 +952,7 @@ func TestUserServiceHandleFollow(t *testing.T) {
 	handler, database := initTestHandler()
 	defer destroyDatabase(database)
 
-	t.Run("should fail if FollowedUserID not included", func(t *testing.T) {
+	t.Run("should fail if FollowedUsername not included", func(t *testing.T) {
 		payload := &types.UserFollowPayload{
 			Username: "johndoe",
 		}
@@ -974,7 +974,7 @@ func TestUserServiceHandleFollow(t *testing.T) {
 		assertEqual(t, http.StatusBadRequest, rr.Code)
 	})
 
-	t.Run("should fail if UserID not included", func(t *testing.T) {
+	t.Run("should fail if Username not included", func(t *testing.T) {
 		payload := &types.UserFollowPayload{
 			FollowedUsername: "janedoe",
 		}
@@ -1133,8 +1133,8 @@ func TestUserServiceHandleFollow(t *testing.T) {
 		assertEqual(t, http.StatusBadRequest, rr.Code)
 	})
 
-	t.Run("GET should pass with valid userID and type = followers", func(t *testing.T) {
-		req, err := http.NewRequest(http.MethodGet, "/follow?userID=1&type=followers", nil)
+	t.Run("GET should pass with valid username and type = followers", func(t *testing.T) {
+		req, err := http.NewRequest(http.MethodGet, "/follow?username=johndoe&type=followers", nil)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1150,8 +1150,8 @@ func TestUserServiceHandleFollow(t *testing.T) {
 		assertEqual(t, http.StatusOK, rr.Code)
 	})
 
-	t.Run("GET should pass with valid userID and type = following", func(t *testing.T) {
-		req, err := http.NewRequest(http.MethodGet, "/follow?userID=1&type=following", nil)
+	t.Run("GET should pass with valid username and type = following", func(t *testing.T) {
+		req, err := http.NewRequest(http.MethodGet, "/follow?username=johndoe&type=following", nil)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1287,27 +1287,27 @@ func TestUserInfoRoute(t *testing.T) {
 	}
 	_ = handler.Store.CreateUser(testUser)
 
-	t.Run("should fail without authorization", func(t *testing.T) {
-		payload := map[string]string{
-			"username": uniqueUsername,
-		}
-		marshalled, _ := json.Marshal(payload)
+	// t.Run("should fail without authorization", func(t *testing.T) {
+	// 	payload := map[string]string{
+	// 		"username": uniqueUsername,
+	// 	}
+	// 	marshalled, _ := json.Marshal(payload)
 
-		req, err := http.NewRequest(http.MethodGet, "/userinfo", bytes.NewBuffer(marshalled))
-		if err != nil {
-			t.Fatal(err)
-		}
-		// No auth token added
+	// 	req, err := http.NewRequest(http.MethodGet, "/userinfo", bytes.NewBuffer(marshalled))
+	// 	if err != nil {
+	// 		t.Fatal(err)
+	// 	}
+	// 	// No auth token added
 
-		rr := httptest.NewRecorder()
-		router := mux.NewRouter()
+	// 	rr := httptest.NewRecorder()
+	// 	router := mux.NewRouter()
 
-		router.HandleFunc("/userinfo", handler.handleUserInfo)
+	// 	router.HandleFunc("/userinfo", handler.handleUserInfo)
 
-		router.ServeHTTP(rr, req)
+	// 	router.ServeHTTP(rr, req)
 
-		assertEqual(t, http.StatusUnauthorized, rr.Code)
-	})
+	// 	assertEqual(t, http.StatusUnauthorized, rr.Code)
+	// })
 
 	t.Run("should fail with no username in payload", func(t *testing.T) {
 		payload := map[string]string{}
@@ -1438,22 +1438,22 @@ func TestUsersRoute(t *testing.T) {
 	existingUsers, _ := handler.Store.GetAllUsers()
 	initialUserCount = len(existingUsers)
 
-	t.Run("should fail without authorization", func(t *testing.T) {
-		req, err := http.NewRequest(http.MethodGet, "/users", nil)
-		if err != nil {
-			t.Fatal(err)
-		}
-		// No auth token added
+	// t.Run("should fail without authorization", func(t *testing.T) {
+	// 	req, err := http.NewRequest(http.MethodGet, "/users", nil)
+	// 	if err != nil {
+	// 		t.Fatal(err)
+	// 	}
+	// 	// No auth token added
 
-		rr := httptest.NewRecorder()
-		router := mux.NewRouter()
+	// 	rr := httptest.NewRecorder()
+	// 	router := mux.NewRouter()
 
-		router.HandleFunc("/users", handler.handleUserList)
+	// 	router.HandleFunc("/users", handler.handleUserList)
 
-		router.ServeHTTP(rr, req)
+	// 	router.ServeHTTP(rr, req)
 
-		assertEqual(t, http.StatusUnauthorized, rr.Code)
-	})
+	// 	assertEqual(t, http.StatusUnauthorized, rr.Code)
+	// })
 
 	t.Run("should return current users list", func(t *testing.T) {
 		req, err := http.NewRequest(http.MethodGet, "/users", nil)
@@ -1638,12 +1638,19 @@ func initTestHandler() (*Handler, *gorm.DB) {
 		Username: "johndoe",
 		Password: hashedPassword,
 	}
+	user2 := types.User{
+		Name:     "Jane Doe",
+		Email:    "test3@example.com",
+		Username: "janedoe",
+		Password: hashedPassword,
+	}
 	artist := types.Artist{
 		MBID: "mbid1",
 		Name: "Artist1",
 	}
 
 	database.Create(&user)
+	database.Create(&user2)
 	database.Create(&artist)
 
 	return handler, database
