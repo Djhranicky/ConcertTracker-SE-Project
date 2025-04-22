@@ -40,9 +40,10 @@ export class UserProfileComponent implements OnInit {
   user: string;
   isUser: boolean = false;
   loading: boolean = false;
-  loggedInID: number;
-  userID: number = 4;
+  loggedInUser: string;
   isFollowing: boolean = false;
+  followingCount: number;
+  followersCount: number;
   // Active tab state
   activeTab: string = 'profile';
 
@@ -68,14 +69,25 @@ export class UserProfileComponent implements OnInit {
   ngOnInit(): void {
     this.route.paramMap.subscribe((params) => {
       this.user = params.get('user') as string;
-      const loggedInUser = localStorage.getItem('user');
-      this.loggedInID = Number(localStorage.getItem('id') as string);
-      this.isUser = this.user === loggedInUser;
-      console.log(this.user, loggedInUser);
+      this.loggedInUser = localStorage.getItem('user') as string;
+      this.isUser = this.user === this.loggedInUser;
+      console.log(this.user, this.loggedInUser);
       this.loading = true;
 
       this.checkIfFollowing();
     });
+
+    this.userService
+      .getFollowList(this.user, 'following')
+      .subscribe((users) => {
+        this.followingCount = users.length;
+      });
+
+    this.userService
+      .getFollowList(this.user, 'followers')
+      .subscribe((users) => {
+        this.followersCount = users.length;
+      });
 
     // Get user profile data
     this.userService.getUserProfile().subscribe((profile) => {
@@ -124,7 +136,8 @@ export class UserProfileComponent implements OnInit {
   }
 
   toggleFollow() {
-    this.userService.followUser(this.loggedInID, this.userID).subscribe({
+    console.log('logged in', this.loggedInUser);
+    this.userService.followUser(this.loggedInUser, this.user).subscribe({
       next: () => {
         console.log('followed!');
         this.checkIfFollowing();
@@ -137,10 +150,19 @@ export class UserProfileComponent implements OnInit {
 
   checkIfFollowing(): void {
     this.userService
-      .getFollowList(this.loggedInID, 'following')
-      .subscribe((users) => {
-        console.log('users', users);
-        this.isFollowing = users.some((u) => u.userName === this.user);
+      // .getFollowList(this.loggedInID, 'following')
+      .getFollowList(this.loggedInUser, 'following')
+      .subscribe({
+        next: (users) => {
+          if (!users) {
+            this.isFollowing = false;
+            return;
+          }
+          this.isFollowing = users.some((u) => u?.username === this.user);
+        },
+        error: (err) => {
+          this.isFollowing = false;
+        },
       });
   }
 }

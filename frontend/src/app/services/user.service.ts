@@ -249,22 +249,25 @@ export class UserService {
 
   //getfollowlist
   getFollowList(
-    userID: number,
+    username: string,
     type: string,
     page: number = 1
   ): Observable<any[]> {
     return this.http.get<any[]>(
-      `${this.url}/follow?userID=${userID}&type=${type}`
+      `${this.url}/follow?username=${username}&type=${type}`
     );
   }
 
   //follow
-  followUser(userID: number, followedUserID: number): Observable<any> {
+  followUser(userID: string, followedUserID: string): Observable<any> {
     const payload = {
-      UserID: userID,
-      FollowedUserID: followedUserID,
+      Username: userID,
+      FollowedUsername: followedUserID,
     };
+    console.log(payload);
 
     return this.http.post(`${this.url}/follow`, payload);
   }
+
+  //userinfo
 }

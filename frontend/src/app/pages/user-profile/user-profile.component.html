@@ -7,15 +7,16 @@
     <!-- Profile Header Section -->
     <div class="profile-header">
       <div class="profile-info">
-        <div class="profile-image">
-          <img
-            [src]="userProfile.profileImage || 'imgs/user-profile.jpeg'"
-            [alt]="userProfile.name"
+        <div>
+          <p-avatar
+            [label]="user.charAt(0).toUpperCase()"
+            class="mr-2 profile-image"
+            size="large"
           />
         </div>
         <div class="profile-details">
           <h1 class="user-name">
-            {{ userProfile.name }}
+            &#64;{{ user }}
             <span class="edit-icon" *ngIf="isUser">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -34,7 +35,6 @@
               </svg>
             </span>
           </h1>
-          <p class="username">&#64;{{ userProfile.username }}</p>
           <div *ngIf="!isUser">
             <p-button
               class="log-button"
@@ -55,11 +55,11 @@
           <div class="stat-label">Lists</div>
         </div>
         <div class="stat-box">
-          <div class="stat-number">{{ userProfile.stats.following || 0 }}</div>
+          <div class="stat-number">{{ followingCount || 0 }}</div>
           <div class="stat-label">Following</div>
         </div>
         <div class="stat-box">
-          <div class="stat-number">{{ userProfile.stats.followers || 0 }}</div>
+          <div class="stat-number">{{ followersCount || 0 }}</div>
           <div class="stat-label">Followers</div>
         </div>
       </div>
