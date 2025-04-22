@@ -638,23 +638,6 @@ paths:
       summary: Get list of all users
       tags:
       - Auth
-  /validate:
-    get:
-      description: Verifies if a user's session cookie contains an authenticated token
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: user session validated
-          schema:
-            type: string
-        "401":
-          description: missing or invalid authorization token
-          schema:
-            type: string
-      summary: Validate user session
-      tags:
-      - Auth
 schemes:
 - http
 swagger: "2.0"

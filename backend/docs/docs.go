@@ -563,32 +563,6 @@ const docTemplate = `{
                     }
                 }
             }
-        },
-        "/validate": {
-            "get": {
-                "description": "Verifies if a user's session cookie contains an authenticated token",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Auth"
-                ],
-                "summary": "Validate user session",
-                "responses": {
-                    "200": {
-                        "description": "user session validated",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "401": {
-                        "description": "missing or invalid authorization token",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
         }
     },
     "definitions": {
