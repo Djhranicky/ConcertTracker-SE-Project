@@ -86,7 +86,7 @@ export class NavbarComponent {
         this.userItems = [
           {
             label: 'Profile',
-            routerLink: '/user-profile',
+            routerLink: '/user/user',
           },
           {
             label: 'Notifications',
