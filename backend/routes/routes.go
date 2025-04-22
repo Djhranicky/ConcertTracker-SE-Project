@@ -171,6 +171,7 @@ func (h *Handler) handleRegister(w http.ResponseWriter, r *http.Request) {
 		Name:     payload.Name,
 		Email:    payload.Email,
 		Password: hashedPassword,
+		Username: payload.Username,
 	})
 	if err != nil {
 		utils.WriteError(w, http.StatusInternalServerError, err)
