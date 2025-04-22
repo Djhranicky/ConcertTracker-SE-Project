@@ -130,6 +130,18 @@ Currently serves mock posts from posts service. Auth guarded so only logged in u
   - should be created
 - TimeAgoPipe
 create an instance
+- SearchPage
+   - should create
+   - should contain navbar and search components
+- SearchComponent
+  - should create
+  - should show error message when error exists and not loading
+  - should get query parameter and search for artist on init
+  - should initialize results array when there is no query
+  - should display search results when data is loaded
+  - should set error message when HTTP request fails
+  - should make HTTP request with correct URL when searching
+
 
 #### Cypress E2E Tests
 - Login Page
