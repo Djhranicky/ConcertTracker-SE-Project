@@ -324,13 +324,18 @@ WHERE U.username = ? AND C.external_id = ? AND UP.type = ?
 func (s *Store) ToggleUserFollow(newFollow types.UserFollowPayload) error {
 	var follow types.Follow
 
+	user, err := s.GetUserByUsername(newFollow.Username)
+	if err != nil {
+		return err
+	}
+
+	followedUser, err := s.GetUserByUsername(newFollow.FollowedUsername)
+	if err != nil {
+		return err
+	}
+
 	// Try to find an existing like
-	result := s.db.Raw(`SELECT
-F.*
-FROM follows F
-JOIN Users U ON F.user_id = U.id
-WHERE F.followed_user_id = ? AND U.username = ?
-;`, newFollow.FollowedUserID, newFollow.Username).First(&follow)
+	result := s.db.Model(&types.Follow{}).Where("followed_user_id = ? AND user_id = ?", followedUser.ID, user.ID).First(&follow)
 
 	// If we found a record (no ErrRecordNotFound), delete it
 	if result.Error == nil {
@@ -345,7 +350,7 @@ WHERE F.followed_user_id = ? AND U.username = ?
 		}
 		newFollowRecord := types.Follow{
 			UserID:         user.ID,
-			FollowedUserID: newFollow.FollowedUserID,
+			FollowedUserID: followedUser.ID,
 		}
 		return s.db.Create(&newFollowRecord).Error
 	}

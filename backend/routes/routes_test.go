@@ -976,7 +976,7 @@ func TestUserServiceHandleFollow(t *testing.T) {
 
 	t.Run("should fail if UserID not included", func(t *testing.T) {
 		payload := &types.UserFollowPayload{
-			FollowedUserID: 1,
+			FollowedUsername: "janedoe",
 		}
 		marshalled, _ := json.Marshal(payload)
 
@@ -998,8 +998,8 @@ func TestUserServiceHandleFollow(t *testing.T) {
 
 	t.Run("should succeed when user first follows another user", func(t *testing.T) {
 		payload := &types.UserFollowPayload{
-			Username:       "johndoe",
-			FollowedUserID: 1,
+			Username:         "johndoe",
+			FollowedUsername: "janedoe",
 		}
 		marshalled, _ := json.Marshal(payload)
 
@@ -1021,8 +1021,8 @@ func TestUserServiceHandleFollow(t *testing.T) {
 
 	t.Run("should succeed when user unfollows another user", func(t *testing.T) {
 		payload := &types.UserFollowPayload{
-			Username:       "johndoe",
-			FollowedUserID: 1,
+			Username:         "johndoe",
+			FollowedUsername: "janedoe",
 		}
 		marshalled, _ := json.Marshal(payload)
 
@@ -1044,8 +1044,8 @@ func TestUserServiceHandleFollow(t *testing.T) {
 
 	t.Run("should succeed when user follows another user again", func(t *testing.T) {
 		payload := &types.UserFollowPayload{
-			Username:       "johndoe",
-			FollowedUserID: 1,
+			Username:         "johndoe",
+			FollowedUsername: "janedoe",
 		}
 		marshalled, _ := json.Marshal(payload)
 

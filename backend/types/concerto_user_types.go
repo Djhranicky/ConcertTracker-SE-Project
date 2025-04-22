@@ -21,8 +21,8 @@ type UserUsernamePayload struct {
 }
 
 type UserFollowPayload struct {
-	Username       string `json:"username" validate:"required"`
-	FollowedUserID uint   `json:"followedUserID" validate:"required"`
+	Username         string `json:"username" validate:"required"`
+	FollowedUsername string `json:"followedUsername" validate:"required"`
 }
 
 type UserInfoResponse struct {
