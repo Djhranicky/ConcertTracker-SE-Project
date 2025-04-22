@@ -62,7 +62,7 @@ export class ConcertComponent {
   isPublic: boolean = true;
   type: boolean;
   user: string;
-  userID: number;
+  wishlisted: boolean = false;
 
   constructor(
     private concertService: ConcertService,
@@ -76,7 +76,6 @@ export class ConcertComponent {
 
   ngOnInit() {
     this.user = localStorage.getItem('user') as string;
-    this.userID = Number(localStorage.getItem('id') as string);
 
     this.route.paramMap.subscribe((params) => {
       this.id = params.get('id') as string;
@@ -103,25 +102,42 @@ export class ConcertComponent {
   }
 
   submitPost() {
-    let postType = '';
-    if (this.type == true) {
-      postType = 'ATTENDED';
-    } else {
-      postType = 'WISHLIST';
-    }
+    const postType = 'ATTENDED';
 
     const payload = {
-      authorID: this.userID,
-      concertID: this.id, // Also assign dynamically based on the concert context
+      authorUsername: this.user,
+      externalConcertID: this.id,
       isPublic: this.isPublic,
       rating: this.rating,
-      text: this.reviewText,
+      text: this.reviewText ?? null,
       type: postType,
     };
     this.postService.postPost(payload).subscribe({
       next: () => {
         console.log('Post submitted');
         this.showModal = false;
+      },
+      error: (err) => {
+        console.error('Failed to submit post', err);
+      },
+    });
+  }
+
+  wishlist() {
+    const postType = 'WISHLIST';
+
+    const payload = {
+      authorUsername: this.user,
+      externalConcertID: this.id,
+      isPublic: this.isPublic,
+      rating: null,
+      text: '',
+      type: postType,
+    };
+    this.postService.postPost(payload).subscribe({
+      next: () => {
+        console.log('Wishlist submitted');
+        this.wishlisted = true;
       },
       error: (err) => {
         console.error('Failed to submit post', err);

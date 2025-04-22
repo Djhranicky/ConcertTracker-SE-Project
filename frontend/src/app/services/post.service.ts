@@ -82,11 +82,11 @@ export class PostService {
   }
 
   postPost(payload: {
-    authorID: number;
-    concertID: string;
+    authorUsername: string;
+    externalConcertID: string;
     isPublic: boolean;
-    rating: number;
-    text: string;
+    rating: number | null;
+    text: string | null;
     type: string; //'ATTENDED' | 'WISHLIST' | 'REVIEW' | 'LISTCREATED';
     // userPostID: number | null;
   }) {

@@ -3,7 +3,7 @@ import { Observable, of } from 'rxjs';
 import { Router } from '@angular/router';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { CookieService } from 'ngx-cookie-service';
-import { map, catchError } from 'rxjs/operators';
+import { map, catchError, tap } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -30,14 +30,20 @@ export class AuthenticationService {
     };
 
     localStorage.setItem('isAuth', '1');
-    localStorage.setItem('user', 'paola');
-    localStorage.setItem('id', '2');
 
-    return this.http.post(
-      `${this.url}/login`,
-      { email, password },
-      { withCredentials: true }
-    );
+    return this.http
+      .post<{ username: string }>(
+        `${this.url}/login`,
+        { email, password },
+        { withCredentials: true }
+      )
+      .pipe(
+        tap((response) => {
+          if (response && response.username) {
+            localStorage.setItem('user', response.username);
+          }
+        })
+      );
   }
 
   logout() {
