@@ -15,7 +15,13 @@ import { FriendlyDatePipe } from '../../utils/friendlyDate.pipe';
 import { ProgressSpinner } from 'primeng/progressspinner';
 import { RouterModule } from '@angular/router';
 import { Post } from '../../models/post.model';
-
+import { DialogModule } from 'primeng/dialog';
+import { TextareaModule } from 'primeng/textarea';
+import { Checkbox } from 'primeng/checkbox';
+import { RatingModule } from 'primeng/rating';
+import { ToggleButtonModule } from 'primeng/togglebutton';
+import { FormsModule } from '@angular/forms';
+import { FloatLabel } from 'primeng/floatlabel';
 @Component({
   selector: 'app-concert',
   imports: [
@@ -30,6 +36,13 @@ import { Post } from '../../models/post.model';
     ProgressSpinner,
     FriendlyDatePipe,
     RouterModule,
+    DialogModule,
+    TextareaModule,
+    Checkbox,
+    RatingModule,
+    ToggleButtonModule,
+    FormsModule,
+    FloatLabel,
   ],
   templateUrl: './concert.component.html',
   styleUrl: './concert.component.css',
@@ -43,6 +56,13 @@ export class ConcertComponent {
   year: string;
   loading: boolean = true;
   id: string;
+  showModal: boolean = false;
+  reviewText: string = '';
+  rating: number = 0;
+  isPublic: boolean = true;
+  type: boolean;
+  user: string;
+  userID: number;
 
   constructor(
     private concertService: ConcertService,
@@ -55,6 +75,9 @@ export class ConcertComponent {
   }
 
   ngOnInit() {
+    this.user = localStorage.getItem('user') as string;
+    this.userID = Number(localStorage.getItem('id') as string);
+
     this.route.paramMap.subscribe((params) => {
       this.id = params.get('id') as string;
       this.loading = true;
@@ -73,5 +96,36 @@ export class ConcertComponent {
 
   private toggleLoading() {
     if (this.loading) this.loading = false;
+  }
+
+  openModal() {
+    this.showModal = true;
+  }
+
+  submitPost() {
+    let postType = '';
+    if (this.type == true) {
+      postType = 'ATTENDED';
+    } else {
+      postType = 'WISHLIST';
+    }
+
+    const payload = {
+      authorID: this.userID,
+      concertID: this.id, // Also assign dynamically based on the concert context
+      isPublic: this.isPublic,
+      rating: this.rating,
+      text: this.reviewText,
+      type: postType,
+    };
+    this.postService.postPost(payload).subscribe({
+      next: () => {
+        console.log('Post submitted');
+        this.showModal = false;
+      },
+      error: (err) => {
+        console.error('Failed to submit post', err);
+      },
+    });
   }
 }

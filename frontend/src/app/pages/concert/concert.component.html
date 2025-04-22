@@ -37,9 +37,67 @@
           class="mark-attended"
           label="Mark as Attended"
           icon="pi pi-plus-circle"
+          (click)="openModal()"
         ></p-button>
+        <p-dialog
+          header="Log Concert"
+          [(visible)]="showModal"
+          [modal]="true"
+          [style]="{ width: '30vw' }"
+        >
+          <div class="flex flex-column gap-3">
+            <label for="concertText" style="font-size: medium">Review</label>
+            <textarea
+              id="concertText"
+              pInputTextarea
+              [(ngModel)]="reviewText"
+              rows="5"
+              cols="30"
+            ></textarea>
+
+            <div class="flex align-items-center gap-2">
+              <p-toggleButton
+                [(ngModel)]="type"
+                onLabel="Attended"
+                offLabel="Wishlist"
+              ></p-toggleButton>
+            </div>
+
+            <div class="flex align-items-center gap-2">
+              <label for="rating" style="font-size: medium">Rating</label>
+              <p-rating
+                [(ngModel)]="rating"
+                [disabled]="type === false"
+              ></p-rating>
+            </div>
+
+            <div class="flex align-items-center gap-2">
+              <p-checkbox
+                [(ngModel)]="isPublic"
+                inputId="isPublic"
+                binary="true"
+              ></p-checkbox>
+              <label for="isPublic" style="font-size: medium"
+                >Make this post public</label
+              >
+            </div>
+          </div>
+
+          <ng-template pTemplate="footer">
+            <p-button
+              label="Submit"
+              icon="pi pi-check"
+              (click)="submitPost()"
+            ></p-button>
+            <p-button
+              label="Cancel"
+              icon="pi pi-times"
+              severity="secondary"
+              (click)="showModal = false"
+            ></p-button>
+          </ng-template>
+        </p-dialog>
         <!-- </div> -->
-        <div class="rating">4.2/5</div>
       </div>
     </div>
   </p-card>

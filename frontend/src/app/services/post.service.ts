@@ -81,10 +81,17 @@ export class PostService {
     return of(this.data.posts);
   }
 
-  // postPost(request): Observable<any> {
-  //   return this.http.post(`${this.url}/userpost`, request);
-
-  // }
+  postPost(payload: {
+    authorID: number;
+    concertID: string;
+    isPublic: boolean;
+    rating: number;
+    text: string;
+    type: string; //'ATTENDED' | 'WISHLIST' | 'REVIEW' | 'LISTCREATED';
+    // userPostID: number | null;
+  }) {
+    return this.http.post(`${this.url}/userpost`, payload);
+  }
 
   getDashboardPosts(userID: string, p: number = 1): Observable<Post[]> {
     const params = new HttpParams()
