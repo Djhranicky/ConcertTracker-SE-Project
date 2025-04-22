@@ -36,6 +36,25 @@ func (s *Store) GetUserByID(id uint) (*types.User, error) {
 	return &user, nil
 }
 
+func (s *Store) GetUserByUsername(username string) (*types.User, error) {
+	var user types.User
+	err := s.db.First(&user, "username = ?", username).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, err
+	}
+
+	return &user, nil
+}
+
+func (s *Store) GetAllUsers() ([]types.User, error) {
+	var users []types.User
+	err := s.db.Find(&users).Error
+	if err != nil {
+		return nil, err
+	}
+	return users, nil
+}
+
 func (s *Store) CreateUser(user types.User) error {
 	result := s.db.Create(&user)
 
