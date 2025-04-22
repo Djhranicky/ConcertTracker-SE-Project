@@ -46,21 +46,10 @@ export class AuthenticationService {
   }
 
   isAuthenticated(): Observable<boolean> {
-    return this.http
-      .get<{ message: string }>(`${this.url}/validate`, {
-        withCredentials: true,
-      })
-      .pipe(
-        catchError(() => {
-          return of(false);
-        }),
-        map((response) => {
-          if (typeof response === 'boolean') {
-            return false;
-          }
-          return response.message === 'user session validated';
-        })
-      );
+    let isAuth = localStorage.getItem('isAuth');
+
+    if (isAuth == '1') return of(true);
+    return of(false);
   }
   constructor(
     private router: Router,
