@@ -334,4 +334,16 @@ For the GET route, a userID query parameter must be passed in, and an optional p
 
 #### Like Route
 
+The `"/like"` endpoint is used to create and fetch likes on posts.
+
+The POST route takes a UserID and a UserPostID to add a like from the user to the post. Calling the post route with a record that already exists will remove the like from the table.
+
+The GET route returns the number of likes for a given UserPostID.
+
 #### Follow Route
+
+The `"/follow"` endpoint allows users to follow eachother and can return lists of users.
+
+The POST route will add or remove a follow relation between two users. When the UserID and FollowedUserID pairing is not present, a record is created. If the pairing is present, the record is removed (unfollowing).
+
+The GET route will return a list of users in two different scenarios. The type = followers scenario will return a list of users that all follow the given user, and the type = following will return a list of users that the given user follows.
