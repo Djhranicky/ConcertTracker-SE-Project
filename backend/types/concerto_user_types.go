@@ -25,6 +25,11 @@ type UserFollowPayload struct {
 	FollowedUserID uint `json:"followedUserID" validate:"required"`
 }
 
+type UserInfoResponse struct {
+	Name  string `json:"name"`
+	Email string `json:"email"`
+}
+
 type User struct {
 	ID        uint   `gorm:"primaryKey"`
 	Username  string `json:"username" gorm:"unique"`

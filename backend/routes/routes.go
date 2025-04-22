@@ -186,7 +186,7 @@ func (h *Handler) handleRegister(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce json
 // @Param request body types.UserUsernamePayload true "Username Payload"
-// @Success 200 {object} map[string]string "User's name and email"
+// @Success 200 {object} types.UserInfoResponse "User's name and email"
 // @Failure 400 {string} string "Invalid payload"
 // @Failure 404 {string} string "User not found"
 // @Router /user [get]
