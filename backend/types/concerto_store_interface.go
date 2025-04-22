@@ -3,6 +3,8 @@ package types
 type Store interface {
 	GetUserByEmail(string) (*User, error)
 	GetUserByID(uint) (*User, error)
+	GetUserByUsername(string) (*User, error)
+	GetAllUsers() ([]User, error)
 	CreateUser(User) error
 	GetArtistByMBID(string) (*Artist, error)
 	GetArtistByName(string) (*Artist, error)
