@@ -220,6 +220,17 @@ func (s *Store) GetConcertTotalByArtist(artistID uint) int64 {
 	return count
 }
 
+func (s *Store) GetConcertByExternalID(externalConcertID string) (*types.Concert, error) {
+	var concert types.Concert
+	result := s.db.Model(&types.Concert{}).Where("external_id = ?", externalConcertID).Scan(&concert)
+
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return &concert, nil
+}
+
 func (s *Store) CreateConcertSongIfMissing(concertSong types.ConcertSong) *types.ConcertSong {
 	var Exists bool
 	var returnConcertSong types.ConcertSong
@@ -234,14 +245,22 @@ func (s *Store) CreateConcertSongIfMissing(concertSong types.ConcertSong) *types
 }
 
 func (s *Store) CreateUserPost(newPost types.UserPostCreatePayload) (*types.UserPost, error) {
+	author, err := s.GetUserByUsername(newPost.AuthorUsername)
+	if err != nil {
+		return nil, err
+	}
+	concert, err := s.GetConcertByExternalID(newPost.ExternalConcertID)
+	if err != nil {
+		return nil, err
+	}
 	post := types.UserPost{
-		AuthorID:   newPost.AuthorID,
+		AuthorID:   author.ID,
 		Text:       newPost.Text,
 		Type:       newPost.Type,
 		Rating:     newPost.Rating,
 		UserPostID: newPost.UserPostID,
 		IsPublic:   *newPost.IsPublic,
-		ConcertID:  newPost.ConcertID,
+		ConcertID:  concert.ID,
 	}
 	result := s.db.Clauses(clause.Returning{}).Select("AuthorID", "Text", "Type", "Rating", "PostID", "IsPublic", "ConcertID").Create(&post)
 
@@ -256,7 +275,12 @@ func (s *Store) ToggleUserLike(newLike types.UserLikePostPayload) error {
 	var like types.Likes
 
 	// Try to find an existing like
-	result := s.db.Where("user_post_id = ? AND user_id = ?", newLike.UserPostID, newLike.UserID).First(&like)
+	result := s.db.Raw(`SELECT
+L.*
+FROM likes L
+JOIN Users U ON L.user_id = U.id
+WHERE L.user_post_id = ? AND U.username = ?
+;`, newLike.UserPostID, newLike.Username).First(&like)
 
 	// If we found a record (no ErrRecordNotFound), delete it
 	if result.Error == nil {
@@ -265,9 +289,13 @@ func (s *Store) ToggleUserLike(newLike types.UserLikePostPayload) error {
 
 	// If no record was found, create a new one (only if the error was "record not found")
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		user, err := s.GetUserByUsername(newLike.Username)
+		if err != nil {
+			return err
+		}
 		newLikeRecord := types.Likes{
 			UserPostID: newLike.UserPostID,
-			UserID:     newLike.UserID,
+			UserID:     user.ID,
 		}
 		return s.db.Create(&newLikeRecord).Error
 	}
@@ -276,11 +304,15 @@ func (s *Store) ToggleUserLike(newLike types.UserLikePostPayload) error {
 	return result.Error
 }
 
-func (s *Store) UserPostExists(authorID, concertID uint, postType string) (bool, error) {
+func (s *Store) UserPostExists(authorUsername string, externalConcertID string, postType string) (bool, error) {
 	var count int64
-	result := s.db.Model(&types.UserPost{}).
-		Where("author_id = ? AND concert_id = ? AND type = ?", authorID, concertID, postType).
-		Count(&count)
+	result := s.db.Raw(`SELECT
+count(*)
+FROM user_posts UP
+JOIN concerts C ON UP.concert_id = C.id
+JOIN users U ON UP.author_id = U.id
+WHERE U.username = ? AND C.external_id = ? AND UP.type = ?
+;`, authorUsername, externalConcertID, postType).Scan(&count)
 
 	if result.Error != nil {
 		return false, result.Error
@@ -293,7 +325,12 @@ func (s *Store) ToggleUserFollow(newFollow types.UserFollowPayload) error {
 	var follow types.Follow
 
 	// Try to find an existing like
-	result := s.db.Where("followed_user_id = ? AND user_id = ?", newFollow.FollowedUserID, newFollow.UserID).First(&follow)
+	result := s.db.Raw(`SELECT
+F.*
+FROM follows F
+JOIN Users U ON F.user_id = U.id
+WHERE F.followed_user_id = ? AND U.username = ?
+;`, newFollow.FollowedUserID, newFollow.Username).First(&follow)
 
 	// If we found a record (no ErrRecordNotFound), delete it
 	if result.Error == nil {
@@ -302,8 +339,12 @@ func (s *Store) ToggleUserFollow(newFollow types.UserFollowPayload) error {
 
 	// If no record was found, create a new one (only if the error was "record not found")
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		user, err := s.GetUserByUsername(newFollow.Username)
+		if err != nil {
+			return err
+		}
 		newFollowRecord := types.Follow{
-			UserID:         newFollow.UserID,
+			UserID:         user.ID,
 			FollowedUserID: newFollow.FollowedUserID,
 		}
 		return s.db.Create(&newFollowRecord).Error
