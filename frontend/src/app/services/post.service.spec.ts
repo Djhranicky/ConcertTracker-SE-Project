@@ -1,7 +1,8 @@
 import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { PostService, Post } from './post.service';
+import { PostService } from './post.service';
+import { Post } from '../models/post.model';
 
 describe('PostService', () => {
   let service: PostService;
@@ -35,6 +36,8 @@ describe('PostService', () => {
         rating: 4,
         likes: 10,
         comments: 3,
+        city: 'Brisbane, Australia', // Added missing property
+        id: '1'
       },
       {
         type: 'wishlist',
@@ -52,6 +55,8 @@ describe('PostService', () => {
         setlist: null,
         likes: 2,
         comments: 0,
+        city: 'Brisbane, Australia', // Added missing property
+        id: '2'
       },
       {
         type: 'review',
@@ -70,6 +75,8 @@ describe('PostService', () => {
         rating: 5,
         likes: 2,
         comments: 0,
+        city: 'Brisbane, Australia', // Added missing property
+        id: '3'
       },
     ];
 
@@ -97,6 +104,8 @@ describe('PostService', () => {
         expect(post.likes).toBeDefined();
         expect(post.comments).toBeDefined();
         expect(post.setlist).toBeDefined();
+        expect(post.id).toBeDefined();
+        expect(post.city).toBeDefined();
       });
     });
   });
