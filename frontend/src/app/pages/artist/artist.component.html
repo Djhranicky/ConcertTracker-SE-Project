@@ -81,7 +81,7 @@
       <p-card>
         <ng-template #title> Upcoming Shows </ng-template>
         <p-carousel
-          [value]="upcomingTuples"
+          [value]="upcoming"
           [numVisible]="3"
           [numScroll]="1"
           [circular]="false"
@@ -92,14 +92,22 @@
               <div class="mb-2">
                 <div class="relative mx-auto">
                   <div class="stat-frame">
-                    {{ concert[1][0] }}
-                    <div class="number-box">{{ concert[1][1] }}</div>
-                    {{ concert[1][2] }}
+                    {{ (concert.date | friendlyDate).split(" ")[0] }}
+                    <div class="number-box">
+                      {{
+                        (concert.date | friendlyDate)
+                          .split(" ")[1]
+                          .replace(",", "")
+                      }}
+                    </div>
+                    {{ (concert.date | friendlyDate).split(" ")[2] }}
                   </div>
                 </div>
               </div>
               <div class="flex justify-between items-center"></div>
-              <div class="font-small text-xs">{{ concert[0].venue }}</div>
+              <div class="font-small text-xs">
+                {{ concert.venue }}, {{ concert.city }}
+              </div>
             </div>
           </ng-template>
         </p-carousel></p-card
@@ -108,19 +116,14 @@
     <div class="stats">
       <p-card>
         <ng-template #title> Stats </ng-template>
-        Billie Eilish is the 95th most popular artist on Spotify. <br />Their
-        average show length is 1 hour and 39 minutes <br />
         <span class="text-xl font-bold">Most Played Songs</span>
 
-        <p-table
-          [value]="mostPlayed"
-          [tableStyle]="{ 'background-color': '#fff' }"
-        >
+        <p-table [value]="stats" [tableStyle]="{ 'background-color': '#fff' }">
           <!-- <ng-template #header> Most Played Songs </ng-template> -->
           <ng-template #body let-song>
             <tr>
-              <td>{{ song[0] }}</td>
-              <td>{{ song[1] }}</td>
+              <td>{{ song[1].song }}</td>
+              <td>({{ song[1].count }})</td>
             </tr>
           </ng-template>
         </p-table>

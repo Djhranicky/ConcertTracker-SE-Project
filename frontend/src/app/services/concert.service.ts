@@ -166,43 +166,80 @@ export class ConcertService {
 
   getArtist(name: string): Observable<Artist> {
     const encoded = encodeURIComponent(name);
-    return this.http.get<any>(`${this.url}/artist?name=${encoded}`).pipe(
-      map((response) => {
-        const artist = response.artist;
+    return this.http
+      .get<any>(`${this.url}/artist?name=${encoded}`, { withCredentials: true })
+      .pipe(
+        map((response) => {
+          const artist = response.artist;
 
-        const concerts: Concert[] = (response.recent_setlists || []).map(
-          (item: any) => ({
-            city: item.city ?? null,
-            date: item.date ?? null,
-            id: item.id ?? null,
-            venue: item.venue ?? null,
-            tour: null,
-            artist: artist.name,
-            img: null,
-            setlist: null,
-          })
-        );
+          const concerts: Concert[] = (response.recent_setlists || []).map(
+            (item: any) => ({
+              city: item.city ?? null,
+              date: item.date ?? null,
+              id: item.id ?? null,
+              venue: item.venue ?? null,
+              tour: null,
+              artist: artist.name,
+              img: null,
+              setlist: null,
+            })
+          );
 
-        return {
-          ID: response.artist.ID,
-          MBID: response.artist.MBID,
-          name: response.artist.name,
-          lastUpdate: response.artist.UpdatedAt,
-          imageUrl: '',
-          recentSetlists: concerts,
-          toursCount: response.number_of_tours,
-          showsCount: response.total_setlists,
-          upcomingShows: null,
-        };
-      })
-    );
+          return {
+            ID: response.artist.ID,
+            MBID: response.artist.MBID,
+            name: response.artist.name,
+            lastUpdate: response.artist.UpdatedAt,
+            imageUrl: '',
+            recentSetlists: concerts,
+            toursCount: response.number_of_tours,
+            showsCount: response.total_setlists,
+            upcomingShows: null,
+          };
+        })
+      );
   }
 
   getRecentConcerts(): Observable<Concert[]> {
     return of(this.data.concerts);
   }
 
-  getUpcomingConcerts(): Observable<Concert[]> {
-    return of(this.data.upcoming);
+  getUpcomingConcerts(name: string): Observable<Concert[]> {
+    const encoded = encodeURIComponent(name);
+    return this.http
+      .get<any>(`${this.url}/artist?name=${encoded}`, { withCredentials: true })
+      .pipe(
+        map((response) => {
+          const artist = response.artist;
+
+          const concerts: Concert[] = (response.upcoming_shows || []).map(
+            (item: any) => ({
+              city: item.city ?? null,
+              date: item.date ?? null,
+              id: item.id ?? null,
+              venue: item.venue ?? null,
+              tour: null,
+              artist: artist.name,
+              img: null,
+              setlist: null,
+            })
+          );
+
+          console.log(concerts);
+          return concerts;
+        })
+      );
+  }
+
+  getStats(name: string): Observable<any> {
+    const encoded = encodeURIComponent(name);
+    return this.http
+      .get<any>(`${this.url}/artist?name=${encoded}`, { withCredentials: true })
+      .pipe(
+        map((response) => {
+          console.log(response.top_songs);
+          return response.top_songs;
+        })
+      );
   }
 }

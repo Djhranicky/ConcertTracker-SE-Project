@@ -43,6 +43,8 @@ export class ArtistComponent implements OnInit {
   upcomingTuples: [Concert, string[]][] = [];
   mostPlayed: [string, string][] = [];
   loading: boolean = true;
+  loadingCount = 0;
+  stats: [string, unknown][];
 
   constructor(
     private concertService: ConcertService,
@@ -59,28 +61,20 @@ export class ArtistComponent implements OnInit {
 
     this.concertService.getArtist(this.name).subscribe((artist) => {
       this.artist = artist;
-      //console.log(this.artist);
+      console.log(this.artist);
       this.toggleLoading();
     });
 
-    this.concertService.getUpcomingConcerts().subscribe((upcoming) => {
+    this.concertService.getUpcomingConcerts(this.name).subscribe((upcoming) => {
       this.upcoming = upcoming;
+      this.toggleLoading();
     });
 
-    for (const item of this.upcoming) {
-      let date = item.date!.split(' ');
-      let month = date[0];
-      let day = date[1].slice(0, -1);
-      let year = date[2];
-      this.upcomingTuples.push([item, [month, day, year]]);
-    }
-    this.mostPlayed = [
-      ["when the party's over", '(315)'],
-      ['ocean eyes', '(274)'],
-      ['bellyache', '(268)'],
-    ];
-
-    // console.log(this.upcomingTuples);
+    this.concertService.getStats(this.name).subscribe((stats) => {
+      this.stats = Object.entries(stats);
+      console.log('stats', this.stats);
+      this.toggleLoading();
+    });
 
     this.responsiveOptions = [
       {
@@ -107,6 +101,7 @@ export class ArtistComponent implements OnInit {
   }
 
   private toggleLoading() {
-    if (this.loading) this.loading = false;
+    this.loadingCount++;
+    if (this.loadingCount === 3) this.loading = false;
   }
 }
