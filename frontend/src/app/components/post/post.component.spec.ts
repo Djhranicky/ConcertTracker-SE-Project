@@ -6,7 +6,7 @@ import {
 } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { PostComponent } from './post.component';
-import { Post } from '../../services/post.service';
+import { Post } from '../../models/post.model';
 
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
@@ -41,6 +41,8 @@ describe('PostComponent', () => {
       rating: 4,
       likes: 10,
       comments: 3,
+      city: 'Brisbane, Australia', // Added missing property
+      id: '3'
     };
     fixture.detectChanges();
   });

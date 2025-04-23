@@ -1,23 +1,40 @@
 <app-navbar></app-navbar>
-<body>
+<p-progressSpinner
+  *ngIf="loading"
+  styleClass="custom-spinner"
+></p-progressSpinner>
+<body *ngIf="!loading">
   <p-card class="header">
     <div class="content">
       <div class="details">
-        <img class="header-img" src="{{ artist.img }}" />
+        <img
+          class="header-img"
+          [src]="
+            artist.imageUrl ||
+            'https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small_2x/default-avatar-icon-of-social-media-user-vector.jpg'
+          "
+        />
 
         <div>
-          <div class="header-artist">{{ artist.artist }}</div>
+          <div class="header-artist">{{ artist.name }}</div>
           <div class="header-tour"></div>
-          <div class="header-venue">Artist bio</div>
+          <div class="header-venue">
+            <p-button
+              class="import"
+              label="import"
+              icon="pi pi-plus-circle"
+              (click)="runImport()"
+            ></p-button>
+          </div>
         </div>
       </div>
       <div class="stats-frame">
         <div class="stat-frame">
-          <div class="number-box">254</div>
+          <div class="number-box">{{ artist.showsCount }}</div>
           shows
         </div>
         <div class="stat-frame">
-          <div class="number-box">04</div>
+          <div class="number-box">{{ artist.toursCount }}</div>
           tours
         </div>
       </div>
@@ -26,7 +43,7 @@
   <p-card class="recent">
     <ng-template #title> Recent Shows </ng-template>
     <p-carousel
-      [value]="concerts"
+      [value]="artist?.recentSetlists?.slice(0, 5) || []"
       [numVisible]="5"
       [numScroll]="1"
       [circular]="false"
@@ -36,13 +53,18 @@
         <div class="border border-surface rounded-border m-2 p-2">
           <div class="mb-2">
             <div class="relative mx-auto">
-              <img
-                src="{{ concert.img }}"
-                [alt]="concert.artist"
-                class="w-full rounded-border"
-              />
+              <a [routerLink]="['/concert/', concert.id]"
+                ><img
+                  [src]="
+                    artist.imageUrl ||
+                    'https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small_2x/default-avatar-icon-of-social-media-user-vector.jpg'
+                  "
+                  [alt]="concert.artist"
+                  class="w-full rounded-border"
+                />
+              </a>
               <p-tag
-                [value]="concert.date"
+                [value]="concert.date | friendlyDate"
                 class="absolute"
                 severity="info"
                 [ngStyle]="{ 'left.px': 5, 'bottom.px': 10 }"
@@ -54,17 +76,22 @@
               {{ concert.tour }}
             </div>
           </div>
-          <div class="font-small text-xs">{{ concert.venue }}</div>
+          <div class="font-small text-xs">
+            {{ concert.venue }}, {{ concert.city }}
+          </div>
         </div>
       </ng-template>
     </p-carousel>
   </p-card>
-  <div class="grid">
+  <div
+    class="grid"
+    *ngIf="!(artist.showsCount === 20 && artist.upcomingShows === null)"
+  >
     <div class="upcoming">
       <p-card>
         <ng-template #title> Upcoming Shows </ng-template>
         <p-carousel
-          [value]="upcomingTuples"
+          [value]="upcoming"
           [numVisible]="3"
           [numScroll]="1"
           [circular]="false"
@@ -75,14 +102,22 @@
               <div class="mb-2">
                 <div class="relative mx-auto">
                   <div class="stat-frame">
-                    {{ concert[1][0] }}
-                    <div class="number-box">{{ concert[1][1] }}</div>
-                    {{ concert[1][2] }}
+                    {{ (concert.date | friendlyDate).split(" ")[0] }}
+                    <div class="number-box">
+                      {{
+                        (concert.date | friendlyDate)
+                          .split(" ")[1]
+                          .replace(",", "")
+                      }}
+                    </div>
+                    {{ (concert.date | friendlyDate).split(" ")[2] }}
                   </div>
                 </div>
               </div>
               <div class="flex justify-between items-center"></div>
-              <div class="font-small text-xs">{{ concert[0].venue }}</div>
+              <div class="font-small text-xs">
+                {{ concert.venue }}, {{ concert.city }}
+              </div>
             </div>
           </ng-template>
         </p-carousel></p-card
@@ -91,19 +126,14 @@
     <div class="stats">
       <p-card>
         <ng-template #title> Stats </ng-template>
-        Billie Eilish is the 95th most popular artist on Spotify. <br />Their
-        average show length is 1 hour and 39 minutes <br />
         <span class="text-xl font-bold">Most Played Songs</span>
 
-        <p-table
-          [value]="mostPlayed"
-          [tableStyle]="{ 'background-color': '#fff' }"
-        >
+        <p-table [value]="stats" [tableStyle]="{ 'background-color': '#fff' }">
           <!-- <ng-template #header> Most Played Songs </ng-template> -->
           <ng-template #body let-song>
             <tr>
-              <td>{{ song[0] }}</td>
-              <td>{{ song[1] }}</td>
+              <td>{{ song[1].song }}</td>
+              <td>({{ song[1].count }})</td>
             </tr>
           </ng-template>
         </p-table>

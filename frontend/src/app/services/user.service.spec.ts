@@ -8,7 +8,7 @@ describe('UserService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      // providers: [provideHttpClient(), provideHttpClientTesting()]
+      providers: [provideHttpClient(), provideHttpClientTesting()],
     });
     service = TestBed.inject(UserService);
   });
@@ -18,7 +18,7 @@ describe('UserService', () => {
   });
 
   it('should return user profile', () => {
-    service.getUserProfile().subscribe(profile => {
+    service.getUserProfile().subscribe((profile) => {
       expect(profile).toBeTruthy();
       expect(profile.name).toBeDefined();
       expect(profile.username).toBeDefined();
@@ -29,9 +29,9 @@ describe('UserService', () => {
   });
 
   it('should return favorite concerts', () => {
-    service.getFavoriteConcerts().subscribe(concerts => {
+    service.getFavoriteConcerts().subscribe((concerts) => {
       expect(concerts.length).toBeGreaterThan(0);
-      concerts.forEach(concert => {
+      concerts.forEach((concert) => {
         expect(concert.title).toBeDefined();
         expect(concert.artist).toBeDefined();
         expect(concert.date).toBeDefined();
@@ -41,9 +41,9 @@ describe('UserService', () => {
   });
 
   it('should return user posts', () => {
-    service.getUserPosts().subscribe(posts => {
+    service.getUserPosts().subscribe((posts) => {
       expect(posts.length).toBeGreaterThan(0);
-      posts.forEach(post => {
+      posts.forEach((post) => {
         expect(post.type).toBeDefined();
         expect(post.username).toBeDefined();
         expect(post.avatar).toBeDefined();
@@ -59,11 +59,11 @@ describe('UserService', () => {
       title: 'Test Tour',
       artist: 'Test Artist',
       date: 'Jan 1, 2025',
-      image: 'test-image.jpg'
+      image: 'test-image.jpg',
     };
-    
+
     const post = service.convertToPost(concertCard, 'review');
-    
+
     expect(post.type).toBe('review');
     expect(post.tour).toBe(concertCard.title);
     expect(post.artist).toBe(concertCard.artist);

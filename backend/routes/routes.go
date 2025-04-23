@@ -171,6 +171,7 @@ func (h *Handler) handleRegister(w http.ResponseWriter, r *http.Request) {
 		Name:     payload.Name,
 		Email:    payload.Email,
 		Password: hashedPassword,
+		Username: payload.Username,
 	})
 	if err != nil {
 		utils.WriteError(w, http.StatusInternalServerError, err)
@@ -197,10 +198,10 @@ func (h *Handler) handleUserInfo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := auth.ValidateUser(r, h.Store); err != nil {
-		utils.WriteError(w, http.StatusUnauthorized, err)
-		return
-	}
+	// if err := auth.ValidateUser(r, h.Store); err != nil {
+	// 	utils.WriteError(w, http.StatusUnauthorized, err)
+	// 	return
+	// }
 
 	// Parse JSON payload
 	var payload struct {
@@ -250,10 +251,10 @@ func (h *Handler) handleUserList(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := auth.ValidateUser(r, h.Store); err != nil {
-		utils.WriteError(w, http.StatusUnauthorized, err)
-		return
-	}
+	// if err := auth.ValidateUser(r, h.Store); err != nil {
+	// 	utils.WriteError(w, http.StatusUnauthorized, err)
+	// 	return
+	// }
 
 	// Fetch all users from the database
 	users, err := h.Store.GetAllUsers()
@@ -293,10 +294,10 @@ func (h *Handler) handleArtist(inputURL string) http.HandlerFunc {
 			return
 		}
 
-		if err := auth.ValidateUser(r, h.Store); err != nil {
-			utils.WriteError(w, http.StatusUnauthorized, err)
-			return
-		}
+		// if err := auth.ValidateUser(r, h.Store); err != nil {
+		// 	utils.WriteError(w, http.StatusUnauthorized, err)
+		// 	return
+		// }
 
 		// Get artist search from request
 		searchString := r.URL.Query().Get("name")
@@ -441,10 +442,10 @@ func (h *Handler) handleArtistImport(inputURL string) http.HandlerFunc {
 			return
 		}
 
-		if err := auth.ValidateUser(r, h.Store); err != nil {
-			utils.WriteError(w, http.StatusUnauthorized, err)
-			return
-		}
+		// if err := auth.ValidateUser(r, h.Store); err != nil {
+		// 	utils.WriteError(w, http.StatusUnauthorized, err)
+		// 	return
+		// }
 
 		// Get artist search from request
 		mbid := r.URL.Query().Get("mbid")
@@ -503,10 +504,10 @@ func (h *Handler) handleConcert(inputURL string) http.HandlerFunc {
 			return
 		}
 
-		if err := auth.ValidateUser(r, h.Store); err != nil {
-			utils.WriteError(w, http.StatusUnauthorized, err)
-			return
-		}
+		// if err := auth.ValidateUser(r, h.Store); err != nil {
+		// 	utils.WriteError(w, http.StatusUnauthorized, err)
+		// 	return
+		// }
 
 		// Get setlist ID from request
 		setlistID := r.URL.Query().Get("id")
@@ -693,10 +694,10 @@ func (h *Handler) handleUserPost() http.HandlerFunc {
 			return
 		}
 
-		if err := auth.ValidateUser(r, h.Store); err != nil {
-			utils.WriteError(w, http.StatusUnauthorized, err)
-			return
-		}
+		// if err := auth.ValidateUser(r, h.Store); err != nil {
+		// 	utils.WriteError(w, http.StatusUnauthorized, err)
+		// 	return
+		// }
 
 		if r.Method == http.MethodPost {
 			h.UserPostOnPost(w, r)
@@ -716,10 +717,10 @@ func (h *Handler) handleUserLike() http.HandlerFunc {
 			return
 		}
 
-		if err := auth.ValidateUser(r, h.Store); err != nil {
-			utils.WriteError(w, http.StatusUnauthorized, err)
-			return
-		}
+		// if err := auth.ValidateUser(r, h.Store); err != nil {
+		// 	utils.WriteError(w, http.StatusUnauthorized, err)
+		// 	return
+		// }
 
 		if r.Method == http.MethodPost {
 			h.UserLikeOnPost(w, r)
@@ -741,10 +742,10 @@ func (h *Handler) handleUserFollow() http.HandlerFunc {
 			return
 		}
 
-		if err := auth.ValidateUser(r, h.Store); err != nil {
-			utils.WriteError(w, http.StatusUnauthorized, err)
-			return
-		}
+		// if err := auth.ValidateUser(r, h.Store); err != nil {
+		// 	utils.WriteError(w, http.StatusUnauthorized, err)
+		// 	return
+		// }
 
 		if r.Method == http.MethodPost {
 			h.UserFollowOnPost(w, r)

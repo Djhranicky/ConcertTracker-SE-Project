@@ -220,6 +220,17 @@ func (s *Store) GetConcertTotalByArtist(artistID uint) int64 {
 	return count
 }
 
+func (s *Store) GetConcertByExternalID(externalConcertID string) (*types.Concert, error) {
+	var concert types.Concert
+	result := s.db.Model(&types.Concert{}).Where("external_id = ?", externalConcertID).Scan(&concert)
+
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return &concert, nil
+}
+
 func (s *Store) CreateConcertSongIfMissing(concertSong types.ConcertSong) *types.ConcertSong {
 	var Exists bool
 	var returnConcertSong types.ConcertSong
@@ -234,14 +245,22 @@ func (s *Store) CreateConcertSongIfMissing(concertSong types.ConcertSong) *types
 }
 
 func (s *Store) CreateUserPost(newPost types.UserPostCreatePayload) (*types.UserPost, error) {
+	author, err := s.GetUserByUsername(newPost.AuthorUsername)
+	if err != nil {
+		return nil, err
+	}
+	concert, err := s.GetConcertByExternalID(newPost.ExternalConcertID)
+	if err != nil {
+		return nil, err
+	}
 	post := types.UserPost{
-		AuthorID:   newPost.AuthorID,
+		AuthorID:   author.ID,
 		Text:       newPost.Text,
 		Type:       newPost.Type,
 		Rating:     newPost.Rating,
 		UserPostID: newPost.UserPostID,
 		IsPublic:   *newPost.IsPublic,
-		ConcertID:  newPost.ConcertID,
+		ConcertID:  concert.ID,
 	}
 	result := s.db.Clauses(clause.Returning{}).Select("AuthorID", "Text", "Type", "Rating", "PostID", "IsPublic", "ConcertID").Create(&post)
 
@@ -256,7 +275,12 @@ func (s *Store) ToggleUserLike(newLike types.UserLikePostPayload) error {
 	var like types.Likes
 
 	// Try to find an existing like
-	result := s.db.Where("user_post_id = ? AND user_id = ?", newLike.UserPostID, newLike.UserID).First(&like)
+	result := s.db.Raw(`SELECT
+L.*
+FROM likes L
+JOIN Users U ON L.user_id = U.id
+WHERE L.user_post_id = ? AND U.username = ?
+;`, newLike.UserPostID, newLike.Username).First(&like)
 
 	// If we found a record (no ErrRecordNotFound), delete it
 	if result.Error == nil {
@@ -265,9 +289,13 @@ func (s *Store) ToggleUserLike(newLike types.UserLikePostPayload) error {
 
 	// If no record was found, create a new one (only if the error was "record not found")
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		user, err := s.GetUserByUsername(newLike.Username)
+		if err != nil {
+			return err
+		}
 		newLikeRecord := types.Likes{
 			UserPostID: newLike.UserPostID,
-			UserID:     newLike.UserID,
+			UserID:     user.ID,
 		}
 		return s.db.Create(&newLikeRecord).Error
 	}
@@ -276,11 +304,15 @@ func (s *Store) ToggleUserLike(newLike types.UserLikePostPayload) error {
 	return result.Error
 }
 
-func (s *Store) UserPostExists(authorID, concertID uint, postType string) (bool, error) {
+func (s *Store) UserPostExists(authorUsername string, externalConcertID string, postType string) (bool, error) {
 	var count int64
-	result := s.db.Model(&types.UserPost{}).
-		Where("author_id = ? AND concert_id = ? AND type = ?", authorID, concertID, postType).
-		Count(&count)
+	result := s.db.Raw(`SELECT
+count(*)
+FROM user_posts UP
+JOIN concerts C ON UP.concert_id = C.id
+JOIN users U ON UP.author_id = U.id
+WHERE U.username = ? AND C.external_id = ? AND UP.type = ?
+;`, authorUsername, externalConcertID, postType).Scan(&count)
 
 	if result.Error != nil {
 		return false, result.Error
@@ -292,8 +324,18 @@ func (s *Store) UserPostExists(authorID, concertID uint, postType string) (bool,
 func (s *Store) ToggleUserFollow(newFollow types.UserFollowPayload) error {
 	var follow types.Follow
 
+	user, err := s.GetUserByUsername(newFollow.Username)
+	if err != nil {
+		return err
+	}
+
+	followedUser, err := s.GetUserByUsername(newFollow.FollowedUsername)
+	if err != nil {
+		return err
+	}
+
 	// Try to find an existing like
-	result := s.db.Where("followed_user_id = ? AND user_id = ?", newFollow.FollowedUserID, newFollow.UserID).First(&follow)
+	result := s.db.Model(&types.Follow{}).Where("followed_user_id = ? AND user_id = ?", followedUser.ID, user.ID).First(&follow)
 
 	// If we found a record (no ErrRecordNotFound), delete it
 	if result.Error == nil {
@@ -302,9 +344,13 @@ func (s *Store) ToggleUserFollow(newFollow types.UserFollowPayload) error {
 
 	// If no record was found, create a new one (only if the error was "record not found")
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		user, err := s.GetUserByUsername(newFollow.Username)
+		if err != nil {
+			return err
+		}
 		newFollowRecord := types.Follow{
-			UserID:         newFollow.UserID,
-			FollowedUserID: newFollow.FollowedUserID,
+			UserID:         user.ID,
+			FollowedUserID: followedUser.ID,
 		}
 		return s.db.Create(&newFollowRecord).Error
 	}
@@ -323,17 +369,17 @@ func (s *Store) GetNumberOfLikes(userPostID int64) (int64, error) {
 	return count, nil
 }
 
-func (s *Store) GetActivityFeed(userID int64, pageNumber int64) ([]types.UserPostGetResponse, error) {
+func (s *Store) GetActivityFeed(username string, pageNumber int64) ([]types.UserPostGetResponse, error) {
 	var userPosts []types.UserPostGetResponse
 	result := s.db.Raw(`SELECT 
 		P.id AS post_id,
-		U2.name AS author_name,
+		U2.name AS author_username,
 		P.text,
 		P.type,
 		P.rating,
 		P.user_post_id,
 		P.is_public,
-		P.concert_id,
+		C.external_id AS external_concert_id,
 		A.name AS artist_name,
 		C.date AS concert_date,
 		T.name AS tour_name,
@@ -350,11 +396,11 @@ func (s *Store) GetActivityFeed(userID int64, pageNumber int64) ([]types.UserPos
 		JOIN tours T ON C.tour_id = T.id
 		JOIN venues V ON C.venue_id = V.id
 		JOIN artists A ON C.artist_id = A.id
-		WHERE U.id = ?
+		WHERE U.username = 'test1'
 		AND P.is_public = 1
 		ORDER BY P.updated_at DESC
-		LIMIT 20 OFFSET ?
-	;`, userID, 20*pageNumber).Scan(&userPosts)
+		LIMIT 20 OFFSET 0
+	;`, username, 20*pageNumber).Scan(&userPosts)
 
 	if result.Error != nil {
 		return nil, result.Error
@@ -363,14 +409,14 @@ func (s *Store) GetActivityFeed(userID int64, pageNumber int64) ([]types.UserPos
 	return userPosts, nil
 }
 
-func (s *Store) GetFollowersOrFollowing(userID int64, followType string, pageNum int64) ([]types.UserFollowGetResponse, error) {
+func (s *Store) GetFollowersOrFollowing(username string, followType string, pageNum int64) ([]types.UserFollowGetResponse, error) {
 	var users []types.UserFollowGetResponse
 	var err error
 
 	if followType == "followers" {
-		users, err = s.getFollowers(userID, users, pageNum)
+		users, err = s.getFollowers(username, users, pageNum)
 	} else {
-		users, err = s.getFollowing(userID, users, pageNum)
+		users, err = s.getFollowing(username, users, pageNum)
 	}
 
 	if err != nil {
@@ -380,17 +426,22 @@ func (s *Store) GetFollowersOrFollowing(userID int64, followType string, pageNum
 	return users, nil
 }
 
-func (s *Store) getFollowers(userID int64, users []types.UserFollowGetResponse, pageNum int64) ([]types.UserFollowGetResponse, error) {
+func (s *Store) getFollowers(username string, users []types.UserFollowGetResponse, pageNum int64) ([]types.UserFollowGetResponse, error) {
 	pageSize := int64(20)
 	result := s.db.Raw(`
-		SELECT
-		U.name AS user_name
-		FROM follows F
-		JOIN users U ON F.followed_user_id = U.id
-		WHERE F.followed_user_id = ?
+		SELECT U.username
+		FROM (
+			SELECT
+			F.user_id,
+			F.created_at
+			FROM follows F
+			JOIN users U ON F.followed_user_id = U.id
+			WHERE U.username = ?
+		) F
+		JOIN users U ON F.user_id = U.id
 		ORDER BY F.created_at DESC
 		LIMIT ? OFFSET ?;
-	`, userID, pageSize, pageNum*pageSize).Scan(&users)
+	`, username, pageSize, pageNum*pageSize).Scan(&users)
 
 	if result.Error != nil {
 		return nil, result.Error
@@ -399,17 +450,22 @@ func (s *Store) getFollowers(userID int64, users []types.UserFollowGetResponse, 
 	return users, nil
 }
 
-func (s *Store) getFollowing(userID int64, users []types.UserFollowGetResponse, pageNum int64) ([]types.UserFollowGetResponse, error) {
+func (s *Store) getFollowing(username string, users []types.UserFollowGetResponse, pageNum int64) ([]types.UserFollowGetResponse, error) {
 	pageSize := int64(20)
 	result := s.db.Raw(`
-		SELECT
-		U.name AS user_name
-		FROM follows F
+		SELECT U.username
+		FROM (
+			SELECT
+			F.followed_user_id,
+			F.created_at
+			FROM follows F
+			JOIN users U ON F.user_id = U.id
+			WHERE U.username = ?
+		) F
 		JOIN users U ON F.followed_user_id = U.id
-		WHERE F.user_id = ?
 		ORDER BY F.created_at DESC
 		LIMIT ? OFFSET ?;
-	`, userID, pageSize, pageNum*pageSize).Scan(&users)
+	`, username, pageSize, pageNum*pageSize).Scan(&users)
 
 	if result.Error != nil {
 		return nil, result.Error

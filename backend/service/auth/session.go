@@ -12,8 +12,13 @@ var cookieName string = "id"
 
 func SetJWTCookie(w http.ResponseWriter, token string) {
 	cookie := http.Cookie{
-		Name:  cookieName,
-		Value: token,
+		Name:     cookieName,
+		Value:    token,
+		Path:     "/",
+		SameSite: http.SameSiteNoneMode,
+		Secure:   true,
+		HttpOnly: true,
+		MaxAge:   3600 * 24,
 	}
 
 	http.SetCookie(w, &cookie)

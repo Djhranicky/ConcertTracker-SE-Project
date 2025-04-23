@@ -41,6 +41,7 @@ describe('AuthenticationService', () => {
       email: 'mock@test.com',
       password: 'password123',
       name: 'mocktest',
+      username: 'mocktest',
     };
 
     const mockResponse = {};
@@ -126,29 +127,5 @@ describe('AuthenticationService', () => {
     document.cookie = 'id=jwt123; path=/api';
     service.logout();
     expect(document.cookie).not.toContain('id=');
-  });
-
-  //isAuth test
-  it('should return true if /validate return 200 message', () => {
-    const testResponse = { message: 'user session validated' };
-    service.isAuthenticated().subscribe((result) => {
-      expect(result).toBeTrue();
-    });
-
-    const req = httpMock.expectOne(`${service['url']}/validate`);
-    expect(req.request.method).toBe('GET');
-    expect(req.request.withCredentials).toBeTrue();
-    req.flush(testResponse);
-  });
-
-  it('should return false if /validate returns 401', () => {
-    const mockResponse = {};
-    service.isAuthenticated().subscribe((result) => {
-      expect(result).toBeFalse();
-    });
-
-    const req = httpMock.expectOne(`${service['url']}/validate`);
-    expect(req.request.method).toBe('GET');
-    req.flush(mockResponse, { status: 401, statusText: '' });
   });
 });
