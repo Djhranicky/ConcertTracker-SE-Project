@@ -240,18 +240,10 @@ definitions:
         maxLength: 130
         minLength: 3
         type: string
-      username:
-        type: string
     required:
     - email
     - name
     - password
-    - username
-    type: object
-  types.UserUsernamePayload:
-    properties:
-      username:
-        type: string
     type: object
   types.VenueMetadata:
     properties:
@@ -473,7 +465,7 @@ paths:
     post:
       consumes:
       - application/json
-      description: Authenticates a user and returns a JWT token and username
+      description: Authenticates a user and returns a JWT token
       parameters:
       - description: Login Payload
         in: body
@@ -485,7 +477,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: Token and username
+          description: OK
           schema:
             additionalProperties:
               type: string
@@ -521,38 +513,6 @@ paths:
           schema:
             type: string
       summary: Register user
-      tags:
-      - Auth
-  /user:
-    get:
-      consumes:
-      - application/json
-      description: Returns user information based on username provided in JSON payload
-      parameters:
-      - description: Username Payload
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/types.UserUsernamePayload'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: User's name and email
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-        "400":
-          description: Invalid payload
-          schema:
-            type: string
-        "404":
-          description: User not found
-          schema:
-            type: string
-      summary: Get user info
       tags:
       - Auth
   /userpost:
@@ -617,25 +577,21 @@ paths:
       summary: Create user post
       tags:
       - User
-  /users:
+  /validate:
     get:
-      consumes:
-      - application/json
-      description: Returns a list of all usernames in the database
+      description: Verifies if a user's session cookie contains an authenticated token
       produces:
       - application/json
       responses:
         "200":
-          description: List of usernames
-          schema:
-            items:
-              type: string
-            type: array
-        "500":
-          description: Internal server error
+          description: user session validated
           schema:
             type: string
-      summary: Get list of all users
+        "401":
+          description: missing or invalid authorization token
+          schema:
+            type: string
+      summary: Validate user session
       tags:
       - Auth
 schemes:

@@ -1,23 +1,15 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { PostService } from '../../services/post.service';
-import { Post } from '../../models/post.model';
+import { PostService, Post } from '../../services/post.service';
 import { UserService } from '../../services/user.service';
 import { Button } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { Avatar } from 'primeng/avatar';
 import { TimeAgoPipe } from '../../utils/time-ago.pipe';
-import { FriendlyDatePipe } from '../../utils/friendlyDate.pipe';
+
 @Component({
   selector: 'app-post',
-  imports: [
-    CardModule,
-    Button,
-    Avatar,
-    CommonModule,
-    TimeAgoPipe,
-    FriendlyDatePipe,
-  ],
+  imports: [CardModule, Button, Avatar, CommonModule, TimeAgoPipe],
   templateUrl: './post.component.html',
   styleUrl: './post.component.css',
   providers: [PostService, UserService],
@@ -28,12 +20,12 @@ export class PostComponent implements OnInit {
   currentUsername: string = '';
 
   @Input() post: Post;
-
+  
   constructor(private userService: UserService) {}
-
+  
   ngOnInit(): void {
     // Check if the post is from the current user
-    this.userService.getUserProfile().subscribe((profile) => {
+    this.userService.getUserProfile().subscribe(profile => {
       this.currentUsername = profile.name;
       this.isCurrentUser = this.post.username === this.currentUsername;
     });
@@ -51,7 +43,7 @@ export class PostComponent implements OnInit {
       this.post.likes = this.post.likes - 1;
     }
   }
-
+  
   getDisplayUsername(): string {
     return this.isCurrentUser ? 'You' : this.post.username;
   }

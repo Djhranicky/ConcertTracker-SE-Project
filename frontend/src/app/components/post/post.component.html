@@ -1,4 +1,4 @@
-<p-card *ngIf="post.type === 'review' || post.type === 'ATTENDED'">
+<p-card *ngIf="post.type === 'review'">
   <ng-template #title class="template">
     <div class="head">
       <p-avatar icon="pi pi-user" class="mr-2" size="large" shape="circle" />
@@ -9,18 +9,14 @@
   <div class="card-body">
     <div class="review">
       <div class="concert">
-        <img
-          src="https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-        />
+        <img [src]="post.img" />
         <div class="concert-text">
           <div class="date-name">
             <span class="tour-name">{{ post.tour }}</span>
-            <span class="tour-date">{{ post.date | friendlyDate }}</span>
+            <span class="tour-date">{{ post.date }}</span>
           </div>
-          <a [href]="'/artist/' + post.artist"
-            ><span class="tour-artist">{{ post.artist }}</span></a
-          >
-          <span class="tour-venue">{{ post.venue }}, {{ post.city }} </span>
+          <span class="tour-artist">{{ post.artist }}</span>
+          <span class="tour-venue">{{ post.venue }} </span>
           <div class="rating">
             <span class="rating-number">{{ post.rating }} </span>
             <span
@@ -49,7 +45,7 @@
   </div>
 </p-card>
 
-<p-card *ngIf="post.type === 'wishlist' || post.type === 'WISHLIST'">
+<p-card *ngIf="post.type === 'wishlist'">
   <ng-template #title>
     <div class="head">
       <p-avatar icon="pi pi-user" class="mr-2" size="large" shape="circle" />
@@ -60,18 +56,14 @@
   <div></div>
   <div class="card-body">
     <div class="concert">
-      <img
-        src="https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-      />
+      <img [src]="post.img" />
       <div class="concert-text">
         <div class="date-name">
           <span class="tour-name">{{ post.tour }}</span>
-          <span class="tour-date">{{ post.date | friendlyDate }}</span>
+          <span class="tour-date">{{ post.date }}</span>
         </div>
-        <a [href]="'/artist/' + post.artist">
-          <span class="tour-artist">{{ post.artist }}</span></a
-        >
-        <span class="tour-venue">{{ post.venue }}, {{ post.city }} </span>
+        <span class="tour-artist">{{ post.artist }}</span>
+        <span class="tour-venue">{{ post.venue }} </span>
       </div>
     </div>
     <div class="footer">

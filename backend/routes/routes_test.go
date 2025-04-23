@@ -3,7 +3,6 @@ package routes
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"net/http/httptest"
@@ -17,7 +16,6 @@ import (
 	"github.com/djhranicky/ConcertTracker-SE-Project/types"
 	"github.com/djhranicky/ConcertTracker-SE-Project/utils"
 	"github.com/gorilla/mux"
-	"github.com/joho/godotenv"
 	"gorm.io/gorm"
 )
 
@@ -98,7 +96,6 @@ func TestUserServiceHandleRegister(t *testing.T) {
 		payload := types.UserRegisterPayload{
 			Name:     "Created User",
 			Email:    "test2@example.com",
-			Username: "createduser",
 			Password: "testpw",
 		}
 		marshalled, _ := json.Marshal(payload)
@@ -247,6 +244,90 @@ func TestUserServiceHandleLogin(t *testing.T) {
 	})
 }
 
+func TestUserServiceHandleValidate(t *testing.T) {
+	utils.Init()
+	handler, database := initTestHandler()
+	defer destroyDatabase(database)
+
+	t.Run("should fail when no id cookie is present", func(t *testing.T) {
+		req, err := http.NewRequest(http.MethodGet, "/validate", nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/validate", handler.handleValidate)
+
+		router.ServeHTTP(rr, req)
+
+		if rr.Code != http.StatusUnauthorized {
+			t.Errorf("expected status code %v, got status code %v", http.StatusBadRequest, rr.Code)
+		}
+	})
+
+	t.Run("should fail when invalid jwt string is present", func(t *testing.T) {
+		req, err := http.NewRequest(http.MethodGet, "/validate", nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+		req.AddCookie(&http.Cookie{
+			Name:  "id",
+			Value: "invalid jwt token",
+		})
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/validate", handler.handleValidate)
+
+		router.ServeHTTP(rr, req)
+
+		if rr.Code != http.StatusUnauthorized {
+			t.Errorf("expected status code %v, got status code %v", http.StatusBadRequest, rr.Code)
+		}
+	})
+
+	t.Run("should pass when valid cookie is present", func(t *testing.T) {
+		payload := &types.UserRegisterPayload{
+			Name:     "John Doe",
+			Email:    "test@example.com",
+			Password: "test",
+		}
+		marshalled, _ := json.Marshal(payload)
+
+		req, err := http.NewRequest(http.MethodPost, "/login", bytes.NewBuffer(marshalled))
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		rr := httptest.NewRecorder()
+		router := mux.NewRouter()
+
+		router.HandleFunc("/login", handler.handleLogin)
+		router.ServeHTTP(rr, req)
+
+		cookie := rr.Result().Cookies()
+		req, err = http.NewRequest(http.MethodGet, "/validate", nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+		req.AddCookie(cookie[0])
+
+		rr = httptest.NewRecorder()
+		router = mux.NewRouter()
+
+		router.HandleFunc("/validate", handler.handleValidate)
+
+		router.ServeHTTP(rr, req)
+
+		if rr.Code != http.StatusOK {
+			t.Errorf("expected status code %v, got status code %v", http.StatusBadRequest, rr.Code)
+		}
+	})
+}
+
 func TestArtistServiceHandleArtist(t *testing.T) {
 	utils.Init()
 	handler, database := initTestHandler()
@@ -288,7 +369,6 @@ func TestArtistServiceHandleArtist(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		addDefaultValidation(req)
 
 		rr := httptest.NewRecorder()
 		router := mux.NewRouter()
@@ -317,7 +397,6 @@ func TestArtistServiceHandleArtist(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		addDefaultValidation(req)
 
 		rr := httptest.NewRecorder()
 		router := mux.NewRouter()
@@ -352,7 +431,6 @@ func TestArtistServiceHandleImport(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		addDefaultValidation(req)
 
 		rr := httptest.NewRecorder()
 		router := mux.NewRouter()
@@ -369,7 +447,6 @@ func TestArtistServiceHandleImport(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		addDefaultValidation(req)
 
 		rr := httptest.NewRecorder()
 		router := mux.NewRouter()
@@ -386,7 +463,6 @@ func TestArtistServiceHandleImport(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		addDefaultValidation(req)
 
 		rr := httptest.NewRecorder()
 		router := mux.NewRouter()
@@ -413,7 +489,6 @@ func TestArtistServiceHandleImport(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		addDefaultValidation(req)
 
 		rr := httptest.NewRecorder()
 		router := mux.NewRouter()
@@ -441,7 +516,6 @@ func TestArtistServiceHandleImport(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		addDefaultValidation(req)
 
 		rr := httptest.NewRecorder()
 		router := mux.NewRouter()
@@ -469,7 +543,6 @@ func TestArtistServiceHandleImport(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		addDefaultValidation(req)
 
 		rr := httptest.NewRecorder()
 		router := mux.NewRouter()
@@ -492,7 +565,6 @@ func TestConcertServiceHandleConcert(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		addDefaultValidation(req)
 
 		rr := httptest.NewRecorder()
 		router := mux.NewRouter()
@@ -520,7 +592,6 @@ func TestConcertServiceHandleConcert(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		addDefaultValidation(req)
 
 		rr := httptest.NewRecorder()
 		router := mux.NewRouter()
@@ -538,18 +609,18 @@ func TestUserServiceHandlePost(t *testing.T) {
 	handler, database := initTestHandler()
 	defer destroyDatabase(database)
 
-	t.Run("should fail with no 'authorUsername' field included in incoming json", func(t *testing.T) {
+	t.Run("should fail with no 'authorID' field included in incoming json", func(t *testing.T) {
 		text := "Test"
 		rating := uint(1)
 		userPostID := uint(1)
 		isPublic := true
 		payload := &types.UserPostCreatePayload{
-			Text:              &text,
-			Type:              "WISHLIST",
-			Rating:            &rating,
-			UserPostID:        &userPostID,
-			IsPublic:          &isPublic,
-			ExternalConcertID: "test",
+			Text:       &text,
+			Type:       "WISHLIST",
+			Rating:     &rating,
+			UserPostID: &userPostID,
+			IsPublic:   &isPublic,
+			ConcertID:  1,
 		}
 		marshalled, _ := json.Marshal(payload)
 
@@ -557,7 +628,6 @@ func TestUserServiceHandlePost(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		addDefaultValidation(req)
 
 		rr := httptest.NewRecorder()
 		router := mux.NewRouter()
@@ -575,12 +645,12 @@ func TestUserServiceHandlePost(t *testing.T) {
 		userPostID := uint(1)
 		isPublic := true
 		payload := &types.UserPostCreatePayload{
-			AuthorUsername:    "johndoe",
-			Text:              &text,
-			Rating:            &rating,
-			UserPostID:        &userPostID,
-			IsPublic:          &isPublic,
-			ExternalConcertID: "test",
+			AuthorID:   1,
+			Text:       &text,
+			Rating:     &rating,
+			UserPostID: &userPostID,
+			IsPublic:   &isPublic,
+			ConcertID:  1,
 		}
 		marshalled, _ := json.Marshal(payload)
 
@@ -588,7 +658,6 @@ func TestUserServiceHandlePost(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		addDefaultValidation(req)
 
 		rr := httptest.NewRecorder()
 		router := mux.NewRouter()
@@ -605,12 +674,12 @@ func TestUserServiceHandlePost(t *testing.T) {
 		rating := uint(1)
 		userPostID := uint(1)
 		payload := &types.UserPostCreatePayload{
-			AuthorUsername:    "johndoe",
-			Text:              &text,
-			Type:              "WISHLIST",
-			Rating:            &rating,
-			UserPostID:        &userPostID,
-			ExternalConcertID: "test",
+			AuthorID:   1,
+			Text:       &text,
+			Type:       "WISHLIST",
+			Rating:     &rating,
+			UserPostID: &userPostID,
+			ConcertID:  1,
 		}
 		marshalled, _ := json.Marshal(payload)
 
@@ -618,7 +687,6 @@ func TestUserServiceHandlePost(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		addDefaultValidation(req)
 
 		rr := httptest.NewRecorder()
 		router := mux.NewRouter()
@@ -636,12 +704,12 @@ func TestUserServiceHandlePost(t *testing.T) {
 		userPostID := uint(1)
 		isPublic := true
 		payload := &types.UserPostCreatePayload{
-			AuthorUsername: "johndoe",
-			Text:           &text,
-			Type:           "WISHLIST",
-			Rating:         &rating,
-			UserPostID:     &userPostID,
-			IsPublic:       &isPublic,
+			AuthorID:   1,
+			Text:       &text,
+			Type:       "WISHLIST",
+			Rating:     &rating,
+			UserPostID: &userPostID,
+			IsPublic:   &isPublic,
 		}
 		marshalled, _ := json.Marshal(payload)
 
@@ -649,7 +717,6 @@ func TestUserServiceHandlePost(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		addDefaultValidation(req)
 
 		rr := httptest.NewRecorder()
 		router := mux.NewRouter()
@@ -667,13 +734,13 @@ func TestUserServiceHandlePost(t *testing.T) {
 		userPostID := uint(1)
 		isPublic := true
 		payload := &types.UserPostCreatePayload{
-			AuthorUsername:    "johndoe",
-			Text:              &text,
-			Type:              "WRONG_TYPE",
-			Rating:            &rating,
-			UserPostID:        &userPostID,
-			IsPublic:          &isPublic,
-			ExternalConcertID: "test",
+			AuthorID:   1,
+			Text:       &text,
+			Type:       "WRONG_TYPE",
+			Rating:     &rating,
+			UserPostID: &userPostID,
+			IsPublic:   &isPublic,
+			ConcertID:  1,
 		}
 		marshalled, _ := json.Marshal(payload)
 
@@ -681,7 +748,6 @@ func TestUserServiceHandlePost(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		addDefaultValidation(req)
 
 		rr := httptest.NewRecorder()
 		router := mux.NewRouter()
@@ -699,13 +765,13 @@ func TestUserServiceHandlePost(t *testing.T) {
 		userPostID := uint(1)
 		isPublic := true
 		payload := &types.UserPostCreatePayload{
-			AuthorUsername:    "johndoe",
-			Text:              &text,
-			Type:              "WISHLIST",
-			Rating:            &rating,
-			UserPostID:        &userPostID,
-			IsPublic:          &isPublic,
-			ExternalConcertID: "test",
+			AuthorID:   1,
+			Text:       &text,
+			Type:       "WISHLIST",
+			Rating:     &rating,
+			UserPostID: &userPostID,
+			IsPublic:   &isPublic,
+			ConcertID:  1,
 		}
 		marshalled, _ := json.Marshal(payload)
 
@@ -713,7 +779,6 @@ func TestUserServiceHandlePost(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		addDefaultValidation(req)
 
 		rr := httptest.NewRecorder()
 		router := mux.NewRouter()
@@ -725,12 +790,11 @@ func TestUserServiceHandlePost(t *testing.T) {
 		assertEqual(t, http.StatusCreated, rr.Code)
 	})
 
-	t.Run("GET should fail with no username query parameter", func(t *testing.T) {
+	t.Run("GET should fail with no userID query parameter", func(t *testing.T) {
 		req, err := http.NewRequest(http.MethodGet, "/userpost", nil)
 		if err != nil {
 			t.Fatal(err)
 		}
-		addDefaultValidation(req)
 
 		rr := httptest.NewRecorder()
 		router := mux.NewRouter()
@@ -742,12 +806,11 @@ func TestUserServiceHandlePost(t *testing.T) {
 		assertEqual(t, http.StatusBadRequest, rr.Code)
 	})
 
-	t.Run("GET should fail with bad username query parameter", func(t *testing.T) {
-		req, err := http.NewRequest(http.MethodGet, "/userpost?usernameserID=test", nil)
+	t.Run("GET should fail with bad userID query parameter", func(t *testing.T) {
+		req, err := http.NewRequest(http.MethodGet, "/userpost?userID=test", nil)
 		if err != nil {
 			t.Fatal(err)
 		}
-		addDefaultValidation(req)
 
 		rr := httptest.NewRecorder()
 		router := mux.NewRouter()
@@ -759,12 +822,11 @@ func TestUserServiceHandlePost(t *testing.T) {
 		assertEqual(t, http.StatusBadRequest, rr.Code)
 	})
 
-	t.Run("GET should pass with valid username query parameter", func(t *testing.T) {
-		req, err := http.NewRequest(http.MethodGet, "/userpost?username=johndoe", nil)
+	t.Run("GET should pass with valid userID query parameter", func(t *testing.T) {
+		req, err := http.NewRequest(http.MethodGet, "/userpost?userID=1", nil)
 		if err != nil {
 			t.Fatal(err)
 		}
-		addDefaultValidation(req)
 
 		rr := httptest.NewRecorder()
 		router := mux.NewRouter()
@@ -784,7 +846,7 @@ func TestUserServiceHandleLike(t *testing.T) {
 
 	t.Run("should fail if UserPostID not included", func(t *testing.T) {
 		payload := &types.UserLikePostPayload{
-			Username: "johndoe",
+			UserID: 1,
 		}
 		marshalled, _ := json.Marshal(payload)
 
@@ -792,7 +854,6 @@ func TestUserServiceHandleLike(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		addDefaultValidation(req)
 
 		rr := httptest.NewRecorder()
 		router := mux.NewRouter()
@@ -814,7 +875,6 @@ func TestUserServiceHandleLike(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		addDefaultValidation(req)
 
 		rr := httptest.NewRecorder()
 		router := mux.NewRouter()
@@ -828,7 +888,7 @@ func TestUserServiceHandleLike(t *testing.T) {
 
 	t.Run("should succeed when user first likes a post", func(t *testing.T) {
 		payload := &types.UserLikePostPayload{
-			Username:   "johndoe",
+			UserID:     1,
 			UserPostID: 1,
 		}
 		marshalled, _ := json.Marshal(payload)
@@ -837,7 +897,6 @@ func TestUserServiceHandleLike(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		addDefaultValidation(req)
 
 		rr := httptest.NewRecorder()
 		router := mux.NewRouter()
@@ -851,7 +910,7 @@ func TestUserServiceHandleLike(t *testing.T) {
 
 	t.Run("should succeed when user removes like from post", func(t *testing.T) {
 		payload := &types.UserLikePostPayload{
-			Username:   "johndoe",
+			UserID:     1,
 			UserPostID: 1,
 		}
 		marshalled, _ := json.Marshal(payload)
@@ -860,7 +919,6 @@ func TestUserServiceHandleLike(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		addDefaultValidation(req)
 
 		rr := httptest.NewRecorder()
 		router := mux.NewRouter()
@@ -874,7 +932,7 @@ func TestUserServiceHandleLike(t *testing.T) {
 
 	t.Run("should succeed when user likes a post again", func(t *testing.T) {
 		payload := &types.UserLikePostPayload{
-			Username:   "johndoe",
+			UserID:     1,
 			UserPostID: 1,
 		}
 		marshalled, _ := json.Marshal(payload)
@@ -883,7 +941,6 @@ func TestUserServiceHandleLike(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		addDefaultValidation(req)
 
 		rr := httptest.NewRecorder()
 		router := mux.NewRouter()
@@ -900,7 +957,6 @@ func TestUserServiceHandleLike(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		addDefaultValidation(req)
 
 		rr := httptest.NewRecorder()
 		router := mux.NewRouter()
@@ -917,7 +973,6 @@ func TestUserServiceHandleLike(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		addDefaultValidation(req)
 
 		rr := httptest.NewRecorder()
 		router := mux.NewRouter()
@@ -934,7 +989,6 @@ func TestUserServiceHandleLike(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		addDefaultValidation(req)
 
 		rr := httptest.NewRecorder()
 		router := mux.NewRouter()
@@ -952,9 +1006,9 @@ func TestUserServiceHandleFollow(t *testing.T) {
 	handler, database := initTestHandler()
 	defer destroyDatabase(database)
 
-	t.Run("should fail if FollowedUsername not included", func(t *testing.T) {
+	t.Run("should fail if FollowedUserID not included", func(t *testing.T) {
 		payload := &types.UserFollowPayload{
-			Username: "johndoe",
+			UserID: 1,
 		}
 		marshalled, _ := json.Marshal(payload)
 
@@ -962,7 +1016,6 @@ func TestUserServiceHandleFollow(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		addDefaultValidation(req)
 
 		rr := httptest.NewRecorder()
 		router := mux.NewRouter()
@@ -974,9 +1027,9 @@ func TestUserServiceHandleFollow(t *testing.T) {
 		assertEqual(t, http.StatusBadRequest, rr.Code)
 	})
 
-	t.Run("should fail if Username not included", func(t *testing.T) {
+	t.Run("should fail if UserID not included", func(t *testing.T) {
 		payload := &types.UserFollowPayload{
-			FollowedUsername: "janedoe",
+			FollowedUserID: 1,
 		}
 		marshalled, _ := json.Marshal(payload)
 
@@ -984,7 +1037,6 @@ func TestUserServiceHandleFollow(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		addDefaultValidation(req)
 
 		rr := httptest.NewRecorder()
 		router := mux.NewRouter()
@@ -998,8 +1050,8 @@ func TestUserServiceHandleFollow(t *testing.T) {
 
 	t.Run("should succeed when user first follows another user", func(t *testing.T) {
 		payload := &types.UserFollowPayload{
-			Username:         "johndoe",
-			FollowedUsername: "janedoe",
+			UserID:         1,
+			FollowedUserID: 1,
 		}
 		marshalled, _ := json.Marshal(payload)
 
@@ -1007,7 +1059,6 @@ func TestUserServiceHandleFollow(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		addDefaultValidation(req)
 
 		rr := httptest.NewRecorder()
 		router := mux.NewRouter()
@@ -1021,8 +1072,8 @@ func TestUserServiceHandleFollow(t *testing.T) {
 
 	t.Run("should succeed when user unfollows another user", func(t *testing.T) {
 		payload := &types.UserFollowPayload{
-			Username:         "johndoe",
-			FollowedUsername: "janedoe",
+			UserID:         1,
+			FollowedUserID: 1,
 		}
 		marshalled, _ := json.Marshal(payload)
 
@@ -1030,7 +1081,6 @@ func TestUserServiceHandleFollow(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		addDefaultValidation(req)
 
 		rr := httptest.NewRecorder()
 		router := mux.NewRouter()
@@ -1044,8 +1094,8 @@ func TestUserServiceHandleFollow(t *testing.T) {
 
 	t.Run("should succeed when user follows another user again", func(t *testing.T) {
 		payload := &types.UserFollowPayload{
-			Username:         "johndoe",
-			FollowedUsername: "janedoe",
+			UserID:         1,
+			FollowedUserID: 1,
 		}
 		marshalled, _ := json.Marshal(payload)
 
@@ -1053,7 +1103,6 @@ func TestUserServiceHandleFollow(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		addDefaultValidation(req)
 
 		rr := httptest.NewRecorder()
 		router := mux.NewRouter()
@@ -1070,7 +1119,6 @@ func TestUserServiceHandleFollow(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		addDefaultValidation(req)
 
 		rr := httptest.NewRecorder()
 		router := mux.NewRouter()
@@ -1087,7 +1135,6 @@ func TestUserServiceHandleFollow(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		addDefaultValidation(req)
 
 		rr := httptest.NewRecorder()
 		router := mux.NewRouter()
@@ -1104,7 +1151,6 @@ func TestUserServiceHandleFollow(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		addDefaultValidation(req)
 
 		rr := httptest.NewRecorder()
 		router := mux.NewRouter()
@@ -1121,7 +1167,6 @@ func TestUserServiceHandleFollow(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		addDefaultValidation(req)
 
 		rr := httptest.NewRecorder()
 		router := mux.NewRouter()
@@ -1133,12 +1178,11 @@ func TestUserServiceHandleFollow(t *testing.T) {
 		assertEqual(t, http.StatusBadRequest, rr.Code)
 	})
 
-	t.Run("GET should pass with valid username and type = followers", func(t *testing.T) {
-		req, err := http.NewRequest(http.MethodGet, "/follow?username=johndoe&type=followers", nil)
+	t.Run("GET should pass with valid userID and type = followers", func(t *testing.T) {
+		req, err := http.NewRequest(http.MethodGet, "/follow?userID=1&type=followers", nil)
 		if err != nil {
 			t.Fatal(err)
 		}
-		addDefaultValidation(req)
 
 		rr := httptest.NewRecorder()
 		router := mux.NewRouter()
@@ -1150,12 +1194,11 @@ func TestUserServiceHandleFollow(t *testing.T) {
 		assertEqual(t, http.StatusOK, rr.Code)
 	})
 
-	t.Run("GET should pass with valid username and type = following", func(t *testing.T) {
-		req, err := http.NewRequest(http.MethodGet, "/follow?username=johndoe&type=following", nil)
+	t.Run("GET should pass with valid userID and type = following", func(t *testing.T) {
+		req, err := http.NewRequest(http.MethodGet, "/follow?userID=1&type=following", nil)
 		if err != nil {
 			t.Fatal(err)
 		}
-		addDefaultValidation(req)
 
 		rr := httptest.NewRecorder()
 		router := mux.NewRouter()
@@ -1166,439 +1209,6 @@ func TestUserServiceHandleFollow(t *testing.T) {
 
 		assertEqual(t, http.StatusOK, rr.Code)
 	})
-}
-
-func TestSessionMethods(t *testing.T) {
-	utils.Init()
-	handler, database := initTestHandler()
-	defer destroyDatabase(database)
-	err := godotenv.Load("./.env")
-	if err != nil {
-		log.Fatal("cannot load env file")
-	}
-	secret := []byte(os.Getenv("JWT_SECRET"))
-	t.Run("should fail if request has no cookie", func(t *testing.T) {
-		req, err := http.NewRequest(http.MethodGet, "/", nil)
-		if err != nil {
-			t.Fatal(err)
-		}
-		_, err = auth.GetJWTCookie(req)
-		if err != http.ErrNoCookie {
-			t.Errorf("expected error code %v, got nothing", http.ErrNoCookie)
-		}
-	})
-
-	t.Run("should pass if request has cookie", func(t *testing.T) {
-		req, err := http.NewRequest(http.MethodGet, "/", nil)
-		if err != nil {
-			t.Fatal(err)
-		}
-		req.AddCookie(&http.Cookie{
-			Name:     "id",
-			Value:    "",
-			HttpOnly: true,
-		})
-		cookie, err := auth.GetJWTCookie(req)
-		if err != nil {
-			t.Errorf("expected cookie in request, got %v", cookie)
-		}
-	})
-
-	t.Run("verification should fail if no cookie present", func(t *testing.T) {
-		req, err := http.NewRequest(http.MethodGet, "/", nil)
-		if err != nil {
-			t.Fatal(err)
-		}
-		err = auth.ValidateUser(req, handler.Store)
-		if err != http.ErrNoCookie {
-			t.Errorf("expected error code %v, got %v", http.ErrNoCookie, err)
-		}
-	})
-
-	t.Run("verification should fail if no JWT token present", func(t *testing.T) {
-		expectedErr := fmt.Errorf("missing authorization token")
-		req, err := http.NewRequest(http.MethodGet, "/", nil)
-		if err != nil {
-			t.Fatal(err)
-		}
-		req.AddCookie(&http.Cookie{
-			Name:     "id",
-			Value:    "",
-			HttpOnly: true,
-		})
-		req.Header.Add("username", "johndoe")
-		err = auth.ValidateUser(req, handler.Store)
-		if err.Error() != expectedErr.Error() {
-			t.Errorf("expected error code %v, got %v", expectedErr, err)
-		}
-	})
-
-	t.Run("verification should fail if JWT token is expired", func(t *testing.T) {
-		expectedErr := fmt.Errorf("token has invalid claims: token is expired")
-		req, err := http.NewRequest(http.MethodGet, "/", nil)
-		if err != nil {
-			t.Fatal(err)
-		}
-		token, _ := auth.CreateJWT(secret, 1, -1)
-		req.AddCookie(&http.Cookie{
-			Name:     "id",
-			Value:    token,
-			HttpOnly: true,
-		})
-		req.Header.Add("username", "johndoe")
-		err = auth.ValidateUser(req, handler.Store)
-		if err == nil || err.Error() != expectedErr.Error() {
-			t.Errorf("expected error code %v, got %v", expectedErr, err)
-		}
-	})
-
-	t.Run("verification should succeed if JWT token is valid", func(t *testing.T) {
-		req, err := http.NewRequest(http.MethodGet, "/", nil)
-		if err != nil {
-			t.Fatal(err)
-		}
-		token, _ := auth.CreateJWT(secret, 1, 10)
-		req.AddCookie(&http.Cookie{
-			Name:     "id",
-			Value:    token,
-			HttpOnly: true,
-		})
-		req.Header.Add("username", "johndoe")
-		err = auth.ValidateUser(req, handler.Store)
-		if err != nil {
-			t.Errorf("expected no error code, got %v", err)
-		}
-	})
-}
-
-func TestUserInfoRoute(t *testing.T) {
-	utils.Init()
-	handler, database := initTestHandler()
-	defer destroyDatabase(database)
-
-	// Create a test user with unique credentials
-	uniqueEmail := "unique_test_user@example.com"
-	uniqueUsername := "unique_testuser"
-	testUser := types.User{
-		Name:     "Unique Test User",
-		Username: uniqueUsername,
-		Email:    uniqueEmail,
-		Password: "hashedpassword",
-	}
-	_ = handler.Store.CreateUser(testUser)
-
-	// t.Run("should fail without authorization", func(t *testing.T) {
-	// 	payload := map[string]string{
-	// 		"username": uniqueUsername,
-	// 	}
-	// 	marshalled, _ := json.Marshal(payload)
-
-	// 	req, err := http.NewRequest(http.MethodGet, "/userinfo", bytes.NewBuffer(marshalled))
-	// 	if err != nil {
-	// 		t.Fatal(err)
-	// 	}
-	// 	// No auth token added
-
-	// 	rr := httptest.NewRecorder()
-	// 	router := mux.NewRouter()
-
-	// 	router.HandleFunc("/userinfo", handler.handleUserInfo)
-
-	// 	router.ServeHTTP(rr, req)
-
-	// 	assertEqual(t, http.StatusUnauthorized, rr.Code)
-	// })
-
-	t.Run("should fail with no username in payload", func(t *testing.T) {
-		payload := map[string]string{}
-		marshalled, _ := json.Marshal(payload)
-
-		req, err := http.NewRequest(http.MethodGet, "/userinfo", bytes.NewBuffer(marshalled))
-		if err != nil {
-			t.Fatal(err)
-		}
-		addDefaultValidation(req)
-
-		rr := httptest.NewRecorder()
-		router := mux.NewRouter()
-
-		router.HandleFunc("/userinfo", handler.handleUserInfo)
-
-		router.ServeHTTP(rr, req)
-
-		assertEqual(t, http.StatusBadRequest, rr.Code)
-	})
-
-	t.Run("should fail with empty username", func(t *testing.T) {
-		payload := map[string]string{
-			"username": "",
-		}
-		marshalled, _ := json.Marshal(payload)
-
-		req, err := http.NewRequest(http.MethodGet, "/userinfo", bytes.NewBuffer(marshalled))
-		if err != nil {
-			t.Fatal(err)
-		}
-		addDefaultValidation(req)
-
-		rr := httptest.NewRecorder()
-		router := mux.NewRouter()
-
-		router.HandleFunc("/userinfo", handler.handleUserInfo)
-
-		router.ServeHTTP(rr, req)
-
-		assertEqual(t, http.StatusBadRequest, rr.Code)
-	})
-
-	t.Run("should fail with non-existent username", func(t *testing.T) {
-		payload := map[string]string{
-			"username": "nonexistentuser_123456",
-		}
-		marshalled, _ := json.Marshal(payload)
-
-		req, err := http.NewRequest(http.MethodGet, "/userinfo", bytes.NewBuffer(marshalled))
-		if err != nil {
-			t.Fatal(err)
-		}
-		addDefaultValidation(req)
-
-		rr := httptest.NewRecorder()
-		router := mux.NewRouter()
-
-		router.HandleFunc("/userinfo", handler.handleUserInfo)
-
-		router.ServeHTTP(rr, req)
-
-		assertEqual(t, http.StatusNotFound, rr.Code)
-	})
-
-	t.Run("should succeed with valid username", func(t *testing.T) {
-		payload := map[string]string{
-			"username": uniqueUsername,
-		}
-		marshalled, _ := json.Marshal(payload)
-
-		req, err := http.NewRequest(http.MethodGet, "/userinfo", bytes.NewBuffer(marshalled))
-		if err != nil {
-			t.Fatal(err)
-		}
-		addDefaultValidation(req)
-
-		rr := httptest.NewRecorder()
-		router := mux.NewRouter()
-
-		router.HandleFunc("/userinfo", handler.handleUserInfo)
-
-		router.ServeHTTP(rr, req)
-
-		assertEqual(t, http.StatusOK, rr.Code)
-
-		// Check response contains expected fields
-		var response map[string]string
-		err = json.Unmarshal(rr.Body.Bytes(), &response)
-		if err != nil {
-			t.Fatalf("Failed to parse response JSON: %v", err)
-		}
-
-		if response["name"] != "Unique Test User" {
-			t.Errorf("Expected name 'Unique Test User', got '%s'", response["name"])
-		}
-		if response["email"] != uniqueEmail {
-			t.Errorf("Expected email '%s', got '%s'", uniqueEmail, response["email"])
-		}
-	})
-
-	t.Run("should handle OPTIONS request correctly", func(t *testing.T) {
-		req, err := http.NewRequest(http.MethodOptions, "/userinfo", nil)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		rr := httptest.NewRecorder()
-		router := mux.NewRouter()
-
-		router.HandleFunc("/userinfo", handler.handleUserInfo)
-
-		router.ServeHTTP(rr, req)
-
-		assertEqual(t, http.StatusOK, rr.Code)
-	})
-}
-
-func TestUsersRoute(t *testing.T) {
-	utils.Init()
-	handler, database := initTestHandler()
-	defer destroyDatabase(database)
-
-	// First, get the current count of users to use as a baseline
-	var initialUserCount int
-
-	// Get all users first to know what we're starting with
-	existingUsers, _ := handler.Store.GetAllUsers()
-	initialUserCount = len(existingUsers)
-
-	// t.Run("should fail without authorization", func(t *testing.T) {
-	// 	req, err := http.NewRequest(http.MethodGet, "/users", nil)
-	// 	if err != nil {
-	// 		t.Fatal(err)
-	// 	}
-	// 	// No auth token added
-
-	// 	rr := httptest.NewRecorder()
-	// 	router := mux.NewRouter()
-
-	// 	router.HandleFunc("/users", handler.handleUserList)
-
-	// 	router.ServeHTTP(rr, req)
-
-	// 	assertEqual(t, http.StatusUnauthorized, rr.Code)
-	// })
-
-	t.Run("should return current users list", func(t *testing.T) {
-		req, err := http.NewRequest(http.MethodGet, "/users", nil)
-		if err != nil {
-			t.Fatal(err)
-		}
-		addDefaultValidation(req)
-
-		rr := httptest.NewRecorder()
-		router := mux.NewRouter()
-
-		router.HandleFunc("/users", handler.handleUserList)
-
-		router.ServeHTTP(rr, req)
-
-		assertEqual(t, http.StatusOK, rr.Code)
-
-		var response map[string]interface{}
-		err = json.Unmarshal(rr.Body.Bytes(), &response)
-		if err != nil {
-			t.Fatalf("Failed to parse response JSON: %v", err)
-		}
-
-		usernames, ok := response["usernames"].([]interface{})
-		if !ok {
-			t.Fatalf("Expected usernames field to be array, got %T", response["usernames"])
-		}
-
-		count, ok := response["count"].(float64)
-		if !ok {
-			t.Fatalf("Expected count field to be number, got %T", response["count"])
-		}
-
-		if int(count) != len(usernames) {
-			t.Errorf("Count %v doesn't match actual number of usernames %v", count, len(usernames))
-		}
-
-		if int(count) != initialUserCount {
-			t.Errorf("Expected %d users, got %v", initialUserCount, count)
-		}
-	})
-
-	t.Run("should return updated list after adding new users", func(t *testing.T) {
-		// Create test users with unique credentials
-		testUsers := []types.User{
-			{
-				Name:     "Test User One",
-				Username: "test_user1",
-				Email:    "test_user1@example.com",
-				Password: "hashedpassword1",
-			},
-			{
-				Name:     "Test User Two",
-				Username: "test_user2",
-				Email:    "test_user2@example.com",
-				Password: "hashedpassword2",
-			},
-		}
-
-		for _, user := range testUsers {
-			err := handler.Store.CreateUser(user)
-			if err != nil {
-				t.Fatalf("Failed to create test user: %v", err)
-			}
-		}
-
-		req, err := http.NewRequest(http.MethodGet, "/users", nil)
-		if err != nil {
-			t.Fatal(err)
-		}
-		addDefaultValidation(req)
-
-		rr := httptest.NewRecorder()
-		router := mux.NewRouter()
-
-		router.HandleFunc("/users", handler.handleUserList)
-
-		router.ServeHTTP(rr, req)
-
-		assertEqual(t, http.StatusOK, rr.Code)
-
-		var response map[string]interface{}
-		err = json.Unmarshal(rr.Body.Bytes(), &response)
-		if err != nil {
-			t.Fatalf("Failed to parse response JSON: %v", err)
-		}
-
-		usernames, ok := response["usernames"].([]interface{})
-		if !ok {
-			t.Fatalf("Expected usernames field to be array, got %T", response["usernames"])
-		}
-
-		count, ok := response["count"].(float64)
-		if !ok {
-			t.Fatalf("Expected count field to be number, got %T", response["count"])
-		}
-
-		expectedCount := initialUserCount + len(testUsers)
-		if int(count) != expectedCount {
-			t.Errorf("Expected %d users, got %v", expectedCount, count)
-		}
-
-		// Check if all our new test users are in the response
-		foundUsers := make(map[string]bool)
-		for _, username := range usernames {
-			foundUsers[username.(string)] = true
-		}
-
-		for _, user := range testUsers {
-			if !foundUsers[user.Name] {
-				t.Errorf("Expected user %s in response, but not found", user.Name)
-			}
-		}
-	})
-
-	t.Run("should handle OPTIONS request correctly", func(t *testing.T) {
-		req, err := http.NewRequest(http.MethodOptions, "/users", nil)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		rr := httptest.NewRecorder()
-		router := mux.NewRouter()
-
-		router.HandleFunc("/users", handler.handleUserList)
-
-		router.ServeHTTP(rr, req)
-
-		assertEqual(t, http.StatusOK, rr.Code)
-	})
-}
-
-func addDefaultValidation(req *http.Request) {
-	err := godotenv.Load("./.env")
-	if err != nil {
-		log.Fatal("cannot load env file")
-	}
-	secret := []byte(os.Getenv("JWT_SECRET"))
-	token, _ := auth.CreateJWT(secret, 1, 10)
-	req.AddCookie(&http.Cookie{
-		Name:     "id",
-		Value:    token,
-		HttpOnly: true,
-	})
-	req.Header.Add("username", "johndoe")
 }
 
 func initTestDatabase(dbName string) *gorm.DB {
@@ -1635,13 +1245,6 @@ func initTestHandler() (*Handler, *gorm.DB) {
 	user := types.User{
 		Name:     "John Doe",
 		Email:    "test@example.com",
-		Username: "johndoe",
-		Password: hashedPassword,
-	}
-	user2 := types.User{
-		Name:     "Jane Doe",
-		Email:    "test3@example.com",
-		Username: "janedoe",
 		Password: hashedPassword,
 	}
 	artist := types.Artist{
@@ -1650,7 +1253,6 @@ func initTestHandler() (*Handler, *gorm.DB) {
 	}
 
 	database.Create(&user)
-	database.Create(&user2)
 	database.Create(&artist)
 
 	return handler, database

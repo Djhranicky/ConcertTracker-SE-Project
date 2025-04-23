@@ -1,98 +1,31 @@
 <app-navbar></app-navbar>
-<p-progressSpinner
-  *ngIf="loading"
-  styleClass="custom-spinner"
-></p-progressSpinner>
-<body *ngIf="!loading">
+<body>
   <p-card class="header">
     <div class="content">
       <div class="details">
-        <img
-          class="header-img"
-          [src]="
-            concert.img ||
-            'https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small_2x/default-avatar-icon-of-social-media-user-vector.jpg'
-          "
-        />
+        <img class="header-img" src="{{ concert.img }}" />
         <div class="date-frame">
-          {{ (concert.date | friendlyDate).split(" ")[0] }}
+          {{ month }}
           <div class="day-box">
-            {{ (concert.date | friendlyDate).split(" ")[1].replace(",", "") }}
+            {{ day }}
           </div>
-          {{ (concert.date | friendlyDate).split(" ")[2] }}
+          {{ year }}
         </div>
         <div>
-          <a class="header-artist" [routerLink]="['/artist/', concert.artist]">
-            {{ concert.artist }}</a
-          >
+          <div class="header-artist">{{ concert.artist }}</div>
           <div class="header-tour">{{ concert.tour }}</div>
-          <div class="header-venue">
-            {{ concert.venue }}, {{ concert.city }}
-          </div>
+          <div class="header-venue">{{ concert.venue }}</div>
         </div>
       </div>
       <div class="stats">
         <!-- <div class="log-button-wrapper"> -->
         <p-button
           class="mark-attended"
-          [label]="wishlisted ? 'Wishlisted' : 'Add to Wishlist'"
-          [icon]="wishlisted ? 'pi pi-check' : 'pi pi-heart'"
-          (click)="wishlist()"
-          [disabled]="wishlisted"
-        ></p-button>
-        <p-button
-          class="mark-attended"
           label="Mark as Attended"
           icon="pi pi-plus-circle"
-          (click)="openModal()"
         ></p-button>
-        <p-dialog
-          header="Log Concert"
-          [(visible)]="showModal"
-          [modal]="true"
-          [style]="{ width: '30vw' }"
-        >
-          <div class="flex flex-column gap-3">
-            <label for="concertText" style="font-size: medium">Review</label>
-            <textarea
-              id="concertText"
-              pInputTextarea
-              [(ngModel)]="reviewText"
-              rows="5"
-              cols="30"
-            ></textarea>
-            <div class="flex align-items-center gap-2">
-              <label for="rating" style="font-size: medium">Rating</label>
-              <p-rating [(ngModel)]="rating"></p-rating>
-            </div>
-
-            <div class="flex align-items-center gap-2">
-              <p-checkbox
-                [(ngModel)]="isPublic"
-                inputId="isPublic"
-                binary="true"
-              ></p-checkbox>
-              <label for="isPublic" style="font-size: medium"
-                >Make this post public</label
-              >
-            </div>
-          </div>
-
-          <ng-template pTemplate="footer">
-            <p-button
-              label="Submit"
-              icon="pi pi-check"
-              (click)="submitPost()"
-            ></p-button>
-            <p-button
-              label="Cancel"
-              icon="pi pi-times"
-              severity="secondary"
-              (click)="showModal = false"
-            ></p-button>
-          </ng-template>
-        </p-dialog>
         <!-- </div> -->
+        <div class="rating">4.2/5</div>
       </div>
     </div>
   </p-card>
@@ -101,26 +34,12 @@
       <p-card class="setlist">
         <ng-template #title> Setlist </ng-template>
         <ol>
-          <div class="setlistItem" *ngFor="let song of concert.setlist">
-            <span *ngIf="song.tape" style="color: gray" class="tape">
-              <span *ngIf="song.info" class="songInfo"
-                >`({{ song.info }})`</span
-              >
-              <span *ngIf="song.tape" class="pi-headphones"></span><br />
-              <p>{{ song.name }}</p>
+          <li *ngFor="let song of setlist">
+            <span *ngIf="song.tape">
+              {{ song.info }}
             </span>
-            <span *ngIf="!song.tape">
-              <li>
-                <p>{{ song.name }}</p>
-                <p style="color: gray" *ngIf="song.info" class="songInfo">
-                  ({{ song.info }})
-                </p>
-                <p style="color: gray" *ngIf="song.cover" class="songInfo">
-                  ({{ song.cover.name }} cover)
-                </p>
-              </li>
-            </span>
-          </div>
+            {{ song.name }}
+          </li>
         </ol>
       </p-card>
       <p-card class="recent">

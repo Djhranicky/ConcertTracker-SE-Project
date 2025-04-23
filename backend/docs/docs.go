@@ -311,7 +311,7 @@ const docTemplate = `{
         },
         "/login": {
             "post": {
-                "description": "Authenticates a user and returns a JWT token and username",
+                "description": "Authenticates a user and returns a JWT token",
                 "consumes": [
                     "application/json"
                 ],
@@ -335,7 +335,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Token and username",
+                        "description": "OK",
                         "schema": {
                             "type": "object",
                             "additionalProperties": {
@@ -385,55 +385,6 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Invalid payload or user already exists",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
-        "/user": {
-            "get": {
-                "description": "Returns user information based on username provided in JSON payload",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Auth"
-                ],
-                "summary": "Get user info",
-                "parameters": [
-                    {
-                        "description": "Username Payload",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/types.UserUsernamePayload"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "User's name and email",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Invalid payload",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "404": {
-                        "description": "User not found",
                         "schema": {
                             "type": "string"
                         }
@@ -532,31 +483,25 @@ const docTemplate = `{
                 }
             }
         },
-        "/users": {
+        "/validate": {
             "get": {
-                "description": "Returns a list of all usernames in the database",
-                "consumes": [
-                    "application/json"
-                ],
+                "description": "Verifies if a user's session cookie contains an authenticated token",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "Auth"
                 ],
-                "summary": "Get list of all users",
+                "summary": "Validate user session",
                 "responses": {
                     "200": {
-                        "description": "List of usernames",
+                        "description": "user session validated",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "type": "string"
-                            }
+                            "type": "string"
                         }
                     },
-                    "500": {
-                        "description": "Internal server error",
+                    "401": {
+                        "description": "missing or invalid authorization token",
                         "schema": {
                             "type": "string"
                         }
@@ -919,8 +864,7 @@ const docTemplate = `{
             "required": [
                 "email",
                 "name",
-                "password",
-                "username"
+                "password"
             ],
             "properties": {
                 "email": {
@@ -933,17 +877,6 @@ const docTemplate = `{
                     "type": "string",
                     "maxLength": 130,
                     "minLength": 3
-                },
-                "username": {
-                    "type": "string"
-                }
-            }
-        },
-        "types.UserUsernamePayload": {
-            "type": "object",
-            "properties": {
-                "username": {
-                    "type": "string"
                 }
             }
         },

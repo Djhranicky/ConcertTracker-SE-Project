@@ -3,7 +3,7 @@ import { Observable, of } from 'rxjs';
 import { Router } from '@angular/router';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { CookieService } from 'ngx-cookie-service';
-import { map, catchError, tap } from 'rxjs/operators';
+import { map, catchError } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -16,7 +16,6 @@ export class AuthenticationService {
   register(email: string, username: string, password: string): Observable<any> {
     const body = {
       email: email,
-      username: username,
       name: username,
       password: password,
     };
@@ -31,33 +30,35 @@ export class AuthenticationService {
 
     localStorage.setItem('isAuth', '1');
 
-    return this.http
-      .post<{ username: string }>(
-        `${this.url}/login`,
-        { email, password },
-        { withCredentials: true }
-      )
-      .pipe(
-        tap((response) => {
-          if (response && response.username) {
-            localStorage.setItem('user', response.username);
-          }
-        })
-      );
+    return this.http.post(
+      `${this.url}/login`,
+      { email, password },
+      { withCredentials: true }
+    );
   }
 
   logout() {
     // this.isLoggedIn = false;
     document.cookie = 'id=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/api;';
-    localStorage.clear();
     this.router.navigate(['/login']);
   }
 
   isAuthenticated(): Observable<boolean> {
-    let isAuth = localStorage.getItem('isAuth');
-
-    if (isAuth == '1') return of(true);
-    return of(false);
+    return this.http
+      .get<{ message: string }>(`${this.url}/validate`, {
+        withCredentials: true,
+      })
+      .pipe(
+        catchError(() => {
+          return of(false);
+        }),
+        map((response) => {
+          if (typeof response === 'boolean') {
+            return false;
+          }
+          return response.message === 'user session validated';
+        })
+      );
   }
   constructor(
     private router: Router,

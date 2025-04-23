@@ -4,8 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-
-	"github.com/djhranicky/ConcertTracker-SE-Project/types"
 )
 
 var cookieName string = "id"
@@ -14,11 +12,6 @@ func SetJWTCookie(w http.ResponseWriter, token string) {
 	cookie := http.Cookie{
 		Name:     cookieName,
 		Value:    token,
-		Path:     "/",
-		SameSite: http.SameSiteNoneMode,
-		Secure:   true,
-		HttpOnly: true,
-		MaxAge:   3600 * 24,
 	}
 
 	http.SetCookie(w, &cookie)
@@ -39,33 +32,17 @@ func GetJWTCookie(r *http.Request) (*http.Cookie, error) {
 	return cookie, nil
 }
 
-func VerifyJWTCookie(cookie *http.Cookie, userID uint) error {
+func VerifyJWTCookie(cookie *http.Cookie, inErr error) error {
+	if cookie == nil {
+		return inErr
+	}
 	tokenString := cookie.Value
 	if tokenString == "" {
 		return fmt.Errorf("missing authorization token")
 	}
-	err := VerifyToken(tokenString, userID)
+	err := VerifyToken(tokenString)
 	if err != nil {
-		return err
+		return fmt.Errorf("invalid authorization token")
 	}
 	return nil
-}
-
-func ValidateUser(r *http.Request, store types.Store) error {
-	cookie, err := GetJWTCookie(r)
-	if err != nil {
-		return err
-	}
-
-	username := r.Header.Get("username")
-	if username == "" {
-		return fmt.Errorf("no username provided")
-	}
-
-	user, err := store.GetUserByUsername(username)
-	if err != nil {
-		return err
-	}
-
-	return VerifyJWTCookie(cookie, user.ID)
 }

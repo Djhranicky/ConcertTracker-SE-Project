@@ -226,28 +226,3 @@ li {
   font-weight: 600;
   color: #f21414;
 }
-
-.pi-headphones {
-  font-family: "primeicons" !important;
-  color: gray;
-  font-size: 2rem;
-  padding-right: 0.5rem;
-}
-
-.setlistItem {
-  height: fit-content;
-}
-
-.songInfo {
-  font-size: small;
-}
-
-.tape {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-}
-
-a {
-  text-decoration: none;
-}

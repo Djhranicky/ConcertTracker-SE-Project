@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { PopToursService } from './pop-tours.service';
-import { Tour } from '../models/artist.model';
+import { Tour } from './concert.service';
 
 describe('PopToursService', () => {
   let service: PopToursService;

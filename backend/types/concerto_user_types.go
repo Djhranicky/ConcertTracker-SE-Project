@@ -6,7 +6,6 @@ import (
 
 type UserRegisterPayload struct {
 	Name     string `json:"name" validate:"required"`
-	Username string `json:"username" validate:"required"`
 	Email    string `json:"email" validate:"required,email"`
 	Password string `json:"password" validate:"required,min=3,max=130"`
 }
@@ -16,23 +15,13 @@ type UserLoginPayload struct {
 	Password string `json:"password" validate:"required"`
 }
 
-type UserUsernamePayload struct {
-	Username string `json:"username"`
-}
-
 type UserFollowPayload struct {
-	Username         string `json:"username" validate:"required"`
-	FollowedUsername string `json:"followedUsername" validate:"required"`
-}
-
-type UserInfoResponse struct {
-	Name  string `json:"name"`
-	Email string `json:"email"`
+	UserID         uint `json:"userID" validate:"required"`
+	FollowedUserID uint `json:"followedUserID" validate:"required"`
 }
 
 type User struct {
 	ID        uint   `gorm:"primaryKey"`
-	Username  string `json:"username" gorm:"unique"`
 	Name      string `json:"name"`
 	Email     string `json:"email" gorm:"unique"`
 	Password  string `json:"password"`

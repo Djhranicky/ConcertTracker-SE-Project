@@ -7,21 +7,9 @@ import { AvatarGroup } from 'primeng/avatargroup';
 import { ImageModule } from 'primeng/image';
 import { Button } from 'primeng/button';
 import { Timeline } from 'primeng/timeline';
-import { Concert, Song } from '../../models/artist.model';
-import { ConcertService } from '../../services/concert.service';
-import { PostService } from '../../services/post.service';
-import { ActivatedRoute } from '@angular/router';
-import { FriendlyDatePipe } from '../../utils/friendlyDate.pipe';
-import { ProgressSpinner } from 'primeng/progressspinner';
-import { RouterModule } from '@angular/router';
-import { Post } from '../../models/post.model';
-import { DialogModule } from 'primeng/dialog';
-import { TextareaModule } from 'primeng/textarea';
-import { Checkbox } from 'primeng/checkbox';
-import { RatingModule } from 'primeng/rating';
-import { ToggleButtonModule } from 'primeng/togglebutton';
-import { FormsModule } from '@angular/forms';
-import { FloatLabel } from 'primeng/floatlabel';
+import { Concert, Song, ConcertService } from '../../services/concert.service';
+import { Post, PostService } from '../../services/post.service';
+
 @Component({
   selector: 'app-concert',
   imports: [
@@ -33,16 +21,6 @@ import { FloatLabel } from 'primeng/floatlabel';
     AvatarModule,
     AvatarGroup,
     Timeline,
-    ProgressSpinner,
-    FriendlyDatePipe,
-    RouterModule,
-    DialogModule,
-    TextareaModule,
-    Checkbox,
-    RatingModule,
-    ToggleButtonModule,
-    FormsModule,
-    FloatLabel,
   ],
   templateUrl: './concert.component.html',
   styleUrl: './concert.component.css',
@@ -54,94 +32,35 @@ export class ConcertComponent {
   day: string;
   month: string;
   year: string;
-  loading: boolean = true;
-  id: string;
-  showModal: boolean = false;
-  reviewText: string = '';
-  rating: number = 0;
-  isPublic: boolean = true;
-  type: boolean;
-  user: string;
-  wishlisted: boolean = false;
-
+  setlist: Song[];
   constructor(
     private concertService: ConcertService,
-    private postService: PostService,
-    private route: ActivatedRoute
+    private postService: PostService
   ) {}
+
+  parseSetlist() {
+    if (this.concert.setlist) {
+      this.setlist = JSON.parse(this.concert.setlist);
+      // console.log(this.setlist);
+    }
+  }
 
   objectEntries(obj: any): [string, any][] {
     return Object.entries(obj);
   }
 
   ngOnInit() {
-    this.user = localStorage.getItem('user') as string;
-
-    this.route.paramMap.subscribe((params) => {
-      this.id = params.get('id') as string;
-      this.loading = true;
-    });
-
-    this.concertService.getConcert(this.id).subscribe((concert) => {
-      this.concert = concert;
-      console.log(this.concert);
-      this.toggleLoading();
-    });
-
+    this.concert = this.concertService.getConcert();
+    let date = this.concert.date!.split(' ');
+    this.month = date[0];
+    this.day = date[1].slice(0, -1);
+    this.year = date[2];
+    this.parseSetlist();
     this.postService.getPosts().subscribe((data) => {
       this.posts = data;
+      // console.log(this.posts);
     });
-  }
 
-  private toggleLoading() {
-    if (this.loading) this.loading = false;
-  }
-
-  openModal() {
-    this.showModal = true;
-  }
-
-  submitPost() {
-    const postType = 'ATTENDED';
-
-    const payload = {
-      authorUsername: this.user,
-      externalConcertID: this.id,
-      isPublic: this.isPublic,
-      rating: this.rating,
-      text: this.reviewText ?? null,
-      type: postType,
-    };
-    this.postService.postPost(payload).subscribe({
-      next: () => {
-        console.log('Post submitted');
-        this.showModal = false;
-      },
-      error: (err) => {
-        console.error('Failed to submit post', err);
-      },
-    });
-  }
-
-  wishlist() {
-    const postType = 'WISHLIST';
-
-    const payload = {
-      authorUsername: this.user,
-      externalConcertID: this.id,
-      isPublic: this.isPublic,
-      rating: null,
-      text: '',
-      type: postType,
-    };
-    this.postService.postPost(payload).subscribe({
-      next: () => {
-        console.log('Wishlist submitted');
-        this.wishlisted = true;
-      },
-      error: (err) => {
-        console.error('Failed to submit post', err);
-      },
-    });
+    // console.log(this.concert);
   }
 }
