@@ -1,23 +1,8 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Observable, map } from 'rxjs';
 import { of } from 'rxjs';
-import { Concert, Tour } from './concert.service';
-
-export interface User {
-  username: string;
-  avatar: string;
-}
-
-export interface Post extends User, Concert, Tour {
-  type: string;
-  postDate: string;
-  reviewText: string | null;
-  attachedImg: string | null;
-  rating: number | null;
-  likes: number;
-  comments: number;
-}
+import { Post } from '../models/post.model';
 
 @Injectable({
   providedIn: 'root',
@@ -29,7 +14,7 @@ export class PostService {
     avatar: 'imgurl',
     postDate: 'Feb 20, 2025',
     date: 'Feb 19, 2025',
-    venue: 'Brisbane Entertainment Centre, Brisbane, Australia',
+    venue: 'Brisbane Entertainment Centre',
     artist: 'Billie Eilish',
     setlist: null,
     tour: 'HIT ME HARD AND SOFT',
@@ -39,6 +24,8 @@ export class PostService {
     rating: 4,
     likes: 10,
     comments: 3,
+    city: 'Brisbane, Australia',
+    id: '',
   };
 
   post2: Post = {
@@ -57,6 +44,8 @@ export class PostService {
     rating: 4,
     likes: 2,
     comments: 0,
+    city: '',
+    id: '',
   };
 
   post3: Post = {
@@ -65,7 +54,7 @@ export class PostService {
     avatar: 'imgurl',
     postDate: 'Feb 20, 2025',
     date: 'Feb 19, 2025',
-    venue: 'Brisbane Entertainment Centre, Brisbane, Australia',
+    venue: 'Brisbane Entertainment Centre',
     artist: 'Billie Eilish',
     tour: 'HIT ME HARD AND SOFT',
     img: 'https://res.cloudinary.com/hits-photos-archive/image/upload/v1736890770/legacy-migration/legacy-hitsdd_photo_gal__photo_1891402125.png',
@@ -76,14 +65,65 @@ export class PostService {
     rating: 5,
     likes: 2,
     comments: 0,
+    city: 'Brisbane, Australia',
+    id: '',
   };
 
   data = {
     posts: [this.post1, this.post2, this.post3],
   };
+
+  private url = 'http://localhost:8080/api';
+
   constructor(private http: HttpClient) {}
 
   getPosts(): Observable<Post[]> {
     return of(this.data.posts);
+  }
+
+  postPost(payload: {
+    authorUsername: string;
+    externalConcertID: string;
+    isPublic: boolean;
+    rating: number | null;
+    text: string | null;
+    type: string; //'ATTENDED' | 'WISHLIST' | 'REVIEW' | 'LISTCREATED';
+    // userPostID: number | null;
+  }) {
+    return this.http.post(`${this.url}/userpost`, payload);
+  }
+
+  getDashboardPosts(username: string, p: number = 1): Observable<Post[]> {
+    const params = new HttpParams().set('username', username);
+
+    return this.http.get<any[]>(`${this.url}/userpost`, { params }).pipe(
+      map((response) =>
+        response.map(
+          (item): Post => ({
+            // Fields from Post interface
+            type: item.type,
+            postDate: item.createdAt,
+            reviewText: item.text ?? null,
+            attachedImg: null,
+            rating: item.rating ?? null,
+            likes: 0,
+            comments: 0,
+            avatar: '',
+            id: item.postID,
+
+            username: item.authorUsername,
+
+            date: item.concertDate,
+            venue: item.venueName,
+            city: item.venueCity,
+
+            tour: item.tourName,
+            artist: item.artistName,
+            img: null,
+            setlist: null,
+          })
+        )
+      )
+    );
   }
 }

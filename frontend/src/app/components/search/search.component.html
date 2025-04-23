@@ -1,19 +1,21 @@
-<app-navbar></app-navbar>
+<main>
+  <div class="p-card">
+    <div class="p-card-header">
+      <h2>Search Results for "{{ query }}"</h2>
+    </div>
+    <div class="p-card-body">
+      <p-progressSpinner *ngIf="loading"></p-progressSpinner>
+      <p *ngIf="error && !loading" class="error-message">{{ error }}</p>
 
-<div class="p-card">
-  <div class="p-card-header">
-    <h2>Search Results for "{{ query }}"</h2>
-  </div>
-  <div class="p-card-body">
-    <p-progressSpinner *ngIf="loading"></p-progressSpinner>
-    <p *ngIf="error" class="error-message">{{ error }}</p>
-
-    <div *ngFor="let artist of results">
-      <p-card>
-        <ng-template #title>
-          <a href="/artists">{{ artist.artist.name }}</a>
-        </ng-template>
-      </p-card>
+      <div *ngFor="let artist of results">
+        <p-card *ngIf="!loading && !error">
+          <ng-template #title>
+            <a [routerLink]="['/artist/', artist.artist.name]">{{
+              artist.artist.name
+            }}</a>
+          </ng-template>
+        </p-card>
+      </div>
     </div>
   </div>
-</div>
+</main>

@@ -34,7 +34,8 @@ func (h *Handler) RegisterRoutes(router *mux.Router) {
 	router.HandleFunc("/", h.handleHome).Methods("GET")
 	router.HandleFunc("/login", h.handleLogin).Methods("POST", "OPTIONS")
 	router.HandleFunc("/register", h.handleRegister).Methods("POST", "OPTIONS")
-	router.HandleFunc("/validate", h.handleValidate).Methods("GET", "OPTIONS")
+	router.HandleFunc("/userinfo", h.handleUserInfo).Methods("GET", "OPTIONS")
+	router.HandleFunc("/users", h.handleUserList).Methods("GET", "OPTIONS")
 	router.HandleFunc("/artist", h.handleArtist(baseURL)).Methods("GET", "OPTIONS")
 	router.HandleFunc("/import", h.handleArtistImport(baseURL)).Methods("GET", "OPTIONS")
 	router.HandleFunc("/concert", h.handleConcert(baseURL)).Methods("GET", "OPTIONS")
@@ -60,12 +61,12 @@ func (h *Handler) handleHome(w http.ResponseWriter, r *http.Request) {
 }
 
 // @Summary Login user
-// @Description Authenticates a user and returns a JWT token
+// @Description Authenticates a user and returns a JWT token and username
 // @Tags Auth
 // @Accept json
 // @Produce json
 // @Param request body types.UserLoginPayload true "Login Payload"
-// @Success 200 {object} map[string]string
+// @Success 200 {object} map[string]string "Token and username"
 // @Failure 400 {string} string "Invalid email or password"
 // @Router /login [post]
 func (h *Handler) handleLogin(w http.ResponseWriter, r *http.Request) {
@@ -115,7 +116,13 @@ func (h *Handler) handleLogin(w http.ResponseWriter, r *http.Request) {
 
 	// implement jwt
 	auth.SetJWTCookie(w, token)
-	utils.WriteJSON(w, http.StatusOK, nil)
+
+	// Return username in response
+	response := map[string]string{
+		"username": u.Username,
+	}
+
+	utils.WriteJSON(w, http.StatusOK, response)
 }
 
 // @Summary Register user
@@ -164,6 +171,7 @@ func (h *Handler) handleRegister(w http.ResponseWriter, r *http.Request) {
 		Name:     payload.Name,
 		Email:    payload.Email,
 		Password: hashedPassword,
+		Username: payload.Username,
 	})
 	if err != nil {
 		utils.WriteError(w, http.StatusInternalServerError, err)
@@ -173,30 +181,101 @@ func (h *Handler) handleRegister(w http.ResponseWriter, r *http.Request) {
 	utils.WriteJSON(w, http.StatusCreated, nil)
 }
 
-// @Summary Validate user session
-// @Description Verifies if a user's session cookie contains an authenticated token
+// @Summary Get user info
+// @Description Returns user information based on username provided in JSON payload
 // @Tags Auth
+// @Accept json
 // @Produce json
-// @Success 200 {string} string "user session validated"
-// @Failure 401 {string} string "missing or invalid authorization token"
-// @Router /validate [get]
-func (h *Handler) handleValidate(w http.ResponseWriter, r *http.Request) {
+// @Param request body types.UserUsernamePayload true "Username Payload"
+// @Success 200 {object} types.UserInfoResponse "User's name and email"
+// @Failure 400 {string} string "Invalid payload"
+// @Failure 404 {string} string "User not found"
+// @Router /user [get]
+func (h *Handler) handleUserInfo(w http.ResponseWriter, r *http.Request) {
 	utils.SetCORSHeaders(w)
 	if r.Method == "OPTIONS" {
 		w.WriteHeader(http.StatusOK)
 		return
 	}
 
-	w.Header().Add("Content-Type", "application/json")
+	// if err := auth.ValidateUser(r, h.Store); err != nil {
+	// 	utils.WriteError(w, http.StatusUnauthorized, err)
+	// 	return
+	// }
 
-	err := auth.VerifyJWTCookie(auth.GetJWTCookie(r))
-	if err != nil {
-		utils.WriteError(w, http.StatusUnauthorized, err)
+	// Parse JSON payload
+	var payload struct {
+		Username string `json:"username" validate:"required"`
+	}
+
+	if err := utils.ParseJSON(r, &payload); err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(`{"message":"user session validated"}`))
+	// Validate username field
+	if err := utils.Validate.Struct(payload); err != nil {
+		errors := err.(validator.ValidationErrors)
+		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("invalid payload: %v", errors))
+		return
+	}
+
+	// Fetch user from database by username
+	user, err := h.Store.GetUserByUsername(payload.Username)
+	if err != nil {
+		utils.WriteError(w, http.StatusNotFound, errors.New("user not found"))
+		return
+	}
+
+	// Return the user's name and email
+	response := map[string]string{
+		"name":  user.Name,
+		"email": user.Email,
+	}
+
+	utils.WriteJSON(w, http.StatusOK, response)
+}
+
+// @Summary Get list of all users
+// @Description Returns a list of all usernames in the database
+// @Tags Auth
+// @Accept json
+// @Produce json
+// @Success 200 {array} string "List of usernames"
+// @Failure 500 {string} string "Internal server error"
+// @Router /users [get]
+func (h *Handler) handleUserList(w http.ResponseWriter, r *http.Request) {
+	utils.SetCORSHeaders(w)
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
+	// if err := auth.ValidateUser(r, h.Store); err != nil {
+	// 	utils.WriteError(w, http.StatusUnauthorized, err)
+	// 	return
+	// }
+
+	// Fetch all users from the database
+	users, err := h.Store.GetAllUsers()
+	if err != nil {
+		utils.WriteError(w, http.StatusInternalServerError, fmt.Errorf("error retrieving users: %v", err))
+		return
+	}
+
+	// Extract just the usernames into a separate slice
+	var usernames []string
+	for _, user := range users {
+		usernames = append(usernames, user.Name)
+	}
+
+	// Return the list of usernames
+	response := map[string]interface{}{
+		"usernames": usernames,
+		"count":     len(usernames),
+	}
+
+	utils.WriteJSON(w, http.StatusOK, response)
 }
 
 // @Summary Serve information for a given artist
@@ -214,6 +293,11 @@ func (h *Handler) handleArtist(inputURL string) http.HandlerFunc {
 			w.WriteHeader(http.StatusOK)
 			return
 		}
+
+		// if err := auth.ValidateUser(r, h.Store); err != nil {
+		// 	utils.WriteError(w, http.StatusUnauthorized, err)
+		// 	return
+		// }
 
 		// Get artist search from request
 		searchString := r.URL.Query().Get("name")
@@ -357,6 +441,12 @@ func (h *Handler) handleArtistImport(inputURL string) http.HandlerFunc {
 			w.WriteHeader(http.StatusOK)
 			return
 		}
+
+		// if err := auth.ValidateUser(r, h.Store); err != nil {
+		// 	utils.WriteError(w, http.StatusUnauthorized, err)
+		// 	return
+		// }
+
 		// Get artist search from request
 		mbid := r.URL.Query().Get("mbid")
 		if mbid == "" {
@@ -413,6 +503,11 @@ func (h *Handler) handleConcert(inputURL string) http.HandlerFunc {
 			w.WriteHeader(http.StatusOK)
 			return
 		}
+
+		// if err := auth.ValidateUser(r, h.Store); err != nil {
+		// 	utils.WriteError(w, http.StatusUnauthorized, err)
+		// 	return
+		// }
 
 		// Get setlist ID from request
 		setlistID := r.URL.Query().Get("id")
@@ -599,6 +694,11 @@ func (h *Handler) handleUserPost() http.HandlerFunc {
 			return
 		}
 
+		// if err := auth.ValidateUser(r, h.Store); err != nil {
+		// 	utils.WriteError(w, http.StatusUnauthorized, err)
+		// 	return
+		// }
+
 		if r.Method == http.MethodPost {
 			h.UserPostOnPost(w, r)
 		}
@@ -616,6 +716,11 @@ func (h *Handler) handleUserLike() http.HandlerFunc {
 			w.WriteHeader(http.StatusOK)
 			return
 		}
+
+		// if err := auth.ValidateUser(r, h.Store); err != nil {
+		// 	utils.WriteError(w, http.StatusUnauthorized, err)
+		// 	return
+		// }
 
 		if r.Method == http.MethodPost {
 			h.UserLikeOnPost(w, r)
@@ -636,6 +741,11 @@ func (h *Handler) handleUserFollow() http.HandlerFunc {
 			w.WriteHeader(http.StatusOK)
 			return
 		}
+
+		// if err := auth.ValidateUser(r, h.Store); err != nil {
+		// 	utils.WriteError(w, http.StatusUnauthorized, err)
+		// 	return
+		// }
 
 		if r.Method == http.MethodPost {
 			h.UserFollowOnPost(w, r)

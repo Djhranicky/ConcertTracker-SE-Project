@@ -1,0 +1,13 @@
+* {
+  font-family: "Poppins";
+  background-color: #f3f0e6;
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 3.9375rem);
+  align-items: center;
+  background-color: #f3f0e6;
+  /* flex-wrap: nowrap; */
+}

@@ -2,8 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { of } from 'rxjs';
-import { Tour } from './concert.service';
-
+import { Tour } from '../models/artist.model';
 @Injectable({
   providedIn: 'root',
 })

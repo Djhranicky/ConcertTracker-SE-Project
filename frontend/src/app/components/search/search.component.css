@@ -1,8 +1,10 @@
 * {
   font-family: "Poppins";
-  height: 100%;
 }
 
+main {
+  height: calc(100vh - 3.9375rem);
+}
 a {
   text-decoration: none;
   color: #334155;
@@ -13,8 +15,16 @@ a {
   padding: 20px;
   background-color: white;
   box-shadow: none;
+  border-radius: 10px;
 }
-
+.progressSpinner {
+  justify-items: center;
+  align-items: center;
+}
+:host ::ng-deep .p-card {
+  background: white;
+  box-shadow: none;
+}
 .p-inputgroup {
   display: flex;
   gap: 10px;
