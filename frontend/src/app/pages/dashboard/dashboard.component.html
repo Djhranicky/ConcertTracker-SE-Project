@@ -11,67 +11,35 @@
         <ng-template #title style="color: #f21414 !important"
           ><a href="/user/following">Following</a>
         </ng-template>
-        <div class="following">
-          <div class="user-content">
-            <p-avatar
-              image="https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png"
-              class="mr-2"
-              size="large"
-              shape="circle"
-            />
-            <div class="user-details">
-              <p class="user-name">First Last</p>
-              <p class="user-user">&#64;username</p>
+        <div class="following" *ngFor="let user of recentFollowing">
+          <a
+            [href]="'/user/' + user.username"
+            style="text-decoration: none; color: #334155"
+          >
+            <div class="user-content">
+              <p-avatar
+                [label]="user.username.charAt(0).toUpperCase()"
+                class="mr-2"
+                size="large"
+                shape="circle"
+              />
+              <div class="user-details">
+                <p class="user-name">
+                  {{ user.username }}
+                </p>
+                <p class="user-user">&#64;{{ user.username }}</p>
+              </div>
             </div>
-          </div>
-          <span class="pi pi-check-circle"></span>
-        </div>
-        <div class="following">
-          <div class="user-content">
-            <p-avatar
-              image="https://primefaces.org/cdn/primeng/images/demo/avatar/asiyajavayant.png"
-              class="mr-2"
-              size="large"
-              shape="circle"
-            />
-
-            <div class="user-details">
-              <p class="user-name">First Last</p>
-              <p class="user-user">&#64;username</p>
-            </div>
-          </div>
-          <span class="pi pi-check-circle"></span>
-        </div>
-        <div class="following">
-          <div class="user-content">
-            <p-avatar
-              image="https://primefaces.org/cdn/primeng/images/demo/avatar/onyamalimba.png"
-              class="mr-2"
-              size="large"
-              shape="circle"
-            />
-
-            <div class="user-details">
-              <p class="user-name">First Last</p>
-              <p class="user-user">&#64;username</p>
-            </div>
-          </div>
-          <span class="pi pi-check-circle"></span>
-        </div>
-        <div class="following">
-          <div class="user-content">
-            <p-avatar
-              image="https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png"
-              class="mr-2"
-              size="large"
-              shape="circle"
-            />
-            <div class="user-details">
-              <p class="user-name">First Last</p>
-              <p class="user-user">&#64;username</p>
-            </div>
-          </div>
-          <span class="pi pi-check-circle"></span>
+          </a>
+          <span
+            class="pi"
+            [ngClass]="{
+              'pi-check-circle': !followingMap[user.username],
+              'pi-plus-circle': followingMap[user.username]
+            }"
+            (click)="toggleFollow(user.username)"
+            style="cursor: pointer"
+          ></span>
         </div>
         <ng-template #footer> See more... </ng-template></p-card
       >

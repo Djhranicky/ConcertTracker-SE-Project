@@ -93,24 +93,35 @@ export class PostService {
     return this.http.post(`${this.url}/userpost`, payload);
   }
 
-  getDashboardPosts(userID: string, p: number = 1): Observable<Post[]> {
-    const params = new HttpParams()
-      .set('userID', userID)
-      .set('p', p.toString());
+  getDashboardPosts(username: string, p: number = 1): Observable<Post[]> {
+    const params = new HttpParams().set('username', username);
 
     return this.http.get<any[]>(`${this.url}/userpost`, { params }).pipe(
       map((response) =>
         response.map(
-          (item) =>
-            ({
-              ...item,
-              postDate: item.postDate ?? '',
-              reviewText: item.reviewText ?? null,
-              attachedImg: item.attachedImg ?? null,
-              rating: item.rating ?? null,
-              likes: item.likes ?? 0,
-              comments: item.comments ?? 0,
-            } as Post)
+          (item): Post => ({
+            // Fields from Post interface
+            type: item.type,
+            postDate: item.createdAt,
+            reviewText: item.text ?? null,
+            attachedImg: null,
+            rating: item.rating ?? null,
+            likes: 0,
+            comments: 0,
+            avatar: '',
+            id: item.postID,
+
+            username: item.authorUsername,
+
+            date: item.concertDate,
+            venue: item.venueName,
+            city: item.venueCity,
+
+            tour: item.tourName,
+            artist: item.artistName,
+            img: null,
+            setlist: null,
+          })
         )
       )
     );

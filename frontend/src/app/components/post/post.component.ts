@@ -7,10 +7,17 @@ import { Button } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { Avatar } from 'primeng/avatar';
 import { TimeAgoPipe } from '../../utils/time-ago.pipe';
-
+import { FriendlyDatePipe } from '../../utils/friendlyDate.pipe';
 @Component({
   selector: 'app-post',
-  imports: [CardModule, Button, Avatar, CommonModule, TimeAgoPipe],
+  imports: [
+    CardModule,
+    Button,
+    Avatar,
+    CommonModule,
+    TimeAgoPipe,
+    FriendlyDatePipe,
+  ],
   templateUrl: './post.component.html',
   styleUrl: './post.component.css',
   providers: [PostService, UserService],

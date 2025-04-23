@@ -111,8 +111,10 @@ export class ArtistComponent implements OnInit {
         });
 
       this.concertService.getStats(this.name).subscribe((stats) => {
-        this.stats = Object.entries(stats);
-        console.log('stats', this.stats);
+        if (stats) {
+          this.stats = Object.entries(stats);
+          console.log('stats', this.stats);
+        }
         this.toggleLoading();
       });
     }
@@ -152,6 +154,7 @@ export class ArtistComponent implements OnInit {
 
   private toggleLoading() {
     this.loadingCount++;
+    console.log(this.loadingCount, this.loadingTarget);
     if (this.loadingCount === this.loadingTarget) this.loading = false;
   }
 }

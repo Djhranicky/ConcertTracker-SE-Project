@@ -63,38 +63,31 @@ export class NavbarComponent {
   ngOnInit() {
     this.authenticationService.isAuthenticated().subscribe((isAuth) => {
       this.isLoggedIn = isAuth;
+      let user = localStorage.getItem('user') as string;
       if (this.isLoggedIn) {
         this.items = [
           {
             label: 'Home',
             routerLink: '/',
           },
-          {
-            label: 'Concerts',
-            routerLink: '/concerts',
-          },
-          {
-            label: 'Artists',
-            routerLink: '/artists',
-          },
-          {
-            label: 'Lists',
-            routerLink: '/lists',
-          },
+          // {
+          //   label: 'Concerts',
+          //   routerLink: '/concerts',
+          // },
+          // {
+          //   label: 'Artists',
+          //   routerLink: '/artists',
+          // },
+          // {
+          //   label: 'Lists',
+          //   routerLink: '/lists',
+          // },
         ];
 
         this.userItems = [
           {
             label: 'Profile',
-            routerLink: '/user/user',
-          },
-          {
-            label: 'Notifications',
-            routerLink: '/notifications',
-          },
-          {
-            label: 'Settings',
-            routerLink: '/settings',
+            routerLink: `/user/${user}`,
           },
           {
             label: 'Sign out',
