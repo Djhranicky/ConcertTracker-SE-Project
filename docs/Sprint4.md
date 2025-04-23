@@ -268,6 +268,16 @@ Unit tests written so far:
   - GET should fail bad userID provided
   - GET should pass with valid userID and type = followers
   - GET should pass with valid userID and type = following
+- TestUserInfoRoute
+  - should fail with no username in payload
+  - should fail with empty username
+  - should fail with non-existent username
+  - should succeed with valid username
+  - should handle OPTIONS request correctly
+- TestUsersRoute
+  - should return current users list
+  - should return updated list after adding new users
+  - should handle OPTIONS request correctly
 
 ### API Documentation
 
