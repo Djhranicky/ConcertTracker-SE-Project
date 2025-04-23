@@ -4,22 +4,15 @@
 
 ### Work completed
 
-- [x] [Created the frontend for the Concert page.](https://github.com/Djhranicky/ConcertTracker-SE-Project/issues/28) The page is currently populated with mock concert data.
-- [x] [Refined Post UI modular component to be used in Dashboard, Concert and User Pages](https://github.com/Djhranicky/ConcertTracker-SE-Project/issues/53). Currently serves mock post data and the toggle like functionality is static.
-- [x] [Created Dashboard Page UI](https://github.com/Djhranicky/ConcertTracker-SE-Project/issues/54)
-Currently serves mock posts from posts service. Auth guarded so only logged in users should reach it when navigating to '/'
-- [x] [Created injectable service for User Page](https://github.com/Djhranicky/ConcertTracker-SE-Project/issues/36) To be modified to connect with backend once endpoints are set.
-- [x] [Created mock data for User Page ](https://github.com/Djhranicky/ConcertTracker-SE-Project/issues/32) Created interfaces for user service.
- - [x] [Connected frontend to the /validate endpoint in backend](https://github.com/Djhranicky/ConcertTracker-SE-Project/issues/55) Modified isAuth() function in authenticationService to check if the jwt given when logged in is still valid. 
- - [x] [Created injectable service for Concert and Artist Page](https://github.com/Djhranicky/ConcertTracker-SE-Project/issues/33) To be modified to connect with backend once endpoints are set. Current functions getConcert(), getArtist(), getRecentConcerts() and getUpcomingConcerts()
-- [x] [Improved service for serving Posts](https://github.com/Djhranicky/ConcertTracker-SE-Project/issues/51)
-- [x] [Created mock data for Concert and Artist Page](https://github.com/Djhranicky/ConcertTracker-SE-Project/issues/34) Created and refactored interfaces for concert and artist services.
-- [x] [Added navigation menu to signed in Navbar](https://github.com/Djhranicky/ConcertTracker-SE-Project/issues/58) Created and refactored interfaces for concert and artist services. Moved sign out button to drop down menu bar on user avatar click.
-- [x] [Refactored User Page to use modular post components.](https://github.com/Djhranicky/ConcertTracker-SE-Project/issues/58) Added 'Activity', 'Concerts', and 'Lists' Tabs Views for existing user Page.
-- [x] [Created Cypress E2E tests for Artist, Concert and User pages](https://github.com/Djhranicky/ConcertTracker-SE-Project/issues/46)
-- [x] [Created Jasmine unit tests for new pages and components](https://github.com/Djhranicky/ConcertTracker-SE-Project/issues/44)
-- [x] [Initial Search functionality implemented and connected to backend](https://github.com/Djhranicky/ConcertTracker-SE-Project/issues/66) Created SearchResults page that can be accessed through the search bar, which displays results from the search /artist endpoint from the backend.
+- [x] [Finished Search functionality implemented and connected to backend](https://github.com/Djhranicky/ConcertTracker-SE-Project/issues/66) Created SearchResults page that can be accessed through the search bar, which displays results from the search /artist endpoint from the backend. 
 - [x] Created Home Component to render landing page if user not logged in and the dashboard if logged in when navigating to '/'
+- [x] Modified the existing User, Concert, Page Services to connect to the backend routes instead of serving mock data
+- [x] Modified the routes to generate dynamic pages that serve the backend information
+- [x] Implemented Follow/Unfollow functionality to User pages and connecting it to the backend
+- [x] Modified Dashboard page to serve the posts from the followers. Also connected the co
+- [x] Added Pop-up/Modal to review a concert. Connected to backend to make posts.
+- [x] Connected Concert Page to Backend, serving setlist information that is stored in th database.
+- [x] Added Full-Import functionality. When clicking on 'import' button, it would call the /import endpoint and automatically refresh the page and show the new information once the import is ready.       
 - [x] Added 'Following' and 'Followers' Tabs Views for existing user Page and connected it to the backend.
 
 ### Frontend Unit Tests
@@ -79,20 +72,11 @@ Currently serves mock posts from posts service. Auth guarded so only logged in u
   - should require email field
   - should validate email field to be email format
   - should require password field
-  - should not call AuthenticationService.register if form is invalid
-  - should call AuthenticationService.register if form is valid
   - should handle registration error
 - Not Found Page
   - should be created
 - User Profile Page
   - should be created
-  - should display the correct user name
-  - should have "profile" as the default active tab
-  - should change active tab when a tab is clicked
-  - should display the correct number of favorite concerts
-  - should display the correct statistics text
-  - should display the correct number of recent activities
-  - should display the bucket list section
 - Authentication Service
   - should return true if /validate return 200 message
   - should return false if /validate returns 401
@@ -184,7 +168,8 @@ create an instance
   - should display edit profile icon and handle image upload
   - should handle responsive layout
 - Spec Test
-  - Visits inital project Page 
+  - Visits inital project Page
+
 ## Backend
 
 ### Work completed
