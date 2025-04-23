@@ -357,3 +357,17 @@ The `"/follow"` endpoint allows users to follow eachother and can return lists o
 The POST route will add or remove a follow relation between two users. When the UserID and FollowedUserID pairing is not present, a record is created. If the pairing is present, the record is removed (unfollowing).
 
 The GET route will return a list of users in two different scenarios. The type = followers scenario will return a list of users that all follow the given user, and the type = following will return a list of users that the given user follows.
+
+#### UserInfo Route
+
+The `"/userinfo"` endpoint retrieves information about a specific user by username. 
+
+The GET route requires a JSON payload containing a valid username. When provided with a valid username, the endpoint returns user details including name and email. 
+
+Request validation checks for the presence of a username, verifies it's not empty, and confirms the user exists in the system.
+
+#### Users Route
+
+The `"/users"` endpoint provides access to the full list of users in the system. 
+
+The GET route returns an array of all usernames along with a count of total users. The system correctly updates the count when new users are added to the database. 
