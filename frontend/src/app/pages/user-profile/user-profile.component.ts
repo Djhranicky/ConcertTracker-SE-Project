@@ -9,6 +9,8 @@ import {
   ConcertCard,
   Activity,
   List,
+  Followers,
+  Following
 } from '../../models/user.model';
 import { Post } from '../../models/post.model';
 import { Card } from 'primeng/card';
@@ -60,6 +62,9 @@ export class UserProfileComponent implements OnInit {
   favoritePosts: Post[] = [];
   bucketListPosts: Post[] = [];
 
+  followers: Followers[] = [];
+  following: Following[] = [];
+
   constructor(
     private userService: UserService,
     private router: Router,
@@ -81,12 +86,14 @@ export class UserProfileComponent implements OnInit {
       .getFollowList(this.user, 'following')
       .subscribe((users) => {
         this.followingCount = users.length;
+        this.following = users;
       });
 
     this.userService
       .getFollowList(this.user, 'followers')
       .subscribe((users) => {
         this.followersCount = users.length;
+        this.followers = users;
       });
 
     // Get user profile data
@@ -127,12 +134,7 @@ export class UserProfileComponent implements OnInit {
 
   // Method to change active tab
   setActiveTab(tab: string): void {
-    if (tab === 'following' || tab === 'followers') {
-      // Navigate to Not Found page instead of displaying the tab
-      this.router.navigate(['/not-found']);
-    } else {
       this.activeTab = tab;
-    }
   }
 
   toggleFollow() {

@@ -26,3 +26,11 @@ export interface List {
   title: string;
   thumbnails: string[];
 }
+
+export interface Following {
+  username: string;
+}
+
+export interface Followers {
+  username: string;
+}
