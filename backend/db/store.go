@@ -373,13 +373,13 @@ func (s *Store) GetActivityFeed(username string, pageNumber int64) ([]types.User
 	var userPosts []types.UserPostGetResponse
 	result := s.db.Raw(`SELECT 
 		P.id AS post_id,
-		U2.name AS author_name,
+		U2.name AS author_username,
 		P.text,
 		P.type,
 		P.rating,
 		P.user_post_id,
 		P.is_public,
-		P.concert_id,
+		C.external_id AS external_concert_id,
 		A.name AS artist_name,
 		C.date AS concert_date,
 		T.name AS tour_name,
@@ -396,10 +396,10 @@ func (s *Store) GetActivityFeed(username string, pageNumber int64) ([]types.User
 		JOIN tours T ON C.tour_id = T.id
 		JOIN venues V ON C.venue_id = V.id
 		JOIN artists A ON C.artist_id = A.id
-		WHERE U.username = ?
+		WHERE U.username = 'test1'
 		AND P.is_public = 1
 		ORDER BY P.updated_at DESC
-		LIMIT 20 OFFSET ?
+		LIMIT 20 OFFSET 0
 	;`, username, 20*pageNumber).Scan(&userPosts)
 
 	if result.Error != nil {
