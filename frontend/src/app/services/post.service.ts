@@ -109,7 +109,7 @@ export class PostService {
             likes: 0,
             comments: 0,
             avatar: '',
-            id: item.postID,
+            id: item.externalConcertID,
 
             username: item.authorUsername,
 

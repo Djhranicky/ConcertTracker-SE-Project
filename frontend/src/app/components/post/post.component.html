@@ -2,7 +2,7 @@
   <ng-template #title class="template">
     <div class="head">
       <p-avatar icon="pi pi-user" class="mr-2" size="large" shape="circle" />
-      <a href="/user/">{{ getDisplayUsername() }}</a> reviewed:
+      <a [href]="'/user/' + post.username">{{ getDisplayUsername() }}</a> reviewed:
     </div>
     <div class="date">{{ post.postDate | timeAgo }}</div>
   </ng-template>
@@ -14,7 +14,7 @@
         />
         <div class="concert-text">
           <div class="date-name">
-            <span class="tour-name">{{ post.tour }}</span>
+            <a [href]="'/concert/' + post.id"><span class="tour-name">{{ post.tour }}</span></a>
             <span class="tour-date">{{ post.date | friendlyDate }}</span>
           </div>
           <a [href]="'/artist/' + post.artist"
