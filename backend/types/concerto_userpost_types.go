@@ -22,22 +22,22 @@ type UserLikeGetResponse struct {
 }
 
 type UserPostGetResponse struct {
-	PostID       uint      `json:"postID"`
-	AuthorName   string    `json:"authorName"`
-	Text         *string   `json:"text"`
-	Type         string    `json:"type"`
-	Rating       *uint     `json:"rating"`
-	UserPostID   *uint     `json:"userPostID"`
-	IsPublic     bool      `json:"isPublic"`
-	ConcertID    uint      `json:"concertID"`
-	ArtistName   string    `json:"artistName"`
-	ConcertDate  time.Time `json:"concertDate"`
-	TourName     string    `json:"tourName"`
-	VenueName    string    `json:"venueName"`
-	VenueCity    string    `json:"venueCity"`
-	VenueCountry string    `json:"venueCountry"`
-	CreatedAt    time.Time `json:"createdAt"`
-	UpdatedAt    time.Time `json:"updatedAt"`
+	PostID            uint      `json:"postID"`
+	AuthorUsername    string    `json:"authorUsername"`
+	Text              *string   `json:"text"`
+	Type              string    `json:"type"`
+	Rating            *uint     `json:"rating"`
+	UserPostID        *uint     `json:"userPostID"`
+	IsPublic          bool      `json:"isPublic"`
+	ExternalConcertID string    `json:"externalConcertID"`
+	ArtistName        string    `json:"artistName"`
+	ConcertDate       time.Time `json:"concertDate"`
+	TourName          string    `json:"tourName"`
+	VenueName         string    `json:"venueName"`
+	VenueCity         string    `json:"venueCity"`
+	VenueCountry      string    `json:"venueCountry"`
+	CreatedAt         time.Time `json:"createdAt"`
+	UpdatedAt         time.Time `json:"updatedAt"`
 }
 
 type UserFollowGetResponse struct {

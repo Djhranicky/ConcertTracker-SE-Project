@@ -86,4 +86,50 @@ export class PostService {
   getPosts(): Observable<Post[]> {
     return of(this.data.posts);
   }
+
+  postPost(payload: {
+    authorUsername: string;
+    externalConcertID: string;
+    isPublic: boolean;
+    rating: number | null;
+    text: string | null;
+    type: string; //'ATTENDED' | 'WISHLIST' | 'REVIEW' | 'LISTCREATED';
+    // userPostID: number | null;
+  }) {
+    return this.http.post(`${this.url}/userpost`, payload);
+  }
+
+  getDashboardPosts(username: string, p: number = 1): Observable<Post[]> {
+    const params = new HttpParams().set('username', username);
+
+    return this.http.get<any[]>(`${this.url}/userpost`, { params }).pipe(
+      map((response) =>
+        response.map(
+          (item): Post => ({
+            // Fields from Post interface
+            type: item.type,
+            postDate: item.createdAt,
+            reviewText: item.text ?? null,
+            attachedImg: null,
+            rating: item.rating ?? null,
+            likes: 0,
+            comments: 0,
+            avatar: '',
+            id: item.externalConcertID,
+
+            username: item.authorUsername,
+
+            date: item.concertDate,
+            venue: item.venueName,
+            city: item.venueCity,
+
+            tour: item.tourName,
+            artist: item.artistName,
+            img: null,
+            setlist: null,
+          })
+        )
+      )
+    );
+  }
 }
