@@ -196,6 +196,10 @@ Create /like endpoint to allow users to like/unlike a post. The POST route will 
 
 Create /follow endpoint to allow users to follow other users. The POST route will toggle whether a user follows another user. The GET route takes two options as a query parameter. type = followers will give a list of users that follow the given user. type = following will give a list of users that a given user follows.
 
+Create /userinfo endpoint to allow users to retrieve information about a specific user. The GET route will return user details including name and email when provided with a valid username in the request payload. The route validates that the username exists and is not empty.
+
+Create /users endpoint to provide access to the complete list of users. The GET route returns an array of all usernames along with a count of total users in the system. The endpoint dynamically updates when new users are added to the database, ensuring the returned data is always current.
+
 ### Unit Tests
 
 Wrote unit tests for each route implemented so far and for managing the session with JWT tokens stored in cookies
