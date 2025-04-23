@@ -19,7 +19,8 @@ Currently serves mock posts from posts service. Auth guarded so only logged in u
 - [x] [Created Cypress E2E tests for Artist, Concert and User pages](https://github.com/Djhranicky/ConcertTracker-SE-Project/issues/46)
 - [x] [Created Jasmine unit tests for new pages and components](https://github.com/Djhranicky/ConcertTracker-SE-Project/issues/44)
 - [x] [Initial Search functionality implemented and connected to backend](https://github.com/Djhranicky/ConcertTracker-SE-Project/issues/66) Created SearchResults page that can be accessed through the search bar, which displays results from the search /artist endpoint from the backend.
-- [x] Created Home Component to render landing page if user not logged in and the dashboard if logged in when navigating to '/' 
+- [x] Created Home Component to render landing page if user not logged in and the dashboard if logged in when navigating to '/'
+- [x] Added 'Following' and 'Followers' Tabs Views for existing user Page and connected it to the backend.
 
 ### Frontend Unit Tests
 #### Jasmine Unit Tests
