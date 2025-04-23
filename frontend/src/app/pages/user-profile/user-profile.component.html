@@ -252,7 +252,7 @@
             Following
           </div>
         </ng-template>
-        <div class="following">
+        <div class="following" *ngFor="let followin in following">
           <div class="user-content">
             <p-avatar
               image="https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png"
@@ -261,38 +261,8 @@
               shape="circle"
             />
             <div class="user-details">
-              <p class="user-name">First Last</p>
-              <p class="user-user">&#64;username</p>
-            </div>
-          </div>
-          <span class="pi pi-check-circle"></span>
-        </div>
-        <div class="following">
-          <div class="user-content">
-            <p-avatar
-              image="https://primefaces.org/cdn/primeng/images/demo/avatar/asiyajavayant.png"
-              class="mr-2"
-              size="large"
-              shape="circle"
-            />
-            <div class="user-details">
-              <p class="user-name">First Last</p>
-              <p class="user-user">&#64;username</p>
-            </div>
-          </div>
-          <span class="pi pi-check-circle"></span>
-        </div>
-        <div class="following">
-          <div class="user-content">
-            <p-avatar
-              image="https://primefaces.org/cdn/primeng/images/demo/avatar/onyamalimba.png"
-              class="mr-2"
-              size="large"
-              shape="circle"
-            />
-            <div class="user-details">
-              <p class="user-name">First Last</p>
-              <p class="user-user">&#64;username</p>
+              <p class="user-name">{{followin.username}}</p>
+              <p class="user-user"></p>
             </div>
           </div>
           <span class="pi pi-check-circle"></span>
@@ -315,7 +285,7 @@
             Followers
           </div>
         </ng-template>
-        <div class="following">
+        <div class="following" *ngFor="let follower in followers">
           <div class="user-content">
             <p-avatar
               image="https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png"
@@ -324,23 +294,8 @@
               shape="circle"
             />
             <div class="user-details">
-              <p class="user-name">First Last</p>
-              <p class="user-user">&#64;username</p>
-            </div>
-          </div>
-          <span class="pi pi-check-circle"></span>
-        </div>
-        <div class="following">
-          <div class="user-content">
-            <p-avatar
-              image="https://primefaces.org/cdn/primeng/images/demo/avatar/asiyajavayant.png"
-              class="mr-2"
-              size="large"
-              shape="circle"
-            />
-            <div class="user-details">
-              <p class="user-name">First Last</p>
-              <p class="user-user">&#64;username</p>
+              <p class="user-name">{{follower.username}}</p>
+              <p class="user-user"></p>
             </div>
           </div>
           <span class="pi pi-check-circle"></span>

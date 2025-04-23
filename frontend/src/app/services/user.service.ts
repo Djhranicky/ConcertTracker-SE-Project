@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { Concert, Tour } from '../models/artist.model';
-import { UserProfile, ConcertCard, Activity, List } from '../models/user.model';
+import { UserProfile, ConcertCard, Activity, List, Followers } from '../models/user.model';
 import { Post } from '../models/post.model';
 @Injectable({
   providedIn: 'root',
@@ -246,6 +246,10 @@ export class UserService {
   getPostsByType(type: string): Observable<Post[]> {
     return of(this.userPosts.filter((post) => post.type === type));
   }
+
+  // getFollowers(): Observable<Followers[]> {{
+  //   return of(this.followers)
+  // }}
 
   //getfollowlist
   getFollowList(
